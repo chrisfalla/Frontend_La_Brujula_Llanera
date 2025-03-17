@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import LoginForm from '../components/LoginForm';
-
+import CurvedBackground from '../components/CurvedBackground';
 
 
 const LoginScreen = () => {
