@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { View, TextInput, StyleSheet, Alert, Text, TouchableOpacity, Pressable } from 'react-native';
 
+
 const LoginForm =() =>{
     const [email, setEmail] = useState ('');
     const [password, SetPassword] = useState ('');
@@ -19,6 +20,7 @@ const LoginForm =() =>{
   
     return(
         <View style={styles.container}>
+           
             <Text style={styles.title}>Correo electroníco</Text>
             <TextInput
             style={styles.input}
@@ -35,43 +37,45 @@ const LoginForm =() =>{
             value={password}
             onChange={SetPassword}
             />
+          
 
-        <TouchableOpacity onPress={handleForgotPassword}>
-        <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
-        </TouchableOpacity>
-       
-        
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonButtonText}>Iniciar sesión</Text>
-        </TouchableOpacity>
-       
-        <TouchableOpacity style={styles.googleButton} onPress={handleLogin}>
-        <Text style={styles.googleButtonText}>Iniciar con Google</Text>
-        </TouchableOpacity>
-        
-        
-       
         </View>
         
     );
 };
 
 const styles = StyleSheet.create({
-    container: { width: '100%', padding: 10, marginTop: 8,},
+    container: { 
+        width: '100%',
+        padding: 10, 
+        marginTop: 8, 
+        alignItems:'center',
+        
+
+    
+     },
+
     title:{
-        fontSize: 16,
+        alignItems: '',
+        fontSize: 13,
         fontWeight: 'bold',
-        marginBottom:5,
-        textAlign: '',
+        marginBottom: 5,
+        paddingLeft: 15,
+       
+        textAlign:'left',
+        alignSelf: 'flex-start',
+        
     },
     input: {
-        width: '100%',
-        height: 40,
+        marginBottom:15,
+        padding: 25,
+        width: 350,
+        height: 48,
         borderColor: 'gray',
         borderWidth: 1,
-      
-        paddingLeft: 2,
-        borderRadius: 8,
+        
+        paddingLeft: 10,
+        borderRadius: 20,
 
     },
     forgotPassword:{
@@ -80,37 +84,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         textDecorationLine: 'underline', 
     },
-    loginButton: {
-        backgroundColor: '#28A745',
-        marginTop: 10,
-        width: '100%',
-        height: 35,
-        borderRadius:8,
-    },
-    loginButtonButtonText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: 'white',
-        textAlign: 'center',
-        margin: 'auto',
-        
-    },
-    googleButton: {
-        backgroundColor: '#28A745',
-        marginTop: 10,
-        width: '100%',
-        height: 35,
-        borderRadius:8,
-        
-    },
-    googleButtonText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: 'white',
-        textAlign: 'center',
-        margin: 'auto',
-        
-    },
+
     
 });
 

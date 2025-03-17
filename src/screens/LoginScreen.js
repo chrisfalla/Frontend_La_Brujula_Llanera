@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import LoginForm from '../components/LoginForm';
+
 
 
 const LoginScreen = () => {
@@ -10,11 +12,12 @@ const LoginScreen = () => {
             <Image source={require('../assets/LogoName.jpg')}
             style={styles.logo2}/>
             <Text style={styles.title}> Iniciar <Text style={styles.title2}>Sesion</Text></Text>
-            
+            <LoginForm style={styles.form} />
             <View style={styles.footerContainer}>
             <Text style={styles.footer}>Al ingresar, aceptas nuestros Terminos y condiciones,
             y Politica de privacidad</Text>
             </View>
+            <CurvedBackground />
         </View>
     );
 };
@@ -29,6 +32,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     logo:{
+        alignItems:'center',
         width: 101, // Ajusta el ancho de la imagen
         height: 99, // Ajusta la altura de la imagen
         marginBottom: 0, // Espacio entre la imagen y el texto
@@ -56,6 +60,11 @@ const styles = StyleSheet.create({
         margin: 0,
         color: '#236A34'
     },
+
+    form:{
+        alignItems: 'center',
+    },
+
     footerContainer:{
 
         marginTop: 20,
