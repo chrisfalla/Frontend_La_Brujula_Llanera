@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import LoginForm from '../components/LoginForm';
 import CurvedBackground from '../components/CurvedBackground';
 
+
+
 const LoginScreen = () => {
     return (
         <View style={styles.container}>
@@ -11,7 +13,9 @@ const LoginScreen = () => {
             <Image source={require('../assets/LogoName.jpg')}
             style={styles.logo2}/>
             <Text style={styles.title}> Iniciar <Text style={styles.title2}>Sesion</Text></Text>
+            
             <LoginForm style={styles.form} />
+            
             <View style={styles.footerContainer}>
             <Text style={styles.footer}>Al ingresar, aceptas nuestros Terminos y condiciones,
             y Politica de privacidad</Text>
@@ -39,12 +43,12 @@ const styles = StyleSheet.create({
     logo2:{
         width: 207, // Ajusta el ancho de la imagen
         height: 95, // Ajusta la altura de la imagen
-        marginBottom: 0, // Espacio entre la imagen y el texto
+        marginBottom: 50, // Espacio entre la imagen y el texto
         resizeMode: 'contain'
     },
     title: {
         textAlign:'auto',
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
         margin: 0,
     },
@@ -66,6 +70,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 12,
     },
+    
 });
 
 export default LoginScreen;

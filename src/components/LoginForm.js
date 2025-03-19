@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import {  View,  TextInput,  StyleSheet,  Alert,  Text,  TouchableOpacity,  Pressable,} from "react-native";
+import RowLine from "../components/RowLine";
+
+
+
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +17,10 @@ const LoginForm = () => {
     }
   };
 
+  const handleForgotPassword = () =>{
+          Alert.alert('Recuperacion de la contaseña')
+      };
+      
 
 
   return (
@@ -23,7 +31,7 @@ const LoginForm = () => {
         placeholder="ejemplo@ejemplo.com"
         keyboardType="email-address"
         value={email}
-        onChange={setEmail}
+        onChangeText={setEmail}
       />
       <Text style={styles.title}>Contraseña</Text>
       <TextInput
@@ -31,16 +39,25 @@ const LoginForm = () => {
         placeholder="********"
         secureTextEntry
         value={password}
-        onChange={SetPassword}
+        onChangeText={SetPassword}
       />
+      <TouchableOpacity onPress={handleForgotPassword}>
+              <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
+              </TouchableOpacity>
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonButtonText}>Iniciar sesión</Text>
       </TouchableOpacity>
+      
+        <RowLine style={styles.rowLine} />
+       
+    
 
-      <TouchableOpacity style={styles.googleRegistrer} onPress={handleLogin}>
-        <Text style={styles.googleRegistrerText}>Registrarse</Text>
+      <TouchableOpacity style={styles.registrerButton} onPress={handleLogin}>
+        <Text style={styles.registrerButtonText}>Registrarse</Text>
       </TouchableOpacity>
+      
+
     </View>
   );
 };
@@ -57,6 +74,7 @@ const styles = StyleSheet.create({
     alignItems: "",
     fontSize: 13,
     fontWeight: "bold",
+    
     marginBottom: 5,
     paddingLeft: 15,
 
@@ -65,23 +83,23 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 15,
-    padding: 25,
+   
     width: 350,
     height: 48,
     borderColor: "gray",
     borderWidth: 1,
-    paddingLeft: 10,
+    paddingLeft: 15,
     borderRadius: 20,
   },
   forgotPassword: {
-    color: "#1E90FF", // Color azul para simular un enlace
-    textAlign: "flex-start",
+    color: "#747474", // Color azul para simular un enlace
+    paddingLeft: 200,
     marginBottom: 10,
     textDecorationLine: "underline",
   },
   loginButton: {
-    backgroundColor: "#28A745",
-    marginTop: 10,
+    backgroundColor: "#236A34",
+    marginTop: 15,
     width: 350,
     height: 48,
     borderRadius: 20,
@@ -93,20 +111,26 @@ const styles = StyleSheet.create({
     textAlign: "center",
     margin: "auto",
   },
-  googleRegistrer: {
-    backgroundColor: "#28A745",
-    marginTop: 10,
+  registrerButton: {
+    backgroundColor: "#ffff",
+    borderWidth: 1,
+    borderColor:'#236A34',
     width: 350,
     height: 48,
     borderRadius: 20,
   },
-  googleRegistrerText: {
+  registrerButtonText: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "white",
+    color: "#236A34",
     textAlign: "center",
-    margin: "auto",
+    margin: 'auto',
   },
+
+  rowLine: {
+    marginVertical: 10, // Espacio entre los botones
+  }
+
 });
 
 export default LoginForm;
