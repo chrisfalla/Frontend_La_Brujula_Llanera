@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {  View,  TextInput,  StyleSheet,  Alert,  Text,  TouchableOpacity,  Pressable,} from "react-native";
-import RowLine from "../components/RowLine";
+import RowLine from "./RowLine";
 
 
 
