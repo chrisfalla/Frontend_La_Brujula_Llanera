@@ -1,21 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
-import LoginScreen from './src/screens/LoginScreen';
+import React from 'react';
+import AppNavigation from './src/navigation/AppNavigation'; // Importar AppNavigator
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <LoginScreen/>
-    </View>
-  );
-}
+const App = () => {
+    return (
+        <AppNavigation /> // Usar AppNavigator como el componente raíz
+    );
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
