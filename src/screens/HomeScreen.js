@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Logo from '../../components/logo_perfil'; // Verifica que esta ruta sea correcta
+import Logo from '../components/logo_perfil'; // Verifica que esta ruta sea correcta
 
 const HomeScreen = () => {
     return (

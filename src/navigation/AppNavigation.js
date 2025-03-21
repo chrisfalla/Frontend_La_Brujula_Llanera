@@ -2,9 +2,13 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import HomeScreen from '../screens/Home/HomeScreen';
+import { Ionicons, FontAwesome, MaterialIcons, AntDesign } from '@expo/vector-icons'; // Importar más bibliotecas de iconos
+import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
+import RegistroScreen from '../screens/RegistroScreen';
+import BuscarCategoriasScreen from '../screens/BuscarCategoriasScreen';
+import MapaScreen from '../screens/MapaScreen';
+import CategoriasScreen from '../screens/CategoriasScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,20 +19,29 @@ const AppNavigator = () => {
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName;
+                        let IconComponent = Ionicons; // Por defecto usar Ionicons
 
                         if (route.name === 'Home') {
                             iconName = focused ? 'home' : 'home-outline';
                         } else if (route.name === 'Login') {
                             iconName = focused ? 'log-in' : 'log-in-outline';
+                        } else if (route.name === 'Registro') {
+                            iconName = focused ? 'person-add' : 'person-add-outline';
+                        } else if (route.name === 'BuscarCategorias') {
+                            iconName = focused ? 'search' : 'search-outline';
+                        } else if (route.name === 'Mapa') {
+                            iconName = focused ? 'location' : 'location-outline';
+                        } else if (route.name === 'Categorias') {
+                            iconName = focused ? 'menu' : 'menu-outline';
                         }
 
                         return <Ionicons name={iconName} size={24} color={color} />;
                     },
                     tabBarActiveTintColor: '#236A34',
-                    tabBarInactiveTintColor: 'gray',
+                    tabBarInactiveTintColor: 'black',
                     tabBarLabelStyle: { fontSize: 12 },
                     tabBarStyle: {
-                        height: 60,
+                        height: 54,
                         paddingBottom: 5
                     },
                 })}
@@ -46,6 +59,38 @@ const AppNavigator = () => {
                     component={LoginScreen}
                     options={{
                         title: 'Cuenta',
+                        headerShown: false
+                    }}
+                />
+                <Tab.Screen
+                    name="Registro"
+                    component={RegistroScreen}
+                    options={{
+                        title: 'Registro',
+                        headerShown: false
+                    }}
+                />
+                <Tab.Screen
+                    name="BuscarCategorias"
+                    component={BuscarCategoriasScreen}
+                    options={{
+                        title: 'Buscar',
+                        headerShown: false
+                    }}
+                />
+                <Tab.Screen
+                    name="Mapa"
+                    component={MapaScreen}
+                    options={{
+                        title: 'Mapa',
+                        headerShown: false
+                    }}
+                />
+                <Tab.Screen
+                    name="Categorias"
+                    component={CategoriasScreen}
+                    options={{
+                        title: 'Categorías',
                         headerShown: false
                     }}
                 />
