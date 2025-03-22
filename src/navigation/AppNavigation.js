@@ -1,8 +1,7 @@
-// AppNavigation.js
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons, FontAwesome, MaterialIcons, AntDesign } from '@expo/vector-icons'; // Importar más bibliotecas de iconos
+import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegistroScreen from '../screens/RegistroScreen';
@@ -19,7 +18,6 @@ const AppNavigator = () => {
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName;
-                        let IconComponent = Ionicons; // Por defecto usar Ionicons
 
                         if (route.name === 'Home') {
                             iconName = focused ? 'home' : 'home-outline';
@@ -35,14 +33,16 @@ const AppNavigator = () => {
                             iconName = focused ? 'menu' : 'menu-outline';
                         }
 
-                        return <Ionicons name={iconName} size={24} color={color} />;
+                        return <Ionicons name={iconName} size={size} color={color} />;
                     },
                     tabBarActiveTintColor: '#236A34',
                     tabBarInactiveTintColor: 'black',
                     tabBarLabelStyle: { fontSize: 12 },
                     tabBarStyle: {
                         height: 54,
-                        paddingBottom: 5
+                        paddingBottom: 5,
+                        backgroundColor: '#fff', // Asegúrate de que el fondo sea blanco
+                        borderTopWidth: 0, // Elimina el borde superior si es necesario
                     },
                 })}
             >
