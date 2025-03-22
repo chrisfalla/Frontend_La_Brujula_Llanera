@@ -3,9 +3,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import LoginForm from '../components/LoginForm';
 import CurvedBackground from '../components/CurvedBackground';
 
-
-
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Image source={require('../assets/Logo.jpg')}
@@ -14,11 +12,11 @@ const LoginScreen = () => {
             style={styles.logo2}/>
             <Text style={styles.title}> Iniciar <Text style={styles.title2}>Sesion</Text></Text>
             
-            <LoginForm style={styles.form} />
+            <LoginForm navigation={navigation} style={styles.form} />
             
             <View style={styles.footerContainer}>
-            <Text style={styles.footer}>Al ingresar, aceptas nuestros Terminos y condiciones,
-            y Politica de privacidad</Text>
+                <Text style={styles.footer}>Al ingresar, aceptas nuestros Terminos y condiciones,
+                y Politica de privacidad</Text>
             </View>
             <CurvedBackground />
         </View>
