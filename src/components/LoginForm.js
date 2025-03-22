@@ -5,7 +5,7 @@ import RowLine from "../components/RowLine";
 
 
 
-const LoginForm = () => {
+const LoginForm = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, SetPassword] = useState("");
 
@@ -17,9 +17,9 @@ const LoginForm = () => {
     }
   };
 
-  const handleForgotPassword = () =>{
-          Alert.alert('Recuperacion de la contaseña')
-      };
+  const handleForgotPassword = () => {
+    navigation.navigate('Recovery');
+  };
       
 
 
@@ -74,16 +74,14 @@ const styles = StyleSheet.create({
     alignItems: "",
     fontSize: 13,
     fontWeight: "bold",
-    
     marginBottom: 5,
     paddingLeft: 15,
-
     textAlign: "left",
     alignSelf: "flex-start",
   },
   input: {
     marginBottom: 15,
-   
+    
     width: 350,
     height: 48,
     borderColor: "gray",
@@ -113,7 +111,7 @@ const styles = StyleSheet.create({
   },
   registrerButton: {
     backgroundColor: "#ffff",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor:'#236A34',
     width: 350,
     height: 48,
