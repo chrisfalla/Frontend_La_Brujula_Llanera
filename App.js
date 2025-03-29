@@ -1,3 +1,4 @@
+import 'react-native-reanimated'; // Correcto
 import 'react-native-gesture-handler';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
