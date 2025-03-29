@@ -1,22 +1,82 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import LoginForm from '../components/LoginForm';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import CurvedBackground from '../components/CurvedBackground';
+import RowLine from '../components/RowLine';
 
 const LoginScreen = ({ navigation }) => {
+    const [formData, setFormData] = useState({
+        email: "",
+        password: ""
+    });
+    const [errors, setErrors] = useState({});
+
+    const handleLogin = () => {
+        if (!formData.email || !formData.password) {
+            setErrors({
+                email: !formData.email ? "Email es requerido" : "",
+                password: !formData.password ? "Contraseña es requerida" : ""
+            });
+            return;
+        }
+        navigation.replace('TabNavigator');
+    };
+
+    const handleForgotPassword = () => {
+        navigation.navigate('Recovery');
+    };
+
+    const handleRegister = () => {
+        navigation.navigate('Registro');
+    };
+
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/Logo.jpg')}
-            style={styles.logo}/>
-            <Image source={require('../assets/LogoName.jpg')}
-            style={styles.logo2}/>
-            <Text style={styles.title}> Iniciar <Text style={styles.title2}>Sesion</Text></Text>
-            
-            <LoginForm navigation={navigation} style={styles.form} />
-            
+            <Image source={require('../assets/log.png')}
+                style={styles.logo} />
+                <View style={styles.containertitle}>
+                 <Text style={styles.title3}>LA BRÚJULA <Text style={styles.title4}>LLANERA</Text></Text>
+                 </View>
+            <Text style={styles.title}>Iniciar <Text style={styles.title2}>Sesión</Text></Text>
+
+            <View style={styles.formContainer}>
+                <Text style={styles.inputTitle}>Correo electroníco</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="ejemplo@ejemplo.com"
+                    keyboardType="email-address"
+                    value={formData.email}
+                    onChangeText={(text) => setFormData({ ...formData, email: text })}
+                />
+                {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+                
+                <Text style={styles.inputTitle}>Contraseña</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="********"
+                    secureTextEntry
+                    value={formData.password}
+                    onChangeText={(text) => setFormData({ ...formData, password: text })}
+                />
+                {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+                
+                <TouchableOpacity onPress={handleForgotPassword}>
+                    <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                    <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+                </TouchableOpacity>
+
+                <RowLine style={styles.rowLine} />
+
+                <TouchableOpacity style={styles.registrerButton} onPress={handleRegister}>
+                    <Text style={styles.registrerButtonText}>Registrarse</Text>
+                </TouchableOpacity>
+            </View>
+
             <View style={styles.footerContainer}>
                 <Text style={styles.footer}>Al ingresar, aceptas nuestros Terminos y condiciones,
-                y Politica de privacidad</Text>
+                    y Politica de privacidad</Text>
             </View>
             <CurvedBackground />
         </View>
@@ -27,48 +87,121 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: '#ffff',
         padding: 10,
     },
-    logo:{
-        alignItems:'center',
-        width: 101, // Ajusta el ancho de la imagen
-        height: 99, // Ajusta la altura de la imagen
-        marginBottom: 0, // Espacio entre la imagen y el texto
+    logo: {
+        width: 90,
+        height: 90,
+        marginTop:'auto',
+        marginBottom: 0,
         resizeMode: 'contain'
     },
-    logo2:{
-        width: 207, // Ajusta el ancho de la imagen
-        height: 95, // Ajusta la altura de la imagen
-        marginBottom: 50, // Espacio entre la imagen y el texto
-        resizeMode: 'contain'
+    containertitle: {
+        
+        margin: 10,
     },
+ 
     title: {
-        textAlign:'auto',
         fontSize: 24,
         fontWeight: 'bold',
-        margin: 0,
+        margin: 15,
     },
     title2: {
-        textAlign:'auto',
         fontSize: 24,
         fontWeight: 'bold',
         margin: 0,
         color: '#236A34'
     },
-    form:{
-        alignItems: 'center',
+
+    title3: {
+        fontSize: 20,
+        fontWeight: '900',
+        margin: 0,
     },
-    footerContainer:{
+    title4: {
+        
+        fontSize: 54,
+        fontWeight: '900',
+        margin: 0,
+        color: '#236A34'
+        
+    },
+
+    formContainer: {
+        width: "100%",
+        alignItems: "center",
+        paddingHorizontal: 10,
+    },
+    inputTitle: {
+        fontSize: 13,
+        fontWeight: "bold",
+        marginBottom: 5,
+        paddingLeft: 15,
+        textAlign: "left",
+        alignSelf: "flex-start"
+    },
+    input: {
+        marginBottom: 15,
+        width: 350,
+        height: 48,
+        borderColor: "gray",
+        borderWidth: 1,
+        paddingLeft: 15,
+        borderRadius: 20,
+    },
+    forgotPassword: {
+        color: "#747474",
+        paddingLeft: 200,
+        marginBottom: 10,
+        textDecorationLine: "underline",
+    },
+    loginButton: {
+        backgroundColor: "#236A34",
+        marginTop: 15,
+        width: 350,
+        height: 48,
+        borderRadius: 20,
+        justifyContent: 'center',
+    },
+    loginButtonText: {
+        fontSize: 14,
+        fontWeight: "bold",
+        color: "white",
+        textAlign: "center",
+    },
+    registrerButton: {
+        backgroundColor: "#ffff",
+        borderWidth: 2,
+        borderColor: '#236A34',
+        width: 350,
+        height: 48,
+        borderRadius: 20,
+        justifyContent: 'center',
+    },
+    registrerButtonText: {
+        fontSize: 14,
+        fontWeight: "bold",
+        color: "#236A34",
+        textAlign: "center",
+    },
+    rowLine: {
+        marginVertical: 10,
+    },
+    errorText: {
+        color: "red",
+        marginBottom: 10,
+        paddingLeft: 15,
+        alignSelf: "flex-start",
+    },
+    footerContainer: {
         marginTop: 20,
         width: '80%',
     },
-    footer:{
+    footer: {
         textAlign: 'center',
         fontSize: 12,
     },
-    
 });
 
 export default LoginScreen;

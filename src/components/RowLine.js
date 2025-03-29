@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 20, // Espacio vertical entre los elementos
+    marginVertical: 10, // Espacio vertical entre los elementos
   },
   line: {
     width: 151,

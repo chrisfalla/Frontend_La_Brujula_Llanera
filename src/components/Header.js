@@ -1,12 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, Text } from 'react-native';
 import Logo from './logoPerfil';
 
 const Header = () => {
     return (
         <View style={styles.header}>
-            <Image source={require('../assets/Logo.jpg')} style={styles.logo} />
-            <Image source={require('../assets/LogoName.jpg')} style={styles.logoName} />
+            <Image source={require('../assets/log.png')} style={styles.logo} />
+           <View style={styles.containertitle}>
+                            <Text style={styles.title3}>LA BRÚJULA <Text style={styles.title4}>LLANERA</Text></Text>
+                            </View>
             <Logo style={styles.logoPerfil} />
         </View>
     );
