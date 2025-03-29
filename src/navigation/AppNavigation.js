@@ -19,18 +19,26 @@ const AppNavigator = () => {
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName;
 
-                        if (route.name === 'Home') {
-                            iconName = focused ? 'home' : 'home-outline';
-                        } else if (route.name === 'Login') {
-                            iconName = focused ? 'log-in' : 'log-in-outline';
-                        } else if (route.name === 'Registro') {
-                            iconName = focused ? 'person-add' : 'person-add-outline';
-                        } else if (route.name === 'BuscarCategorias') {
-                            iconName = focused ? 'search' : 'search-outline';
-                        } else if (route.name === 'Mapa') {
-                            iconName = focused ? 'location' : 'location-outline';
-                        } else if (route.name === 'Categorias') {
-                            iconName = focused ? 'menu' : 'menu-outline';
+                        switch (route.name) {
+                            case 'Home':
+                                iconName = focused ? 'home' : 'home-outline';
+                                break;
+                            case 'BuscarCategorias':
+                                iconName = focused ? 'search' : 'search-outline';
+                                break;
+                            case 'Mapa':
+                                iconName = focused ? 'location' : 'location-outline';
+                                break;
+                            case 'Categorias':
+                                iconName = focused ? 'menu' : 'menu-outline';
+                                break;
+                            case 'Auth':
+                                iconName = focused ? 'person' : 'person-outline';
+                                break;
+                            case 'Dashboard':
+                                iconName = focused ? 'dashboard' : 'dashboard-outline';
+                            default:
+                                iconName = 'help-outline'; // Icono por defecto en caso de ruta desconocida
                         }
 
                         return <Ionicons name={iconName} size={size} color={color} />;
