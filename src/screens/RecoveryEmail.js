@@ -109,10 +109,11 @@ const styles = StyleSheet.create({
         },
     recoveryButton: {
         backgroundColor: "#747474",
-        marginTop: 130,
+        marginTop: 80,
         width: 350,
         height: 48,
         borderRadius: 20,
+        justifyContent:'center',
     },
     recoveryButtonText: {
         fontSize: 14,
