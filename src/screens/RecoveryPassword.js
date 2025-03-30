@@ -1,51 +1,51 @@
-import React , { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Status from '../components/Recovery/Status3';
 
 const RecoveryScreen3 = () => {
     const navigation = useNavigation();
-    const [password, SetPassword] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     const handleContinue = () => {
+        if (password !== confirmPassword) {
+            alert("Las contraseñas no coinciden");
+            return;
+        }
+        // Aquí iría la lógica para actualizar la contraseña
         navigation.navigate('Login');
-        
     };
 
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/Logo.jpg')}
-                style={styles.logo}/>
-            <Image source={require('../assets/LogoName.jpg')}
-                style={styles.logo2}/>
+            <Image source={require('../assets/Logo.jpg')} style={styles.logo} />
+            <Image source={require('../assets/LogoName.jpg')} style={styles.logo2} />
             <Text style={styles.title}>Recuperar <Text style={styles.title2}>Contraseña</Text></Text>
             <View style={styles.statusContainer}>
                 <Status />
             </View>
             <View style={styles.formContainer}>
-                <Text style={styles.subtitle}>
-                Ingrese la nueva contraseña:
-                </Text>
+                <Text style={styles.subtitle}>Ingrese la nueva contraseña:</Text>
             </View>
             <Text style={styles.title3}>Ingrese su nueva contraseña</Text>
             <TextInput
-                  style={styles.input}
-                  placeholder="********"
-                  secureTextEntry
-                  value={password}
-                  onChangeText={SetPassword}
+                style={styles.input}
+                placeholder="********"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
             />
             <Text style={styles.title3}>Confirme su nueva contraseña</Text>
-             <TextInput
-                  style={styles.input}
-                  placeholder="********"
-                  secureTextEntry
-                  value={password}
-                  onChangeText={SetPassword}
+            <TextInput
+                style={styles.input}
+                placeholder="********"
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
             />
-          
             <TouchableOpacity style={styles.recoveryButton} onPress={handleContinue}>
-                <Text style={styles.recoveryButtonText}>Validar codigo</Text>
+                <Text style={styles.recoveryButtonText}>Guardar contraseña</Text>
             </TouchableOpacity>
         </View>
     );
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#236A34',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 88,
+        marginTop: 38,
     },
     recoveryButtonText: {
         fontSize: 14,

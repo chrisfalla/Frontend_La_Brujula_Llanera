@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
         backgroundColor: '"#ffff',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 80,
+        marginTop: 35,
     },
     sendButtonText: {
         fontSize: 14,

@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#236A34',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 101,
+        marginTop: 50,
     },
     recoveryButtonText: {
         fontSize: 14,
