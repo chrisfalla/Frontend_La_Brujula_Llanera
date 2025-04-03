@@ -2,7 +2,7 @@ import 'react-native-reanimated'; // Correcto
 import 'react-native-gesture-handler';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import AppNavigator from './src/screens/RegistroScreen';
+import AppNavigator from './src/screens/Login';
 
 const App = () => {
     return (

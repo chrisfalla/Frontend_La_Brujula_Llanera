@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import CurvedBackground from '../components/CurvedBackground';
 import RowLine from '../components/RowLine';
+import CustomInputText from '../components/CustomInput/CustomInputText';
 
 const LoginScreen = ({ navigation }) => {
     const [formData, setFormData] = useState({
@@ -39,39 +40,25 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.title}>Iniciar <Text style={styles.title2}>Sesión</Text></Text>
 
             <View style={styles.formContainer}>
-                <Text style={styles.inputTitle}>Correo electroníco</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="ejemplo@ejemplo.com"
-                    keyboardType="email-address"
-                    value={formData.email}
-                    onChangeText={(text) => setFormData({ ...formData, email: text })}
+
+                <CustomInputText
+                LabelText={'Ingresa su email'}
+                PlaceholderText={'ejemplo@ejemplo.com'}
+                HasError={''}
                 />
-                {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
-                
-                <Text style={styles.inputTitle}>Contraseña</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="********"
-                    secureTextEntry
-                    value={formData.password}
-                    onChangeText={(text) => setFormData({ ...formData, password: text })}
-                />
-                {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
-                
+                <CustomInputText
+                LabelText={'Ingresa su contraseña'}
+                PlaceholderText={'*********'}
+                HasError={''}/>
+
                 <TouchableOpacity onPress={handleForgotPassword}>
                     <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                    <Text style={styles.loginButtonText}>Iniciar sesión</Text>
-                </TouchableOpacity>
-
+             
                 <RowLine style={styles.rowLine} />
 
-                <TouchableOpacity style={styles.registrerButton} onPress={handleRegister}>
-                    <Text style={styles.registrerButtonText}>Registrarse</Text>
-                </TouchableOpacity>
+              
             </View>
 
             <View style={styles.footerContainer}>
