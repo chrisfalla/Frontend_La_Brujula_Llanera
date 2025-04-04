@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     touchableBase: {
         paddingVertical: 12,
         paddingHorizontal: 16,
-        borderRadius: 8,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 10,
