@@ -1,7 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet,  ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Status from '../components/Recovery/Status';
+import LogoTitle from '../components/LogoTitle';
+import CustomButton from '../components/Button/CustomButton';
+import CustomInputText from '../components/CustomInput/CustomInputText';
+
 
 const RecoveryScreen = () => {
     const navigation = useNavigation();
@@ -11,10 +15,8 @@ const RecoveryScreen = () => {
     };
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/Logo.jpg')}
-                style={styles.logo}/>
-            <Image source={require('../assets/LogoName.jpg')}
-                style={styles.logo2}/>
+             <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+            <LogoTitle />
             <Text style={styles.title}>Recuperar <Text style={styles.title2}>Contraseña</Text></Text>
             <View style={styles.statusContainer}>
                 <Status />
@@ -25,15 +27,15 @@ const RecoveryScreen = () => {
                 contraseña, primero vamos a validar la existencia de su correo electronico
                 </Text>
             </View>
-            <Text style={styles.title3}>Ingrese el correo electrónico registrado</Text>
-            <TextInput
-                   style={styles.input}
-                    placeholder="ejemplo@ejemplo.com"
-                    keyboardType="email-address"
-                />
-                <TouchableOpacity style={styles.recoveryButton} onPress={handleContinue}>
-                <Text style={styles.recoveryButtonText}>Continuar</Text>
-            </TouchableOpacity>
+            <View style={styles.containerInput}>
+            <CustomInputText
+                 LabelText={'Ingresa correo electronico registrado'} 
+                 PlaceholderText={'ejemplo@ejemplo.com'}
+            />
+            </View>
+            <CustomButton titletext='Continuar' onPress={handleContinue} />
+            
+            </ScrollView>
         </View>
     );
 };
@@ -41,37 +43,24 @@ const RecoveryScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         backgroundColor: '#ffff',
-        padding: 20,
-        paddingTop: 50,
+
     },
-    logo: {
-        alignItems:'center',
-        width: 101,
-        height: 99,
-        marginBottom: 0,
-        resizeMode: 'contain'
-    },
-    logo2: {
-        width: 207,
-        height: 95,
-        marginBottom: 50,
-        resizeMode: 'contain'
+    scrollContainer: {
+        flexGrow: 1,
+        alignItems: 'center',
+        padding: 10,
     },
     title: {
-        textAlign:'auto',
         fontSize: 24,
         fontWeight: 'bold',
-        margin: 0,
     },
     title2: {
-        textAlign:'auto',
         fontSize: 24,
         fontWeight: 'bold',
-        margin: 0,
-        color: '#236A34'
-    },
+        color: '#236A34',
+        },
+    
     formContainer: {
         width: '100%',
         padding: 10,
@@ -88,42 +77,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 20,
     },
-    title3: {
-        fontWeight: 'semibold',
-        margin:10,
-        alignItems: "",
-        fontSize: 14,        
-        marginBottom: 5,
-        paddingLeft: 10,
-        textAlign: "left",
-        alignSelf: "flex-start",
+    containerInput:{
+        flex: 1,
     },
-    input: {
-        marginBottom: 15,
-        width: 350,
-        height: 48,
-        borderColor: "gray",
-        borderWidth: 1,
-        paddingLeft: 15,
-        borderRadius: 20,
-        },
-    recoveryButton: {
-        backgroundColor: "#747474",
-        marginTop: 80,
-        width: 350,
-        height: 48,
-        borderRadius: 20,
-        justifyContent:'center',
-    },
-    recoveryButtonText: {
-        fontSize: 14,
-        fontWeight: "bold",
-        color: "#ffffff",
-        textAlign: "center",
-        margin: 'auto',
-      },
-    
-
+   
 });
 
 export default RecoveryScreen;

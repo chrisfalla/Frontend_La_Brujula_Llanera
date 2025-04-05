@@ -1,7 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Status from '../components/Recovery/Status2';
+import LogoTitle from '../components/LogoTitle';
+import CustomButton from '../components/Button/CustomButton';
+import CustomInputText from '../components/CustomInput/CustomInputText';
 
 const RecoveryScreen2 = () => {
     const navigation = useNavigation();
@@ -12,10 +15,8 @@ const RecoveryScreen2 = () => {
 
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/Logo.jpg')}
-                style={styles.logo}/>
-            <Image source={require('../assets/LogoName.jpg')}
-                style={styles.logo2}/>
+            <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}> 
+            <LogoTitle />
             <Text style={styles.title}>Recuperar <Text style={styles.title2}>Contraseña</Text></Text>
             <View style={styles.statusContainer}>
                 <Status />
@@ -25,16 +26,15 @@ const RecoveryScreen2 = () => {
                 Ingrese el código que se le ha enviado a su correo electronico
                 </Text>
             </View>
-            <Text style={styles.title3}>Ingrese el código de validación</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="1234"
-                secureTextEntry               
+            <View style={styles.containerInput}>
+            <CustomInputText
+                 LabelText={'Ingrese el código de validación'} 
+                 PlaceholderText={'BL-253665'}
             />
+            </View>
           
-            <TouchableOpacity style={styles.recoveryButton} onPress={handleContinue}>
-                <Text style={styles.recoveryButtonText}>Validar codigo</Text>
-            </TouchableOpacity>
+            <CustomButton titletext='Continuar' onPress={handleContinue}/>
+            </ScrollView>
         </View>
     );
 };
@@ -42,22 +42,13 @@ const RecoveryScreen2 = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         backgroundColor: '#ffff',
-        padding: 20,
-        paddingTop: 50,
+     
     },
-    logo: {
-        width: 101,
-        height: 99,
-        resizeMode: 'contain',
-        marginBottom: 0,
-    },
-    logo2: {
-        width: 207,
-        height: 95,
-        resizeMode: 'contain',
-        marginBottom: 30,
+    scrollContainer: {
+        flexGrow: 1,
+        alignItems: 'center',
+        padding: 10,
     },
     title: {
         fontSize: 24,
@@ -68,11 +59,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#236A34',
     },
-    statusContainer: {
-        width: '100%',
-        alignItems: 'center',
-        marginVertical: 20,
-    },
+    
     formContainer: {
         width: '100%',
         padding: 40,
@@ -84,36 +71,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         fontWeight: 'bold',
     },
-    title3: {
-        fontSize: 14,
-        fontWeight: '600',
-        alignSelf: 'flex-start',
-        marginBottom: 10,
-        paddingLeft: 20,
-    },
-    input: {
-        width: 350,
-        height: 48,
-        borderColor: "gray",
-        borderWidth: 1,
-        borderRadius: 20,
-        paddingLeft: 15,
-        backgroundColor: 'white',
-        marginBottom: 15,
-    },
-    recoveryButton: {
-        width: 350,
-        height: 48,
-        borderRadius: 20,
-        backgroundColor: '#236A34',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 50,
-    },
-    recoveryButtonText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#ffffff',
+    containerInput:{
+        flex: 1,
     },
 });
 

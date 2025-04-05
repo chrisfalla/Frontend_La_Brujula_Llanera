@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Status from '../components/Recovery/Status3';
+import LogoTitle from '../components/LogoTitle';
+import CustomButton from '../components/Button/CustomButton';
+import CustomInputText from '../components/CustomInput/CustomInputText';
 
 const RecoveryScreen3 = () => {
     const navigation = useNavigation();
@@ -19,8 +22,8 @@ const RecoveryScreen3 = () => {
 
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/Logo.jpg')} style={styles.logo} />
-            <Image source={require('../assets/LogoName.jpg')} style={styles.logo2} />
+            <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+           <LogoTitle />
             <Text style={styles.title}>Recuperar <Text style={styles.title2}>Contraseña</Text></Text>
             <View style={styles.statusContainer}>
                 <Status />
@@ -28,25 +31,22 @@ const RecoveryScreen3 = () => {
             <View style={styles.formContainer}>
                 <Text style={styles.subtitle}>Ingrese la nueva contraseña:</Text>
             </View>
-            <Text style={styles.title3}>Ingrese su nueva contraseña</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="********"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
+            <View style={styles.containerInput}>
+            <CustomInputText
+                 LabelText={'Ingrese su nueva contraseña'} 
+                 PlaceholderText={'*********'}
+                 IsPassword={true}
+                 
+                
             />
-            <Text style={styles.title3}>Confirme su nueva contraseña</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="********"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
+             <CustomInputText
+                 LabelText={'Confirme su nueva contraseña'} 
+                 PlaceholderText={'*********'}
+                 IsPassword={true}
             />
-            <TouchableOpacity style={styles.recoveryButton} onPress={handleContinue}>
-                <Text style={styles.recoveryButtonText}>Guardar contraseña</Text>
-            </TouchableOpacity>
+            </View>
+            <CustomButton titletext='Guardar contraseña' onPress={handleContinue}/>
+            </ScrollView>
         </View>
     );
 };
@@ -54,23 +54,14 @@ const RecoveryScreen3 = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         backgroundColor: '#ffff',
-        padding: 20,
-        paddingTop: 50,
     },
-    logo: {
-        width: 101,
-        height: 99,
-        resizeMode: 'contain',
-        marginBottom: 0,
+    scrollContainer: {
+        flexGrow: 1,
+        alignItems: 'center',
+        padding: 10,
     },
-    logo2: {
-        width: 207,
-        height: 95,
-        resizeMode: 'contain',
-        marginBottom: 30,
-    },
+    
     title: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -80,11 +71,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#236A34',
     },
-    statusContainer: {
-        width: '100%',
-        alignItems: 'center',
-        marginVertical: 20,
-    },
+   
     formContainer: {
         width: '100%',
         padding: 10,
@@ -96,36 +83,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         fontWeight: 'bold',
     },
-    title3: {
-        fontSize: 14,
-        fontWeight: '600',
-        alignSelf: 'flex-start',
-        marginBottom: 10,
-        paddingLeft: 20,
-    },
-    input: {
-        width: 350,
-        height: 48,
-        borderColor: "gray",
-        borderWidth: 1,
-        borderRadius: 20,
-        paddingLeft: 15,
-        backgroundColor: 'white',
-        marginBottom: 15,
-    },
-    recoveryButton: {
-        width: 350,
-        height: 48,
-        borderRadius: 20,
-        backgroundColor: '#236A34',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 38,
-    },
-    recoveryButtonText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#ffffff',
+    containerInput:{
+        flex: 1,
     },
 });
 
