@@ -26,18 +26,29 @@ const styles = StyleSheet.create({
     logo: {
         width: 50,
         height: 50,
-        marginRight: 10,
         marginBottom: 10,
     },
-    logoName: {
-        width: 100, 
-        height: 50,
-        marginRight: 10,
+    containertitle:{
+        margin:10,
+    },
+   
+    title3: {
+        fontSize:23,
+        fontWeight: '900',
+        margin: 0,
+        
+    },
+    title4: {
+        fontSize: 23,
+        fontWeight: '900',
+        margin: 0,
+        color: '#236A34',
     },
     logoPerfil: {
         width: 15,
         height: 15,
         marginLeft: 10,
+        
     },
 });
 

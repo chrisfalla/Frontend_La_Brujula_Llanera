@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet,  TouchableOpacity, ScrollView } from 'react-native';
 import CurvedBackground from '../components/CurvedBackground';
 import RowLine from '../components/RowLine';
 import CustomInputText from '../components/CustomInput/CustomInputText';
 import CustomButton from '../components/Button/CustomButton';
+import LogoTitle from '../components/LogoTitle';
+
 
 const LoginScreen = ({ navigation }) => {
     const [formData, setFormData] = useState({
@@ -34,10 +36,7 @@ const LoginScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-                <Image source={require('../assets/log.png')} style={styles.logo} />
-                <View style={styles.containertitle}>
-                    <Text style={styles.title3}>LA BRÚJULA <Text style={styles.title4}>LLANERA</Text></Text>
-                </View>
+            <LogoTitle />
                 <Text style={styles.title}>Iniciar <Text style={styles.title2}>Sesión</Text></Text>
 
                 <View style={styles.formContainer}>
@@ -50,7 +49,7 @@ const LoginScreen = ({ navigation }) => {
                         LabelText={'Ingresa su contraseña'}
                         PlaceholderText={'*********'}
                         IsPassword={true}
-                        HasError={errors.password}
+                        HasError={errors.password}                        
                     />
 
                     <TouchableOpacity onPress={handleForgotPassword}>
@@ -84,16 +83,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
     },
-    logo: {
-        width: 90,
-        height: 90,
-        marginTop: 'auto',
-        marginBottom: 0,
-        resizeMode: 'contain',
-    },
-    containertitle: {
-        margin: 10,
-    },
+    
     title: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -105,17 +95,7 @@ const styles = StyleSheet.create({
         margin: 0,
         color: '#236A34',
     },
-    title3: {
-        fontSize: 20,
-        fontWeight: '900',
-        margin: 0,
-    },
-    title4: {
-        fontSize: 54,
-        fontWeight: '900',
-        margin: 0,
-        color: '#236A34',
-    },
+   
     formContainer: {
         width: "100%",
         alignItems: "center",
@@ -132,7 +112,7 @@ const styles = StyleSheet.create({
     },
     footerContainer: {
        
-        marginBottom:40,
+        marginBottom:20,
         width: '80%',
     },
     footer: {
