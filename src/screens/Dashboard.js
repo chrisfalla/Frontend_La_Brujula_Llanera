@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList, Alert } from 'react-native';
 import Card from '../components/Dashboard/Card';
 import Button from '../components/Dashboard/Button';
+import Header from '../components/Header';
 
 const Dashboard = () => {
     const [places, setPlaces] = useState([
@@ -76,31 +77,37 @@ const Dashboard = () => {
     );
 
     return (
-        <FlatList
-            data={places}
-            keyExtractor={(item) => item.id}
-            ListHeaderComponent={
-                <View style={styles.container}>
-                    {/* Estadísticas */}
-                    <View style={styles.statsContainer}>
-                        <Card title="Lugares Registrados" value={places.length} iconName="location" color="#236A34" />
-                        <Card
-                            title="Visitantes Totales"
-                            value={places.reduce((sum, p) => sum + p.visitors, 0)}
-                            iconName="people"
-                            color="#FF5733"
-                        />
-                        <Card title="Lugar Más Popular" value="Parque La Iguana" iconName="star" color="#3498DB" />
-                    </View>
+        <View style={{ flex: 1 }}>
+            {/* Renderiza el Header */}
+            <Header />
 
-                    {/* Botones de acción */}
-                    <Button title="Añadir Lugar" onPress={addPlace} color="#236A34" />
-                    <Text style={styles.sectionTitle}>Lugares Registrados</Text>
-                </View>
-            }
-            renderItem={renderPlace}
-            contentContainerStyle={styles.listContainer}
-        />
+            {/* Renderiza el contenido principal */}
+            <FlatList
+                data={places}
+                keyExtractor={(item) => item.id}
+                ListHeaderComponent={
+                    <View style={styles.container}>
+                        {/* Estadísticas */}
+                        <View style={styles.statsContainer}>
+                            <Card title="Lugares Registrados" value={places.length} iconName="location" color="#236A34" />
+                            <Card
+                                title="Visitantes Totales"
+                                value={places.reduce((sum, p) => sum + p.visitors, 0)}
+                                iconName="people"
+                                color="#FF5733"
+                            />
+                            <Card title="Lugar Más Popular" value="Parque La Iguana" iconName="star" color="#3498DB" />
+                        </View>
+
+                        {/* Botones de acción */}
+                        <Button title="Añadir Lugar" onPress={addPlace} color="#236A34" />
+                        <Text style={styles.sectionTitle}>Lugares Registrados</Text>
+                    </View>
+                }
+                renderItem={renderPlace}
+                contentContainerStyle={styles.listContainer}
+            />
+        </View>
     );
 };
 

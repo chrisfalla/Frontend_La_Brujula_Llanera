@@ -26,20 +26,20 @@ const styles = StyleSheet.create({
     logo: {
         width: 50,
         height: 50,
-        marginBottom: 10,
+        marginBottom: 0,
     },
     containertitle:{
-        margin:10,
+        margin:0,
     },
    
     title3: {
-        fontSize:23,
+        fontSize:22,
         fontWeight: '900',
         margin: 0,
         
     },
     title4: {
-        fontSize: 23,
+        fontSize: 22,
         fontWeight: '900',
         margin: 0,
         color: '#236A34',
