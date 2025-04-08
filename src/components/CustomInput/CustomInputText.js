@@ -35,6 +35,7 @@ const CustomInputText = ({ LabelText, PlaceholderText, HasError, SupportingText,
 const styles = StyleSheet.create({
     container: {
         marginBottom: 0,
+        width: '100%',
     },
     label: {
         fontSize: 13,
@@ -43,13 +44,14 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         paddingLeft: 15,
         textAlign: "left",
+        
     },
     labelError: {
         color: 'red',
     },
     input: {
         marginBottom: 15,
-        width: 350,
+        width: '100%',
         height: 48,
         borderWidth: 2, // Definimos el grosor
         paddingLeft: 15,
