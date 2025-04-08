@@ -16,11 +16,10 @@ import RecoveryScreen from '../screens/RecoveryEmail';
 import RecoveryScreen1 from '../screens/SendCode';
 import RecoveryScreen2 from '../screens/ValidateCode';
 import RecoveryScreen3 from '../screens/RecoveryPassword';
+import Dashboard from '../screens/Dashboard';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
-
 
 const TabNavigator = () => {
     return (
@@ -29,16 +28,27 @@ const TabNavigator = () => {
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 
-                    if (route.name === 'Home') {
-                        iconName = focused ? 'home' : 'home-outline';
-                    } else if (route.name === 'BuscarCategorias') {
-                        iconName = focused ? 'search' : 'search-outline';
-                    } else if (route.name === 'Mapa') {
-                        iconName = focused ? 'location' : 'location-outline';
-                    } else if (route.name === 'Categorias') {
-                        iconName = focused ? 'menu' : 'menu-outline';
-                    } else if (route.name === 'Auth') {
-                        iconName = focused ? 'person' : 'person-outline';
+                    switch (route.name) {
+                        case 'Home':
+                            iconName = focused ? 'home' : 'home-outline';
+                            break;
+                        case 'BuscarCategorias':
+                            iconName = focused ? 'search' : 'search-outline';
+                            break;
+                        case 'Mapa':
+                            iconName = focused ? 'location' : 'location-outline';
+                            break;
+                        case 'Categorias':
+                            iconName = focused ? 'menu' : 'menu-outline';
+                            break;
+                        case 'Auth':
+                            iconName = focused ? 'person' : 'person-outline';
+                            break;
+                        case 'Dashboard':
+                            iconName = focused ? 'grid' : 'grid-outline';
+                            break;
+                        default:
+                            iconName = 'help-outline';
                     }
 
                     return <Ionicons name={iconName} size={size} color={color} />;
@@ -94,6 +104,14 @@ const TabNavigator = () => {
                     headerShown: false
                 }}
             />
+            <Tab.Screen
+                name="Dashboard"
+                component={Dashboard}
+                options={{
+                    title: 'Dashboard',
+                    headerShown: false
+                }}
+            />
         </Tab.Navigator>
     );
 };
@@ -110,16 +128,11 @@ const AuthStack = () => {
         </Stack.Navigator>
     );
 };
+
 const AppNavigator = () => {
     return (
         <NavigationContainer>
-            <Stack.Navigator 
-                screenOptions={{ headerShown: false }} 
-                initialRouteName="TabNavigator"
-            >
-                <Stack.Screen name="TabNavigator" component={TabNavigator} />
-                <Stack.Screen name="Auth" component={AuthStack} />
-            </Stack.Navigator>
+            <TabNavigator />
         </NavigationContainer>
     );
 };
