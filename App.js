@@ -2,7 +2,7 @@ import 'react-native-reanimated'; // Correcto
 import 'react-native-gesture-handler';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import AppNavigator from './src/navigation/AppNavigation';
+import AppNavigator from './src/navigation/AppNavigation'; // Asegúrate de que la ruta sea correcta
 
 const App = () => {
     return (

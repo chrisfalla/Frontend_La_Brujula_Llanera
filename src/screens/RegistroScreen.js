@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const RegistroScreen = () => {
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Pantalla de Registro</Text>
+            <Text style={styles.text}> Pantalla de Registro</Text>
         </View>
     );
 };
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     text: {
-        fontSize: 18,
+        fontSize: 24,
         fontWeight: 'bold',
     },
 });
