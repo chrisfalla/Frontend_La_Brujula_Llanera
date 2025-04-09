@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet,  TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, SafeAreaView} from 'react-native';
 import CurvedBackground from '../components/CurvedBackground';
 import RowLine from '../components/RowLine';
 import CustomInputText from '../components/CustomInput/CustomInputText';
 import CustomButton from '../components/Button/CustomButton';
 import LogoTitle from '../components/LogoTitle';
 
-
 const LoginScreen = ({ navigation }) => {
     const [formData, setFormData] = useState({
-        email: "",
-        password: ""
+        email: '',
+        password: ''
     });
+
     const [errors, setErrors] = useState({});
 
     const handleLogin = () => {
         if (!formData.email || !formData.password) {
             setErrors({
-                email: !formData.email ? "Email es requerido" : "",
-                password: !formData.password ? "Contraseña es requerida" : ""
+                email: !formData.email ? 'Email es requerido' : '',
+                password: !formData.password ? 'Contraseña es requerida' : ''
             });
             return;
         }
+
+        setErrors({});
         navigation.replace('TabNavigator');
     };
 
@@ -34,95 +36,118 @@ const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-            <LogoTitle />
-                <Text style={styles.title}>Iniciar <Text style={styles.title2}>Sesión</Text></Text>
+        <SafeAreaView style={styles.container}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+            >
+                <ScrollView
+                    contentContainerStyle={styles.scrollContainer}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    <LogoTitle />
 
-                <View style={styles.formContainer}>
-                    <CustomInputText
-                        LabelText={'Ingresa su email'}
-                        PlaceholderText={'ejemplo@ejemplo.com'}
-                        HasError={errors.email}
-                    />
-                    <CustomInputText
-                        LabelText={'Ingresa su contraseña'}
-                        PlaceholderText={'*********'}
-                        IsPassword={true}
-                        HasError={errors.password}                        
-                    />
-
-                    <TouchableOpacity onPress={handleForgotPassword}>
-                        <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
-                    </TouchableOpacity>
-
-                    <CustomButton titletext='Iniciar sesión' onPress={handleLogin} />
-                    <RowLine style={styles.rowLine} />
-                    <CustomButton type='Secondary'  titletext={'Registrarse '} onPress={handleRegister} />
-                </View>
-
-                <View style={styles.footerContainer}>
-                    <Text style={styles.footer}>
-                        Al ingresar, aceptas nuestros Términos y condiciones, y Política de privacidad
+                    <Text style={styles.title}>
+                        Iniciar <Text style={styles.title2}>Sesión</Text>
                     </Text>
-                </View>
-                
-                <CurvedBackground />
-            </ScrollView>
-       
-        </View>
+
+                    <View style={styles.formContainer}>
+                        <CustomInputText  
+                                                   LabelText="Ingresa tu email"
+                            PlaceholderText="ejemplo@correo.com"
+                            HasError={!!errors.email}
+                            SupportingText={errors.email}
+                            IsDisabled={false}
+                            IsPassword={false}
+                        />
+
+                        <CustomInputText 
+                            LabelText="Ingresa tu contraseña"
+                            PlaceholderText="********"
+                            HasError={!!errors.password}
+                            SupportingText={errors.password}
+                            IsDisabled={false}
+                            IsPassword={true}
+                        />
+
+                        <TouchableOpacity style={styles.forgotContainer} onPress={handleForgotPassword}>
+                            <Text style={styles.forgotPassword}>¿Olvidó su contraseña?</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.buttonGroup}>
+                        <CustomButton titletext="Iniciar sesión" onPress={handleLogin} />
+                        <RowLine style={styles.rowLine} />
+                        <CustomButton type="Secondary" titletext="Registrarse" onPress={handleRegister} />
+                    </View>
+
+                    <View style={styles.footerContainer}>
+                        <Text style={styles.footer}>
+                            Al ingresar, aceptas nuestros Términos y condiciones, y Política de privacidad.
+                        </Text>
+                    </View>
+
+                    <CurvedBackground />
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffff',
+        backgroundColor: '#fff',
     },
     scrollContainer: {
         flexGrow: 1,
+        justifyContent: 'space-between',
         alignItems: 'center',
         padding: 10,
     },
-    
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        margin: 15,
+        marginBottom: 10,
+        textAlign: 'center',
     },
     title2: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        margin: 0,
         color: '#236A34',
     },
-   
     formContainer: {
-        width: "100%",
-        alignItems: "center",
-        paddingHorizontal: 10,
+        width: '100%',
+        alignItems: 'center',
+        marginVertical: 10,
+       
     },
+    forgotContainer: {
+        width: '100%',
+        alignItems: 'flex-end',
+        marginTop: 10,       
+    },
+  
+   
     forgotPassword: {
-        color: "#747474",
-        marginLeft: 150,
-        marginBottom: 10,
-        textDecorationLine: "underline",
+        color: '#747474',
+        textDecorationLine: 'underline',
+        fontSize: 13,
+    },
+    buttonGroup: {
+        width: '100%',
+        alignItems: 'center',
     },
     rowLine: {
         marginVertical: 10,
     },
     footerContainer: {
-       
-        marginBottom:0,
-        width: '80%',
-        
-    },
-    img:{
-        alignItems:'flex-end',
+        width: '100%',
     },
     footer: {
         textAlign: 'center',
         fontSize: 12,
+        color: '#7a7a7a',
     },
 });
 
