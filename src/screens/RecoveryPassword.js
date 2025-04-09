@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Status from '../components/Recovery/Status3';
+import CustomStepper from '../components/Steper/CustomSteper';
 import LogoTitle from '../components/LogoTitle';
 import CustomButton from '../components/Button/CustomButton';
 import CustomInputText from '../components/CustomInput/CustomInputText';
@@ -26,7 +26,7 @@ const RecoveryScreen3 = () => {
            <LogoTitle />
             <Text style={styles.title}>Recuperar <Text style={styles.title2}>Contraseña</Text></Text>
             <View style={styles.statusContainer}>
-                <Status />
+                <CustomStepper step={4}/>
             </View>
             <View style={styles.formContainer}>
                 <Text style={styles.subtitle}>Ingrese la nueva contraseña:</Text>

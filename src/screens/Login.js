@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet,  TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet,  TouchableOpacity, ScrollView} from 'react-native';
 import CurvedBackground from '../components/CurvedBackground';
 import RowLine from '../components/RowLine';
 import CustomInputText from '../components/CustomInput/CustomInputText';
@@ -66,6 +66,7 @@ const LoginScreen = ({ navigation }) => {
                         Al ingresar, aceptas nuestros Términos y condiciones, y Política de privacidad
                     </Text>
                 </View>
+                
                 <CurvedBackground />
             </ScrollView>
        
@@ -112,8 +113,12 @@ const styles = StyleSheet.create({
     },
     footerContainer: {
        
-        marginBottom:20,
+        marginBottom:0,
         width: '80%',
+        
+    },
+    img:{
+        alignItems:'flex-end',
     },
     footer: {
         textAlign: 'center',

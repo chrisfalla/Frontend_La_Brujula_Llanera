@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Status from '../components/Recovery/Status2';
+import CustomStepper from '../components/Steper/CustomSteper';
 import LogoTitle from '../components/LogoTitle';
 import CustomButton from '../components/Button/CustomButton';
 import CustomInputText from '../components/CustomInput/CustomInputText';
@@ -12,14 +12,17 @@ const RecoveryScreen2 = () => {
     const handleContinue = () => {
         navigation.navigate('Recovery3');
     };
-
+ const handleResendCode = () => {
+        // Lógica para reenviar el código
+        console.log('Código reenviado');
+    };
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}> 
             <LogoTitle />
             <Text style={styles.title}>Recuperar <Text style={styles.title2}>Contraseña</Text></Text>
             <View style={styles.statusContainer}>
-                <Status />
+                <CustomStepper   step={3}/>
             </View>
             <View style={styles.formContainer}>
                 <Text style={styles.subtitle}>
@@ -32,7 +35,7 @@ const RecoveryScreen2 = () => {
                  PlaceholderText={'BL-253665'}
             />
             </View>
-          
+            <CustomButton titletext='Enviar código nuevamente'  type='Secondary' onPress={handleResendCode} />
             <CustomButton titletext='Continuar' onPress={handleContinue}/>
             </ScrollView>
         </View>
