@@ -11,7 +11,7 @@ import MapaScreen from '../screens/MapaScreen';
 import CategoriasScreen from '../screens/CategoriasScreen';
 
 import Login from '../screens/Login';
-import RegistroScreen from '../screens/RegistroScreen';
+import RegisterScreen from '../screens/Register/RegisterScreen';
 import PasswordRecoveryStepOneScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
 import PasswordRecoveryStepTwoScreen from '../screens/PasswordRecovery/PasswordRecoveryStepTwoScreen';
 import PasswordRecoveryStepThreeScreen from '../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen';
@@ -119,7 +119,7 @@ const AuthStack = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Registro" component={RegistroScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
         </Stack.Navigator>
     );
 };
