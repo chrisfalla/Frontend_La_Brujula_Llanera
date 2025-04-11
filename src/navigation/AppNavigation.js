@@ -9,12 +9,13 @@ import HomeScreen from '../screens/HomeScreen';
 import MapaScreen from '../screens/MapaScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 
-import Login from '../screens/Login';
+import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
 import PasswordRecoveryStepOneScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
 import PasswordRecoveryStepTwoScreen from '../screens/PasswordRecovery/PasswordRecoveryStepTwoScreen';
 import PasswordRecoveryStepThreeScreen from '../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen';
 import DashboardScreen from '../screens/Dashboard/DashboardScreen';
+import LoginScreen from '../screens/Login/LoginScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -117,7 +118,7 @@ const TabNavigator = () => {
 const AuthStack = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
         </Stack.Navigator>
     );
