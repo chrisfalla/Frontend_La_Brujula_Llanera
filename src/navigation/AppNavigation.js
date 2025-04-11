@@ -12,10 +12,9 @@ import CategoriasScreen from '../screens/CategoriasScreen';
 
 import Login from '../screens/Login';
 import RegistroScreen from '../screens/RegistroScreen';
-import RecoveryScreen from '../screens/RecoveryEmail';
-import RecoveryScreen1 from '../screens/SendCode';
-import RecoveryScreen2 from '../screens/ValidateCode';
-import RecoveryScreen3 from '../screens/RecoveryPassword';
+import PasswordRecoveryStepOneScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
+import PasswordRecoveryStepTwoScreen from '../screens/PasswordRecovery/PasswordRecoveryStepTwoScreen';
+import PasswordRecoveryStepThreeScreen from '../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen';
 import Dashboard from '../screens/Dashboard';
 
 const Stack = createStackNavigator();
@@ -121,10 +120,6 @@ const AuthStack = () => {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Registro" component={RegistroScreen} />
-            <Stack.Screen name="Recovery" component={RecoveryScreen} />
-            <Stack.Screen name="Recovery1" component={RecoveryScreen1} />
-            <Stack.Screen name="Recovery2" component={RecoveryScreen2} />
-            <Stack.Screen name="Recovery3" component={RecoveryScreen3} />
         </Stack.Navigator>
     );
 };
