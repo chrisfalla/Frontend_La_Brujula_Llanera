@@ -6,9 +6,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 
-import BuscarCategoriasScreen from '../screens/BuscarCategoriasScreen';
 import MapaScreen from '../screens/MapaScreen';
-import CategoriasScreen from '../screens/CategoriasScreen';
+import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 
 import Login from '../screens/Login';
 import RegisterScreen from '../screens/Register/RegisterScreen';
@@ -89,7 +88,7 @@ const TabNavigator = () => {
             />
             <Tab.Screen
                 name="Categorias"
-                component={CategoriasScreen}
+                component={CategoriesScreen}
                 options={{
                     title: 'Categorías',
                     headerShown: false
