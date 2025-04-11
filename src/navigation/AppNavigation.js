@@ -4,17 +4,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import HomeScreen from '../screens/HomeScreen';
-import BuscarCategoriasScreen from '../screens/BuscarCategoriasScreen';
-import MapaScreen from '../screens/MapaScreen';
-import CategoriasScreen from '../screens/CategoriasScreen';
-import Login from '../screens/Login';
-import RegistroScreen from '../screens/RegistroScreen';
-import RecoveryScreen from '../screens/RecoveryEmail';
-import RecoveryScreen1 from '../screens/SendCode';
-import RecoveryScreen2 from '../screens/ValidateCode';
-import RecoveryScreen3 from '../screens/RecoveryPassword';
-import Dashboard from '../screens/Dashboard';
+
+import HomeScreen from '../screens/Home/HomeScreen';
+import LoginScreen from '../screens/Login/LoginScreen';
+
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,20 +24,8 @@ const TabNavigator = () => {
                         case 'Home':
                             iconName = focused ? 'home' : 'home-outline';
                             break;
-                        case 'BuscarCategorias':
-                            iconName = focused ? 'search' : 'search-outline';
-                            break;
-                        case 'Mapa':
-                            iconName = focused ? 'location' : 'location-outline';
-                            break;
-                        case 'Categorias':
-                            iconName = focused ? 'menu' : 'menu-outline';
-                            break;
                         case 'Auth':
                             iconName = focused ? 'person' : 'person-outline';
-                            break;
-                        case 'Dashboard':
-                            iconName = focused ? 'grid' : 'grid-outline';
                             break;
                         default:
                             iconName = 'help-outline';
@@ -69,61 +51,17 @@ const TabNavigator = () => {
                     title: 'Inicio',
                     headerShown: false
                 }}
-            />
-            <Tab.Screen
-                name="BuscarCategorias"
-                component={BuscarCategoriasScreen}
-                options={{
-                    title: 'Buscar',
-                    headerShown: false
-                }}
-            />
-            <Tab.Screen
-                name="Mapa"
-                component={MapaScreen}
-                options={{
-                    title: 'Mapa',
-                    headerShown: false
-                }}
-            />
-            <Tab.Screen
-                name="Categorias"
-                component={CategoriasScreen}
-                options={{
-                    title: 'Categorías',
-                    headerShown: false
-                }}
-            />
+            />    
             <Tab.Screen
                 name="Auth"
-                component={AuthStack}
+                component={LoginScreen}
                 options={{
                     title: 'Login',
                     headerShown: false
                 }}
             />
-            <Tab.Screen
-                name="Dashboard"
-                component={Dashboard}
-                options={{
-                    title: 'Dashboard',
-                    headerShown: false
-                }}
-            />
-        </Tab.Navigator>
-    );
-};
 
-const AuthStack = () => {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Registro" component={RegistroScreen} />
-            <Stack.Screen name="Recovery" component={RecoveryScreen} />
-            <Stack.Screen name="Recovery1" component={RecoveryScreen1} />
-            <Stack.Screen name="Recovery2" component={RecoveryScreen2} />
-            <Stack.Screen name="Recovery3" component={RecoveryScreen3} />
-        </Stack.Navigator>
+        </Tab.Navigator>
     );
 };
 

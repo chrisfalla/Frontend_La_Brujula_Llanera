@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList, Alert } from 'react-native';
-import Card from '../components/Dashboard/Card';
-import Button from '../components/Dashboard/Button';
+import Card from '../../components/Dashboard/Card';
+import Button from '../../components/Dashboard/Button';
 
-const Dashboard = () => {
+const DashboardScreen = () => {
     const [places, setPlaces] = useState([
         {
             id: '1',
@@ -167,4 +167,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Dashboard;
+export default DashboardScreen;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Logo from '../components/logoPerfil';
-import Header from '../components/Header';
+import Logo from '../../components/logoPerfil'
+import Header from '../../components/Header';
 
 const HomeScreen = () => {
     return (

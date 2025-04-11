@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-nati
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../components/Header';
+import Header from '../../components/Header';
 
 const MapaScreen = () => {
     const mapRef = useRef(null);

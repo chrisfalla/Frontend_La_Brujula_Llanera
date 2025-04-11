@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { Button } from 'react-native-web';
+
 
 const CustomInputText = ({ LabelText, PlaceholderText, HasError, SupportingText, IsDisabled, IsPassword }) => {
     const [isFocused, setIsFocused] = useState(false);
@@ -34,7 +34,7 @@ const CustomInputText = ({ LabelText, PlaceholderText, HasError, SupportingText,
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 15,
+        marginBottom: 0,
     },
     label: {
         fontSize: 13,
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         color: 'red',
     },
     input: {
-        marginBottom: 10,
+        marginBottom: 15,
         width: 350,
         height: 48,
         borderWidth: 2, // Definimos el grosor
