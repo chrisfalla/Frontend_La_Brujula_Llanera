@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 
-import MapaScreen from '../screens/MapaScreen';
+import MapaScreen from '../screens/Map/MapaScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 
 import LoginScreen from '../screens/Login/LoginScreen';
@@ -15,7 +15,7 @@ import PasswordRecoveryStepOneScreen from '../screens/PasswordRecovery/PasswordR
 import PasswordRecoveryStepTwoScreen from '../screens/PasswordRecovery/PasswordRecoveryStepTwoScreen';
 import PasswordRecoveryStepThreeScreen from '../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen';
 import DashboardScreen from '../screens/Dashboard/DashboardScreen';
-import LoginScreen from '../screens/Login/LoginScreen';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
