@@ -14,7 +14,7 @@ import RegisterScreen from '../screens/Register/RegisterScreen';
 import PasswordRecoveryStepOneScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
 import PasswordRecoveryStepTwoScreen from '../screens/PasswordRecovery/PasswordRecoveryStepTwoScreen';
 import PasswordRecoveryStepThreeScreen from '../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen';
-import Dashboard from '../screens/Dashboard';
+import DashboardScreen from '../screens/Dashboard/DashboardScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -104,7 +104,7 @@ const TabNavigator = () => {
             />
             <Tab.Screen
                 name="Dashboard"
-                component={Dashboard}
+                component={DashboardScreen}
                 options={{
                     title: 'Dashboard',
                     headerShown: false
