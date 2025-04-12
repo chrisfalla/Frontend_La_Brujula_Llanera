@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList, Alert } from 'react-native';
-import Card from '../components/Dashboard/Card';
-import Button from '../components/Dashboard/Button';
+import Card from '../../components/Dashboard/Card';
+import Button from '../../components/Dashboard/Button';
 
 const DashboardScreen = () => {
     const [places, setPlaces] = useState([

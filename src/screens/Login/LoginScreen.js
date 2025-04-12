@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet,  TouchableOpacity, ScrollView } from 'react-native';
-import CurvedBackground from '../components/CurvedBackground';
-import RowLine from '../components/RowLine';
-import CustomInputText from '../components/CustomInput/CustomInputText';
-import CustomButton from '../components/Button/CustomButton';
-import LogoTitle from '../components/LogoTitle';
+import CurvedBackground from '../../components/CurvedBackground';
+import RowLine from '../../components/RowLine';
+import CustomInputText from '../../components/CustomInput/CustomInputText';
+import CustomButton from '../../components/Button/CustomButton';
+import LogoTitle from '../../components/LogoTitle';
 
 
 const LoginScreen = ({ navigation }) => {

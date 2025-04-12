@@ -4,11 +4,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import HomeScreen from '../screens/HomeScreen';
 
 import MapaScreen from '../screens/Map/MapaScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';
-
+import HomeScreen from '../screens/Home/HomeScreen';
 import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
 import PasswordRecoveryStepOneScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
@@ -73,7 +72,7 @@ const TabNavigator = () => {
             />
             <Tab.Screen
                 name="BuscarCategorias"
-                component={BuscarCategoriasScreen}
+                component={CategoriesScreen}
                 options={{
                     title: 'Buscar',
                     headerShown: false

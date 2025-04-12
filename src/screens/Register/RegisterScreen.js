@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import {View, StyleSheet, ScrollView, Text, KeyboardAvoidingView, Platform, Alert}
 
 from 'react-native';
-import CustomInputText from '../components/CustomInput/CustomInputText';
-import CustomButton from '../components/Button/CustomButton';
-import LogoTitle from '../components/LogoTitle';
-import CornerImage from '../components/Vectors/CornerImagen';
+import CustomInputText from '../../components/CustomInput/CustomInputText';
+import CustomButton from '../../components/Button/CustomButton';
+import LogoTitle from '../../components/LogoTitle';
+//import CornerImage from '../../components/Vectors/CornerImagen';
 
 
 const RegisterScreen = () => {
@@ -139,7 +139,6 @@ const handleGoogleRegister = () => {
             size="Big"
           />
         </View>
-        <CornerImage />
       </ScrollView>
     </KeyboardAvoidingView>
   );
