@@ -5,15 +5,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-import MapaScreen from '../screens/Map/MapaScreen';
-import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
 import LoginScreen from '../screens/Login/LoginScreen';
-import RegisterScreen from '../screens/Register/RegisterScreen';
-import PasswordRecoveryStepOneScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
-import PasswordRecoveryStepTwoScreen from '../screens/PasswordRecovery/PasswordRecoveryStepTwoScreen';
-import PasswordRecoveryStepThreeScreen from '../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen';
-import DashboardScreen from '../screens/Dashboard/DashboardScreen';
+
 
 
 const Stack = createStackNavigator();
@@ -30,20 +24,8 @@ const TabNavigator = () => {
                         case 'Home':
                             iconName = focused ? 'home' : 'home-outline';
                             break;
-                        case 'BuscarCategorias':
-                            iconName = focused ? 'search' : 'search-outline';
-                            break;
-                        case 'Mapa':
-                            iconName = focused ? 'location' : 'location-outline';
-                            break;
-                        case 'Categorias':
-                            iconName = focused ? 'menu' : 'menu-outline';
-                            break;
                         case 'Auth':
                             iconName = focused ? 'person' : 'person-outline';
-                            break;
-                        case 'Dashboard':
-                            iconName = focused ? 'grid' : 'grid-outline';
                             break;
                         default:
                             iconName = 'help-outline';
@@ -69,57 +51,17 @@ const TabNavigator = () => {
                     title: 'Inicio',
                     headerShown: false
                 }}
-            />
-            <Tab.Screen
-                name="BuscarCategorias"
-                component={CategoriesScreen}
-                options={{
-                    title: 'Buscar',
-                    headerShown: false
-                }}
-            />
-            <Tab.Screen
-                name="Mapa"
-                component={MapaScreen}
-                options={{
-                    title: 'Mapa',
-                    headerShown: false
-                }}
-            />
-            <Tab.Screen
-                name="Categorias"
-                component={CategoriesScreen}
-                options={{
-                    title: 'Categorías',
-                    headerShown: false
-                }}
-            />
+            />    
             <Tab.Screen
                 name="Auth"
-                component={AuthStack}
+                component={LoginScreen}
                 options={{
                     title: 'Login',
                     headerShown: false
                 }}
             />
-            <Tab.Screen
-                name="Dashboard"
-                component={DashboardScreen}
-                options={{
-                    title: 'Dashboard',
-                    headerShown: false
-                }}
-            />
-        </Tab.Navigator>
-    );
-};
 
-const AuthStack = () => {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-        </Stack.Navigator>
+        </Tab.Navigator>
     );
 };
 
