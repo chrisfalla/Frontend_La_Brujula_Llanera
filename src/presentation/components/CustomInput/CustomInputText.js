@@ -6,7 +6,7 @@ const CustomInputText = ({ LabelText, PlaceholderText, HasError, SupportingText,
     const [isFocused, setIsFocused] = useState(false);
     
     return (
-        <View style={styles.container}>
+        <View  style={styles.container}>
             {/* Label encima del input */}
             <Text style={[styles.label, HasError && styles.labelError]}>{LabelText}</Text>
 

@@ -4,7 +4,6 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 const LogoTitle = () => {
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/log.png')} style={styles.logo} />
             <View style={styles.containertitle}>
                 <Text style={styles.title3}>
                     LA BRÚJULA <Text style={styles.title4}>LLANERA</Text>

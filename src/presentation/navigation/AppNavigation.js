@@ -6,7 +6,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from '../screens/Home/HomeScreen';
-import LoginScreen from '../screens/Login/LoginScreen';
+import CategoriesScreen from '../screens/Categories/CategoriesScreen';
+import MapaScreen from '../screens/Map/MapaScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
 
 
 
@@ -24,7 +26,16 @@ const TabNavigator = () => {
                         case 'Home':
                             iconName = focused ? 'home' : 'home-outline';
                             break;
-                        case 'Auth':
+                            
+                            case 'Categories':
+                            iconName = focused ? 'search' : 'search-outline';
+                            break;
+
+                            case 'Map':
+                            iconName = focused ? 'location' : 'location-outline';
+                            break;
+                            
+                            case 'Profile':
                             iconName = focused ? 'person' : 'person-outline';
                             break;
                         default:
@@ -53,10 +64,26 @@ const TabNavigator = () => {
                 }}
             />    
             <Tab.Screen
-                name="Auth"
-                component={LoginScreen}
+            name="Categories"
+            component={CategoriesScreen}
+            options={{
+                title: 'Categories',
+                headerShown: false
+            }}
+            />
+            <Tab.Screen
+            name="Map"
+            component={MapaScreen}
+            options={{
+                title: 'Mapa',
+                headerShown: false
+            }}
+            />    
+            <Tab.Screen
+                name="Profile"
+                component={ProfileScreen}
                 options={{
-                    title: 'Login',
+                    title: 'Perfil',
                     headerShown: false
                 }}
             />
