@@ -5,6 +5,7 @@ import RowLine from '../../components/RowLine';
 import CustomInputText from '../../components/CustomInput/CustomInputText';
 import CustomButton from '../../components/Button/CustomButton';
 import LogoTitle from '../../components/LogoTitle';
+import CustomDecoration from '../../components/Vector/CustomDecoration'
 
 
 const LoginScreen = ({ navigation }) => {
@@ -56,9 +57,21 @@ const LoginScreen = ({ navigation }) => {
                         <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
                     </TouchableOpacity>
 
-                    <CustomButton titletext='Iniciar sesión' onPress={handleLogin} />
+                    <CustomButton titletext='Iniciar sesión'
+                    onPress={handleLogin} 
+                    type="Primary"
+                    size="Big"
+                    />
+
+
+
                     <RowLine style={styles.rowLine} />
-                    <CustomButton type='Secondary'  titletext={'Registrarse '} onPress={handleRegister} />
+
+                    <CustomButton 
+                    titletext='Registrarse'
+                    onPress={handleRegister} 
+                    type="Secondary"
+                    size="Big"/>
                 </View>
 
                 <View style={styles.footerContainer}>
@@ -66,9 +79,12 @@ const LoginScreen = ({ navigation }) => {
                         Al ingresar, aceptas nuestros Términos y condiciones, y Política de privacidad
                     </Text>
                 </View>
-                <CurvedBackground />
+
+                <CustomDecoration
+                type='Left'
+                />
             </ScrollView>
-       
+        
         </View>
     );
 };

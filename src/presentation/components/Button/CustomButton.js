@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
     },
     secondaryTouchable: {
-        backgroundColor: 'transparent',
+        backgroundColor: 'white',
         borderColor: '#236A34',
         borderWidth: 2,
     },
