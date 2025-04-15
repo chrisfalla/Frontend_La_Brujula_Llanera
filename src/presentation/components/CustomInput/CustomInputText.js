@@ -34,12 +34,13 @@ const CustomInputText = ({ LabelText, PlaceholderText, HasError, SupportingText,
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 0,
+        width:"100%",
+        marginBottom: 20,
     },
     label: {
         fontSize: 13,
         color: '#000',
-        marginBottom: 5,
+        marginBottom: 4,
         fontWeight: "bold",
         paddingLeft: 15,
         textAlign: "left",
@@ -48,8 +49,8 @@ const styles = StyleSheet.create({
         color: 'red',
     },
     input: {
-        marginBottom: 15,
-        width: 350,
+        marginBottom: 5,
+        width: "100%",
         height: 48,
         borderWidth: 2, // Definimos el grosor
         paddingLeft: 15,
@@ -70,7 +71,8 @@ const styles = StyleSheet.create({
     errorText: {
         color: 'red',
         fontSize: 12,
-        marginTop: 5,
+        marginTop: 2,
+        marginBottom: 10,
         fontWeight: "bold",
         paddingLeft: 15,
     },

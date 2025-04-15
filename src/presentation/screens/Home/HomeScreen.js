@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Logo from '../../components/logoPerfil'
+import { View, Text, StyleSheet, Image } from 'react-native';
 import Header from '../../components/Header';
 
 const HomeScreen = () => {
@@ -16,7 +15,7 @@ const HomeScreen = () => {
             <View style={{ flex: 1 }}>
                 <View style={styles.body}>
                     <Text style={styles.title}>Bienvenido a mi App</Text>
-                    <Logo />
+                    <Image  source={require('../../../shared/assets/AvatarHeader.png')} />
                     <Text style={styles.subtitle}>Este es el logo de la app</Text>
                 </View>
             </View>

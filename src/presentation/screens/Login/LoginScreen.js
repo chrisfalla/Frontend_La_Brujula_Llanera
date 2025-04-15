@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet,  TouchableOpacity, ScrollView } from 'react-native';
-import CurvedBackground from '../../components/CurvedBackground';
-import RowLine from '../../components/RowLine';
+import { View, Text, StyleSheet,  TouchableOpacity, ScrollView,  } from 'react-native';
 import CustomInputText from '../../components/CustomInput/CustomInputText';
-import CustomButton from '../../components/Button/CustomButton';
+import CustomButton from '../../components/CustomButton/CustomButton';
 import LogoTitle from '../../components/LogoTitle';
+import CustomDecoration from '../../components/CustomDecoration/CustomDecoration'
 
 
 const LoginScreen = ({ navigation }) => {
@@ -38,7 +37,6 @@ const LoginScreen = ({ navigation }) => {
             <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
             <LogoTitle />
                 <Text style={styles.title}>Iniciar <Text style={styles.title2}>Sesión</Text></Text>
-
                 <View style={styles.formContainer}>
                     <CustomInputText
                         LabelText={'Ingresa su email'}
@@ -51,24 +49,32 @@ const LoginScreen = ({ navigation }) => {
                         IsPassword={true}
                         HasError={errors.password}                        
                     />
-
                     <TouchableOpacity onPress={handleForgotPassword}>
                         <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
                     </TouchableOpacity>
-
-                    <CustomButton titletext='Iniciar sesión' onPress={handleLogin} />
-                    <RowLine style={styles.rowLine} />
-                    <CustomButton type='Secondary'  titletext={'Registrarse '} onPress={handleRegister} />
+                    <CustomButton titletext='Iniciar sesión'
+                    onPress={handleLogin} 
+                    type="Primary"
+                    size="Big"
+                    />
+                    <Text>ó</Text>
+                    <CustomButton 
+                    titletext='Registrarse'
+                    onPress={handleRegister} 
+                    type="Secondary"
+                    size="Big"/>
+                    <View style={styles.divider} />
                 </View>
-
                 <View style={styles.footerContainer}>
                     <Text style={styles.footer}>
                         Al ingresar, aceptas nuestros Términos y condiciones, y Política de privacidad
                     </Text>
                 </View>
-                <CurvedBackground />
+                <CustomDecoration
+                type='Left'
+                />
             </ScrollView>
-       
+        
         </View>
     );
 };
@@ -107,9 +113,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         textDecorationLine: "underline",
     },
-    rowLine: {
-        marginVertical: 10,
-    },
+  
     footerContainer: {
        
         marginBottom:20,
@@ -119,6 +123,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 12,
     },
+    divider: {
+        width: '100%',
+        height: 1,
+        backgroundColor: '#CFCFCF',
+        marginVertical: 5,
+        borderRadius: 1,
+      },
 });
 
 export default LoginScreen;
