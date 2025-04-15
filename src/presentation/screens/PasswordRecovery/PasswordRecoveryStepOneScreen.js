@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Status from '../../components/Recovery/Status1';
 import LogoTitle from '../../components/LogoTitle';
-import CustomButton from '../../components/Button/CustomButton';
+import CustomButton from '../../components/CustomButton/CustomButton';
 import CustomInputText from '../../components/CustomInput/CustomInputText';
 
 

@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/Home/HomeScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 import MapaScreen from '../screens/Map/MapaScreen';
-import ProfileScreen from '../screens/Profile/ProfileScreen';
+import ProfileScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
 
 
 

@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
-import Logo from './logoPerfil';
+
 
 const Header = () => {
     return (
         <View style={styles.header}>
-           <View style={styles.containertitle}>
-                            <Text style={styles.title3}>LA BRÚJULA <Text style={styles.title4}>LLANERA</Text></Text>
-                            </View>
-            <Logo style={styles.logoPerfil} />
+            <Image source={require('../../shared/assets/CompassLogo.png')} style={styles.compass} />
+            <View style={styles.containertitle}>
+                <Text style={styles.title3}>LA BRÚJULA <Text style={styles.title4}>LLANERA</Text></Text>
+            </View>
+            <Image source={require('../../shared/assets/AvatarHeader.png')} style={styles.avatar}/>         
         </View>
     );
 };
@@ -19,10 +20,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 10,
-        paddingTop: 45,
+        paddingTop: 35,
         backgroundColor: '#fff',
+        width: '100%',
+        
     },
-    logo: {
+    compass: {
         width: 50,
         height: 50,
         marginBottom: 10,
@@ -30,24 +33,23 @@ const styles = StyleSheet.create({
     containertitle:{
         margin:10,
     },
-   
+
     title3: {
-        fontSize:23,
+        fontSize:20,
         fontWeight: '900',
         margin: 0,
         
     },
     title4: {
-        fontSize: 23,
+        fontSize: 20,
         fontWeight: '900',
         margin: 0,
         color: '#236A34',
     },
-    logoPerfil: {
-        width: 15,
-        height: 15,
-        marginLeft: 10,
-        
+    avatar: {
+        width: 50,
+        height: 50,
+        marginBottom: 10,
     },
 });
 

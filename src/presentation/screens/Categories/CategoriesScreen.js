@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Header from '../../components/Header';
 
 const CategoriesScreen = () => {
-    return (
+    return ( 
+        <View> 
+        <Header/>
         <View style={styles.container}>
             <Text style={styles.text}>Pantalla de Categorías</Text>
+        </View>
         </View>
     );
 };

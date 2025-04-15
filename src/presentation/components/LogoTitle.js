@@ -6,7 +6,7 @@ const LogoTitle = () => {
     return (
         
         <View style={styles.container}>
-            <Image source={require('../../shared/assets/log.png')} style={styles.logo} />
+            <Image source={require('../../shared/assets/CompassLogo.png')} style={styles.logo} />
             <View style={styles.containertitle}>
                 <Text style={styles.title3}>
                     
