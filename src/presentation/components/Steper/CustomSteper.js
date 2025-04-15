@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 const CustomStepper = ({ step }) => {
-    const lista = [1, 2, 3, 4]
+    const lista = [1, 2, 3]
 return (
     <View style={styles.containerlinea}>
     {lista.map((value, index ) => (
