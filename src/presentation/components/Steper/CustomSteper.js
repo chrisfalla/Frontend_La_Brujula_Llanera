@@ -46,9 +46,9 @@ return (
     alignItems: "center",
   },
   circle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -59,7 +59,7 @@ return (
     backgroundColor: "gray",
   },
   line: {
-    width: 40,
+    width: 100,
     height: 4,
   },
   lineActive: {
