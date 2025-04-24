@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import Header from '../../components/Header';
+import { GetTagsUseCase } from '../../../domain/usecases/tags/GetTagsUseCase';
+import { provideTagsRepository } from '../../../data/repositories/Tags/ProvideTagsRepository';
 
 const HomeScreen = () => {
+    const [tags, setTags] = useState([]);
+
+    useEffect(() => {
+        const loadTags = async () => {
+            console.log("🚀 Ejecutando GetTagsUseCase...");
+            const repository = provideTagsRepository();
+            const useCase = new GetTagsUseCase(repository);
+            const result = await useCase.execute();
+            console.log("✅ Tags cargados:", result);
+            setTags(result);
+        };
+        loadTags();
+    },[]);
+
     return (
         <View style={styles.container}>
             <Header />
