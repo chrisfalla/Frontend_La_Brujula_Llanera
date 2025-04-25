@@ -1,4 +1,4 @@
-import React, { useEffect }, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import Header from '../../components/Header';
 import { GetPlacesByTagsUseCase } from '../../../domain/usecases/places/GetPlacesByTagsUseCase';
@@ -57,7 +57,7 @@ const HomeScreen = () => {
             setTags(result);
         };
         loadTags();
-    },[]);
+    }, []);
 
     return (
         <View style={styles.container}>
