@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect }, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import Header from '../../components/Header';
 import { GetPlacesByTagsUseCase } from '../../../domain/usecases/places/GetPlacesByTagsUseCase';
@@ -7,6 +7,8 @@ import { GetPlacesMoreVisitedUseCase } from '../../../domain/usecases/places/Get
 import { providePlacesByTagsRepository, providePlacesByCategoryRepository, providePlacesMoreVisitedRepository } from '../../../data/repositories/places/ProvidePlacesRepository';
 import { GetPlaceDetailUseCase } from '../../../domain/usecases/placeDetail/GetPlaceDetailUseCase';
 import { providePlaceDetailRepository } from '../../../data/repositories/places/ProvidePlaceDetailRepository';
+import { GetTagsUseCase } from '../../../domain/usecases/tags/GetTagsUseCase';
+import { provideTagsRepository } from '../../../data/repositories/Tags/ProvideTagsRepository';
 
 const HomeScreen = () => {
     useEffect(() => {
@@ -42,6 +44,20 @@ const HomeScreen = () => {
 
         loadData();
     }, []);
+
+    const [tags, setTags] = useState([]);
+
+    useEffect(() => {
+        const loadTags = async () => {
+            console.log("🚀 Ejecutando GetTagsUseCase...");
+            const repository = provideTagsRepository();
+            const useCase = new GetTagsUseCase(repository);
+            const result = await useCase.execute();
+            console.log("✅ Tags cargados:", result);
+            setTags(result);
+        };
+        loadTags();
+    },[]);
 
     return (
         <View style={styles.container}>

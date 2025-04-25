@@ -7,7 +7,8 @@ const config = {
   USE_MOCK_PLACES_BY_CATEGORY: true,
   USE_MOCK_PLACES_BY_TAGS: true,
   USE_MOCK_DETAIL_PLACES:true,
-
+  USE_MOCK_TAGS: true,
+  
 };
 
 export default config;
