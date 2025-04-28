@@ -12,7 +12,7 @@ export const HorizontalCardPlace = ({
     return (
         <View style={styles.container}>
             <Image 
-                source={{ uri: image || defaultImage }} 
+                source={{ uri: image}} 
                 style={styles.image}
             />
             <View style={styles.textContainer}>
@@ -63,7 +63,7 @@ export const HorizontalCardPlaceList = ({ places, onMapPress }) => {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        width: 356,
+        width: '100%',
         height: 91,
         backgroundColor: '#FFFFFF',
         borderRadius: 15,
@@ -75,14 +75,14 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         alignSelf: 'center',
         paddingVertical: 12,
-        paddingHorizontal: 20, // Aumentado para dar más espacio lateral
+        paddingHorizontal: 15, 
     },
     image: {
         width: 50,
         height: 50,
         borderRadius: 25,
         alignSelf: 'center',
-        marginLeft: -4  // Ajuste fino para empujar hacia la izquierda
+        marginLeft: -4 
     },
     textContainer: {
         flex: 1,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     },
     actionsContainer: {
         width: 25,
-        height: 90,  // Aumentado para mayor separación entre iconos
+        height: 90,  
         justifyContent: 'space-between',
         alignItems: 'center',
         alignSelf: 'center',
