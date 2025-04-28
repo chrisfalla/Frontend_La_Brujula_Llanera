@@ -7,9 +7,7 @@ export const HorizontalCardPlace = ({
     description,
     image,
     onMapPress,
-    onDetailPress
 }) => {
-    const defaultImage = 'https://via.placeholder.com/60';
 
     return (
         <View style={styles.container}>
@@ -19,7 +17,7 @@ export const HorizontalCardPlace = ({
             />
             <View style={styles.textContainer}>
                 <Text style={styles.title} numberOfLines={1}>{name}</Text>
-                <Text style={styles.subTitle}>Gastronomía</Text>
+                <Text style={styles.subTitle}>solo es un ejemplo de categorias </Text>
                 <Text style={styles.description} numberOfLines={2}>
                     {description}
                 </Text>
@@ -29,27 +27,25 @@ export const HorizontalCardPlace = ({
                     style={styles.iconButton}
                     onPress={onMapPress}
                 >
-                    <FontAwesome5 name="map-marker-alt" size={16} color="white" />
+                    <FontAwesome5 name="map-marker-alt" size={18} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style={styles.iconButton}
-                    onPress={onDetailPress}
-                >
-                    <FontAwesome5 name="arrow-right" size={14} color="white" />
+                    onPress={onMapPress}    >
+                    <FontAwesome5 name="arrow-right" size={17} color="white" />
                 </TouchableOpacity>
             </View>
         </View>
     );
 };
 
-export const HorizontalCardPlaceList = ({ places, onMapPress, onDetailPress }) => {
+export const HorizontalCardPlaceList = ({ places, onMapPress }) => {
     const renderItem = ({ item }) => (
         <HorizontalCardPlace
             name={item.name}
             description={item.description}
             image={item.image}
             onMapPress={() => onMapPress(item)}
-            onDetailPress={() => onDetailPress(item)}
         />
     );
 

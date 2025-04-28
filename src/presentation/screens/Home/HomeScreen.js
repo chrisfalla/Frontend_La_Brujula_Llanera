@@ -9,7 +9,6 @@ import { GetPlaceDetailUseCase } from '../../../domain/usecases/placeDetail/GetP
 import { providePlaceDetailRepository } from '../../../data/repositories/places/ProvidePlaceDetailRepository';
 import { GetTagsUseCase } from '../../../domain/usecases/tags/GetTagsUseCase';
 import { provideTagsRepository } from '../../../data/repositories/Tags/ProvideTagsRepository';
-import HorizontalCardPlace from '../../components/HorizontalCardPlace/HorizontalCardPlace';
 import { HorizontalCardPlaceList } from '../../components/HorizontalCardPlace/HorizontalCardPlace';
 
 const HomeScreen = () => {
