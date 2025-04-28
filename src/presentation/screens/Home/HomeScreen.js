@@ -9,8 +9,13 @@ import { GetPlaceDetailUseCase } from '../../../domain/usecases/placeDetail/GetP
 import { providePlaceDetailRepository } from '../../../data/repositories/places/ProvidePlaceDetailRepository';
 import { GetTagsUseCase } from '../../../domain/usecases/tags/GetTagsUseCase';
 import { provideTagsRepository } from '../../../data/repositories/Tags/ProvideTagsRepository';
+import HorizontalCardPlace from '../../components/HorizontalCardPlace/HorizontalCardPlace';
+import { HorizontalCardPlaceList } from '../../components/HorizontalCardPlace/HorizontalCardPlace';
 
 const HomeScreen = () => {
+    const [placesByTags, setPlacesByTags] = useState([]);
+    const [tags, setTags] = useState([]);
+
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -19,6 +24,7 @@ const HomeScreen = () => {
                 const tagUseCase = new GetPlacesByTagsUseCase(tagRepository);
                 const tagResult = await tagUseCase.execute();
                 console.log("✅ Lugares por tags cargados:", tagResult);
+                setPlacesByTags(tagResult);
 
                 // Cargar lugares por categoría
                 const categoryRepository = providePlacesByCategoryRepository();
@@ -45,8 +51,6 @@ const HomeScreen = () => {
         loadData();
     }, []);
 
-    const [tags, setTags] = useState([]);
-
     useEffect(() => {
         const loadTags = async () => {
             console.log("🚀 Ejecutando GetTagsUseCase...");
@@ -59,10 +63,18 @@ const HomeScreen = () => {
         loadTags();
     }, []);
 
+    const handleMapPress = (item) => {
+        console.log('Map pressed for:', item.name);
+    };
+
+    const handleDetailPress = (item) => {
+        console.log('Detail pressed for:', item.name);
+    };
+
     return (
         <View style={styles.container}>
             <Header />
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <View style={styles.content}>
                 <View style={styles.textScreens}>
                     <Text>
                         <Text style={styles.colorPrimary}>Recomendados</Text>
@@ -70,12 +82,12 @@ const HomeScreen = () => {
                     </Text>
                 </View>
 
-                <View style={styles.body}>
-                    <Text style={styles.title}>Bienvenido a la Brújula Llanera</Text>
-                    <Image source={require('../../../shared/assets/AvatarHeader.png')} />
-                    <Text style={styles.subtitle}>Descubre los mejores lugares del llano</Text>
-                </View>
-            </ScrollView>
+                <HorizontalCardPlaceList 
+                    places={placesByTags}
+                    onMapPress={handleMapPress}
+                    onDetailPress={handleDetailPress}
+                />
+            </View>
         </View>
     );
 };
@@ -84,6 +96,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    content: {
+        flex: 1,
     },
     scrollContent: {
         flexGrow: 1,
