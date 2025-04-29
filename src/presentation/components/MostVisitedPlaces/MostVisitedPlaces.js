@@ -18,6 +18,47 @@ export const MostVisitedPlaces = ({ onPlacePress }) => {
   const flatListRef = useRef(null);
   const autoScrollTimer = useRef(null);
 
+  const startAutoScroll = useCallback(() => {
+    stopAutoScroll();
+    autoScrollTimer.current = setInterval(() => {
+      if (places.length > 0 && flatListRef.current) {
+        const nextIndex = currentIndex + 1;
+
+        if (nextIndex >= places.length - 1) {
+          flatListRef.current.scrollToIndex({
+            index: nextIndex,
+            animated: true,
+            viewPosition: 0.5,
+            viewOffset: 0,
+          });
+
+          setTimeout(() => {
+            flatListRef.current.scrollToIndex({
+              index: 0,
+              animated: false,
+            });
+            setCurrentIndex(0);
+          }, 500); // Aumentado a 500ms para transición más suave
+        } else {
+          flatListRef.current.scrollToIndex({
+            index: nextIndex,
+            animated: true,
+            viewPosition: 0.5,
+            viewOffset: 0,
+          });
+          setCurrentIndex(nextIndex);
+        }
+      }
+    }, 4000); // Aumentado a 4000ms para dar más tiempo entre transiciones
+  }, [currentIndex, places.length]);
+
+  const stopAutoScroll = () => {
+    if (autoScrollTimer.current) {
+      clearInterval(autoScrollTimer.current);
+      autoScrollTimer.current = null;
+    }
+  };
+
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
