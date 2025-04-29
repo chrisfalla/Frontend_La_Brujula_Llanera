@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import Header from '../../components/Header';
+import MainHeader from '../../components/MainHeader/CustomMainHeader ';
 import { GetPlacesByTagsUseCase } from '../../../domain/usecases/places/GetPlacesByTagsUseCase';
 import { GetPlacesByCategoryUseCase } from '../../../domain/usecases/places/GetPlacesByCategoryUseCase';
 import { GetPlacesMoreVisitedUseCase } from '../../../domain/usecases/places/GetPlacesMoreVisitedUseCase';
@@ -9,6 +9,7 @@ import { GetPlaceDetailUseCase } from '../../../domain/usecases/placeDetail/GetP
 import { providePlaceDetailRepository } from '../../../data/repositories/places/ProvidePlaceDetailRepository';
 import { GetTagsUseCase } from '../../../domain/usecases/tags/GetTagsUseCase';
 import { provideTagsRepository } from '../../../data/repositories/Tags/ProvideTagsRepository';
+
 
 const HomeScreen = () => {
     useEffect(() => {
@@ -61,7 +62,7 @@ const HomeScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Header />
+            <MainHeader username={'Username'} />
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.textScreens}>
                     <Text>

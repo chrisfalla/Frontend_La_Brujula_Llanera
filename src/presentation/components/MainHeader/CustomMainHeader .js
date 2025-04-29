@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 const MainHeader = ({ primarytIcon = "notifications", SecondIcon = "settings", username }) => {  {/* propiedades para llamar los iconos */}
 return (
     <View style={styles.header}>
-        <Image source={require('../../shared/assets/Avatar.png') } style={styles.avatar}/>
+        <Image source={require('../../../shared/assets/Avatar.png') } style={styles.avatar}/>
         <View style={styles.containertitle}>
         <Text style={styles.title}> Hola, </Text>
         <Text style={styles.username} >{username} </Text>

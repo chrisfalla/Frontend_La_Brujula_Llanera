@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import Header from "../../components/Header";
+import MainHeader from "../../components/MainHeader/CustomMainHeader ";
 import { GetCategoriesUseCase } from "../../../domain/usecases/categories/GetCategoriesUseCase";
 import { provideCategoryRepository } from "../../../data/repositories/categories/ProvideCategoryRepository";
 
@@ -28,7 +28,7 @@ const CategoriesScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-
+      <MainHeader  username={'Usarname'} />
     </View>
   );
 };

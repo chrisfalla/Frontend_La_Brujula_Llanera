@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import MainHeader from '../../components/MainHeader/CustomMainHeader ';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../../components/Header';
+
 
 const MapaScreen = () => {
     const mapRef = useRef(null);
@@ -76,7 +77,7 @@ const MapaScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Header />
+            <MainHeader username={'Usermane'}/>
             <View style={styles.mapContainer}>
                 <MapView 
                     ref={mapRef}
