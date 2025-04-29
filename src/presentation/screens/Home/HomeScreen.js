@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Header from '../../components/Header';
+import { MostVisitedPlaces } from '../../components/MostVisitedPlaces/MostVisitedPlaces';
 import { GetPlacesByTagsUseCase } from '../../../domain/usecases/places/GetPlacesByTagsUseCase';
 import { GetPlacesByCategoryUseCase } from '../../../domain/usecases/places/GetPlacesByCategoryUseCase';
 import { GetPlacesMoreVisitedUseCase } from '../../../domain/usecases/places/GetPlacesMoreVisitedUseCase';
@@ -12,8 +14,10 @@ import { provideTagsRepository } from '../../../data/repositories/Tags/ProvideTa
 import { HorizontalCardPlaceList } from '../../components/HorizontalCardPlace/HorizontalCardPlace';
 
 const HomeScreen = () => {
+    const navigation = useNavigation();
     const [placesByTags, setPlacesByTags] = useState([]);
     const [tags, setTags] = useState([]);
+    const [mostVisitedPlaces, setMostVisitedPlaces] = useState([]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -36,6 +40,7 @@ const HomeScreen = () => {
                 const visitedUseCase = new GetPlacesMoreVisitedUseCase(visitedRepository);
                 const visitedResult = await visitedUseCase.execute();
                 console.log("✅ Lugares más visitados cargados:", visitedResult);
+                setMostVisitedPlaces(visitedResult);
 
                 // Cargar detalle de lugar (sólo para mock, sin UI)
                 const detailRepository = providePlaceDetailRepository();
@@ -70,23 +75,24 @@ const HomeScreen = () => {
         console.log('Detail pressed for:', item.name);
     };
 
+    const handlePlacePress = (place) => {
+        navigation.navigate('PlaceDetail', { placeId: place.idPlace });
+    };
+
+    const ListHeader = () => (
+        <MostVisitedPlaces places={mostVisitedPlaces} onPlacePress={handlePlacePress} />
+    );
+
     return (
         <View style={styles.container}>
             <Header />
-            <View style={styles.content}>
-                <View style={styles.textScreens}>
-                    <Text>
-                        <Text style={styles.colorPrimary}>Recomendados</Text>
-                        <Text style={styles.normalText}> de la Semana</Text>
-                    </Text>
-                </View>
-
-                <HorizontalCardPlaceList 
-                    places={placesByTags}
-                    onMapPress={handleMapPress}
-                    onDetailPress={handleDetailPress}
-                />
-            </View>
+            <FlatList
+                ListHeaderComponent={ListHeader}
+                data={[]}
+                renderItem={null}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.content}
+            />
         </View>
     );
 };
@@ -97,7 +103,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     content: {
-        flex: 1,
+        flexGrow: 1,
     },
     scrollContent: {
         flexGrow: 1,
