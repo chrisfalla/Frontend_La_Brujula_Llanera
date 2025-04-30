@@ -1,7 +1,8 @@
 // presentation/screens/Categories/CategoriesScreen.js
 
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 import Header from "../../components/Header";
 import CustomSearch from "../../components/Search/Search";
 import { GetCategoriesUseCase } from "../../../domain/usecases/categories/GetCategoriesUseCase";
@@ -11,6 +12,18 @@ const CategoriesScreen = () => {
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
+
+  const getCategoryIcon = (categoryName) => {
+    const icons = {
+      'Ecoturismo': 'leaf',
+      'Cultura': 'book',
+      'Alojamiento': 'bed',
+      'Gastronomía': 'restaurant',
+      'Servicios': 'construct',
+      'Entretenimiento': 'game-controller',
+    };
+    return icons[categoryName] || 'help-circle';
+  };
 
   useEffect(() => {
     loadCategories();
@@ -51,9 +64,25 @@ const CategoriesScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.text}>{item.name}</Text>
-    </View>
+    <TouchableOpacity style={styles.item}>
+      <View style={styles.itemContent}>
+        <View style={styles.leftContent}>
+          <Ionicons 
+            name={getCategoryIcon(item.name)} 
+            size={22} 
+            color="#236A34" 
+            style={styles.icon}
+          />
+          <Text style={styles.text}>{item.name}</Text>
+        </View>
+        <Ionicons 
+          name="chevron-forward" 
+          size={22} 
+          color="#236A34"
+          style={styles.chevronIcon}
+        />
+      </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -78,22 +107,47 @@ const CategoriesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "white",
   },
   listContainer: {
     padding: 16,
   },
   item: {
-    padding: 15,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 1,
+    marginBottom: 12,
+    borderWidth: 1.3,
     borderColor: '#236A34',
+    elevation: 2, 
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,  
+      height: 2, 
+    },
+    shadowOpacity: 0.15, 
+    shadowRadius: 2, 
+  },
+  itemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 15,
+    paddingRight: 8, 
+  },
+  leftContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: 14,
+  },
+  chevronIcon: {
+    marginLeft: 20, 
   },
   text: {
     fontSize: 16,
     fontWeight: '500',
+    color: '#000',
   },
 });
 
