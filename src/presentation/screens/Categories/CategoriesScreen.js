@@ -60,7 +60,7 @@ const CategoriesScreen = () => {
     <View style={styles.container}>
       <Header />
       <CustomSearch
-        placeholder="Buscar categorías..."
+        placeholder="Buscar Categorías..."
         value={searchQuery}
         onChangeText={setSearchQuery}
         onSearch={handleSearch}
@@ -89,11 +89,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#236A34',
   },
   text: {
     fontSize: 16,
-    color: '#236A34',
     fontWeight: '500',
   },
 });
