@@ -1,14 +1,9 @@
-// presentation/screens/Categories/CategoriesScreen.js
-
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Header from "../../components/Header";
 import { GetCategoriesUseCase } from "../../../domain/usecases/categories/GetCategoriesUseCase";
 import { provideCategoryRepository } from "../../../data/repositories/categories/ProvideCategoryRepository";
-
-// .map
-// Listas
-
+import CategoryIcon from "../../components/CategoryIcon/CategoryIcon";  // Asegúrate de importar correctamente el componente
 
 const CategoriesScreen = () => {
   const [categories, setCategories] = useState([]);
@@ -22,36 +17,23 @@ const CategoriesScreen = () => {
       console.log("✅ Categorías cargadas:", result);
       setCategories(result);
     };
-
     loadCategories();
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
-
+    <View style={styles.container}>
+      <Header />
+      
+      {/* Pasa las categorías como prop a CategoryIcon */}
+      <CategoryIcon />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#fff",
     flex: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  item: {
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  text: {
-    fontSize: 18,
+    backgroundColor: "#FFFFFF",
   },
 });
 

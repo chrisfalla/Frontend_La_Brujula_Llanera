@@ -26,18 +26,22 @@ const CategoryIcon = () => {
         onPress={() => handleSelect(item.id)}
         style={[
           styles.categoryItem,
-          {backgroundColor: selectedId === item.id ? "#61CB7C" : "#E0E0E0",},]}>
+          {backgroundColor: selectedId === item.id ? "#61CB7C" : "#E0E0E0",
+            elevation: selectedId === item.id ? 30 : 0
+          },]}>
           
         <View
           style={[
             styles.iconWrapper,
             { transform: [{ scale: selectedId === item.id ? 1.5 : 1 }] },]}>
-          {item.icon}
+          <Ionicons
+          name={item.icon}
+          size={24}
+        />
         </View>
       </TouchableOpacity>
-      <Text style={styles.categoryName}>
-  {item.name.length > 7 ? `${item.name.substring(0, 7)}...` : item.name}
-</Text>
+      <Text style={[styles.categoryName,{fontWeight: selectedId === item.id ? "bold" : "normal" },]}>
+      {item.name.length > 7 ? `${item.name.substring(0, 7)}...` : item.name} </Text>
     </View>
   );
 
@@ -55,7 +59,7 @@ const CategoryIcon = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 10,
+  width: "100%",
   },
   categoryItem: {
     flexDirection: "column",
@@ -63,6 +67,7 @@ const styles = StyleSheet.create({
     padding: 25,
     marginHorizontal: 10,
     borderRadius: 10,
+    backgroundColor: "#E0E0E0",
   },
   iconWrapper: {
     marginBottom: 5,
