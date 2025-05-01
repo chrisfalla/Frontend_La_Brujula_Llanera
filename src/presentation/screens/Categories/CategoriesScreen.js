@@ -24,8 +24,10 @@ const CategoriesScreen = () => {
     <View style={styles.container}>
       <Header />
       
-      {/* Pasa las categorías como prop a CategoryIcon */}
-      <CategoryIcon />
+    
+      <CategoryIcon
+      limit={3}
+      ShowText={true} />
     </View>
   );
 };
