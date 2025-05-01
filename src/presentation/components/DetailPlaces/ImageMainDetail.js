@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         backgroundColor: '#fff',
+        
     },
     imageContainer: {
         width: '92%', 
@@ -41,6 +42,11 @@ const styles = StyleSheet.create({
         borderRadius: 10, // Agregamos borderRadius al contenedor
         overflow: 'hidden', // Necesario para que se vea el borderRadius
         marginTop: '12.5%',
+        
+    },
+    mainImage: {
+        width: '100%',
+        height: '100%',
         // Sombra para iOS
         shadowColor: '#000',
         shadowOffset: {
@@ -50,12 +56,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.35, // Más opaca
         shadowRadius: 12, // Más difusa
         // Sombra para Android
-        elevation: 18, // Más alta
+        elevation: 1, // Más alta
         // backgroundColor: '#000', // Quitado para que la sombra no tape la imagen
-    },
-    mainImage: {
-        width: '100%',
-        height: '100%',
     },
     imageStyle: {
         borderRadius: 10, // Agregamos borderRadius a la imagen

@@ -57,7 +57,8 @@ export class PlaceDetailMockApi {
                 mainImage: "https://images.unsplash.com/photo-1543783207-ec64e4d95325",
                 secondaryImages: [
                     "https://images.unsplash.com/photo-1548625149-fc4a29cf7092",
-                    "https://images.unsplash.com/photo-1505664194779-8beaceb93744"
+                    "https://images.unsplash.com/photo-1505664194779-8beaceb93744",
+                    "https://ulgrkkcquytkafmoqwqt.supabase.co/storage/v1/object/sign/brujula-llanera/ejemplo/Galery002.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJicnVqdWxhLWxsYW5lcmEvZWplbXBsby9HYWxlcnkwMDIud2VicCIsImlhdCI6MTc0NjA5MTc4NCwiZXhwIjoxNzc3NjI3Nzg0fQ.tt3Sjpej0Kj1bgf1i14g6-7sEvieFNp2aiEGqArafwo"
                 ],
                 tags: ["Cultura", "Religioso", "Histórico"],
                 reviews: [
