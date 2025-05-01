@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { GetPlaceDetailUseCase } from '../../../domain/usecases/placeDetail/GetPlaceDetailUseCase';
 import { providePlaceDetailRepository } from '../../../data/repositories/places/ProvidePlaceDetailRepository';
-import HeaderDetail from '../../components/DetailPlaces/HeaderDetail';
+import ImageMainDetail from '../../components/DetailPlaces/ImageMainDetail';
 import Gallery from '../../components/DetailPlaces/Gallery';
 import InfoDetail from '../../components/DetailPlaces/InfoDetail';
 
@@ -30,7 +30,7 @@ const DetailScreen = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
-            <HeaderDetail
+            <ImageMainDetail
                 mainImage={placeDetail.mainImage}
                 name={placeDetail.name}
                 category="Gastronomía" // Esto debería venir de una tabla de categorías

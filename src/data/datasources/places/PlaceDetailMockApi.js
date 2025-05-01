@@ -27,8 +27,9 @@ export class PlaceDetailMockApi {
                     latitude: 5.3396,
                     longitude: -72.3956
                 },
-                mainImage: "https://images.unsplash.com/photo-1588392382834-a891154bca4d",
+                mainImage: "https://ulgrkkcquytkafmoqwqt.supabase.co/storage/v1/object/sign/brujula-llanera/ejemplo/Gallery023.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJicnVqdWxhLWxsYW5lcmEvZWplbXBsby9HYWxsZXJ5MDIzLndlYnAiLCJpYXQiOjE3NDYwODAzOTEsImV4cCI6MTc3NzYxNjM5MX0.MMp6VHFc-tKqpFF2TQFcekSioUwnw0HGkCJM-96tjO4",
                 secondaryImages: [
+                    "https://ulgrkkcquytkafmoqwqt.supabase.co/storage/v1/object/sign/brujula-llanera/ejemplo/Gallery003.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJicnVqdWxhLWxsYW5lcmEvZWplbXBsby9HYWxsZXJ5MDAzLndlYnAiLCJpYXQiOjE3NDYwODAyNjMsImV4cCI6MTc3NzYxNjI2M30.hvir8Ek9rFyF1ay6peU0AuxBoCZoey9RcfPRovFQKao",
                     "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
                     "https://images.unsplash.com/photo-1519331379826-f10be5486c6f"
                 ],
