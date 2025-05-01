@@ -41,6 +41,17 @@ const styles = StyleSheet.create({
         borderRadius: 10, // Agregamos borderRadius al contenedor
         overflow: 'hidden', // Necesario para que se vea el borderRadius
         marginTop: '12.5%',
+        // Sombra para iOS
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 8, // Más pronunciada
+        },
+        shadowOpacity: 0.35, // Más opaca
+        shadowRadius: 12, // Más difusa
+        // Sombra para Android
+        elevation: 18, // Más alta
+        // backgroundColor: '#000', // Quitado para que la sombra no tape la imagen
     },
     mainImage: {
         width: '100%',
