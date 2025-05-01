@@ -124,4 +124,4 @@ export class PlaceDetailMockApi {
         // Buscar el lugar por ID
         return placeDetails[placeId] || null;
     }
-} 
+}

@@ -11,6 +11,7 @@ import InfoDetail from '../../components/DetailPlaces/InfoDetail';
 const DetailScreen = ({ navigation }) => {
     const [placeDetail, setPlaceDetail] = useState(null);
     const [categoryName, setCategoryName] = useState('');
+    const [activeTab, setActiveTab] = useState('Sobre nosotros');
 
     useEffect(() => {
         const loadPlaceDetail = async () => {
@@ -46,11 +47,15 @@ const DetailScreen = ({ navigation }) => {
                 name={placeDetail.name}
                 category={categoryName}
                 onBackPress={handleBackPress}
+                showStars={activeTab === 'Contacto'}
+                average={placeDetail.average}
             />
             <Gallery images={placeDetail.secondaryImages} />
             <InfoDetail 
                 description={placeDetail.description}
                 phoneNumber={placeDetail.phoneNumber}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
             />
         </ScrollView>
     );

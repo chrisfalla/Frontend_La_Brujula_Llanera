@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import NavigationTopBar from '../NavigationTopBar/NavigationTopBar';
+import StarRating from './StarRating';
 
-const ImageMainDetail = ({ mainImage, name, category, onBackPress }) => {
+const ImageMainDetail = ({ mainImage, name, category, onBackPress, showStars, average }) => {
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
@@ -25,6 +26,9 @@ const ImageMainDetail = ({ mainImage, name, category, onBackPress }) => {
                     </View>
                 </ImageBackground>
             </View>
+            {showStars && (
+                <StarRating average={average} />
+            )}
         </View>
     );
 };

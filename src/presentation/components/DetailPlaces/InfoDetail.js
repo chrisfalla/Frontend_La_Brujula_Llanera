@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const tabs = ['Sobre nosotros', 'Contacto', 'Reviews'];
 
-const InfoDetail = ({ description, phoneNumber }) => {
-    const [activeTab, setActiveTab] = useState('Sobre nosotros');
-
+const InfoDetail = ({ description, phoneNumber, activeTab, setActiveTab }) => {
     return (
         <View style={styles.container}>
             {/* Slider de palabras */}
