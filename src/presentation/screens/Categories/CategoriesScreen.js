@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, FlatList } from "react-native";
 import Header from "../../components/Header";
 import { GetCategoriesUseCase } from "../../../domain/usecases/categories/GetCategoriesUseCase";
 import { provideCategoryRepository } from "../../../data/repositories/categories/ProvideCategoryRepository";
-import CategoryIcon from "../../components/CategoryIcon/CategoryIcon";  // Asegúrate de importar correctamente el componente
+import CategoryCard from "../../components/CategoryCard/CategoryCard";
+
+const categoryCardItem = ({item}) => (
+  <CategoryCard nameCategory={item.name} iconCategory={item.icon} isSelectedCategory={false} onPressCard={handlePressCategory}  />
+);
+
+const handlePressCategory = (nameCategoryParam) => {
+  console.log("Categoría seleccionada:", nameCategoryParam);
+};
 
 const CategoriesScreen = () => {
   const [categories, setCategories] = useState([]);
@@ -22,19 +30,22 @@ const CategoriesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Header />
-      
-    
-      <CategoryIcon
-      limit={3}
-      ShowText={true} />
+      <Header/>
+        <FlatList
+          data={categories}
+          horizontal
+          style={{ height: 120 }} // altura fija para que no ocupe todo
+          renderItem={categoryCardItem}
+          keyExtractor={item => item.id}/>
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    padding:10,
+    flex:1,
     backgroundColor: "#FFFFFF",
   },
 });
