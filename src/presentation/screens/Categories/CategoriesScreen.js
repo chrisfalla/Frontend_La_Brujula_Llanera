@@ -1,14 +1,21 @@
-// presentation/screens/Categories/CategoriesScreen.js
-
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, StyleSheet, FlatList,image } from "react-native";
 import Header from "../../components/Header";
 import { GetCategoriesUseCase } from "../../../domain/usecases/categories/GetCategoriesUseCase";
 import { provideCategoryRepository } from "../../../data/repositories/categories/ProvideCategoryRepository";
+import CategoryCard from "../../components/CategoryCard/CategoryCard";
+import VerticalPlaceCard from "../../components/VerticalPlaceCard/VerticalPlaceCard";
 
-// .map
-// Listas
+const categoryCardItem = ({item}) => (
+  <CategoryCard nameCategory={item.name} iconCategory={item.icon} isSelectedCategory={false} onPressCard={handlePressCategory}  />
+);
 
+const PlaceCard = ({item}) => (
+  <VerticalPlaceCard NameCard={item.name1} ImagenPlaceCard={item.image}  />
+);
+const handlePressCategory = (nameCategoryParam) => {
+  console.log("Categoría seleccionada:", nameCategoryParam);
+};
 
 const CategoriesScreen = () => {
   const [categories, setCategories] = useState([]);
@@ -22,36 +29,35 @@ const CategoriesScreen = () => {
       console.log("✅ Categorías cargadas:", result);
       setCategories(result);
     };
-
     loadCategories();
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
+      <Header/>
+        <FlatList
+          data={categories}
+          horizontal
+          style={{ height: 120 }} // altura fija para que no ocupe todo
+          renderItem={categoryCardItem}
+          keyExtractor={item => item.id}/>
 
+        <FlatList
+          data={categories}
+          horizontal
+          style={{ height: 200 }} // altura fija para que no ocupe todo
+          renderItem={PlaceCard}
+          keyExtractor={item => item.id}/>
+    
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#fff",
-    flex: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  item: {
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  text: {
-    fontSize: 18,
+    padding:10,
+    flex:1,
+    backgroundColor: "#FFFFFF",
   },
 });
 
