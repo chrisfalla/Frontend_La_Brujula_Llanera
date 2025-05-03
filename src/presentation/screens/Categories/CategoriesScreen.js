@@ -10,11 +10,9 @@ const CategoriesScreen = () => {
 
   useEffect(() => {
     const loadCategories = async () => {
-      console.log("🚀 Ejecutando GetCategoriesUseCase...");
       const getCategories = getCategoriesUseCase(categoriesRepository);
       const all = await getCategories();
       setCategories(all);
-      console.log("✅ Categorías cargadas:", all);
     };
 
     loadCategories();

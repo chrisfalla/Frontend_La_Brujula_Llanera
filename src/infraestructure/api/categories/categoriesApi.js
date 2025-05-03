@@ -1,12 +1,12 @@
-import axios from 'axios';
-import { API_CONFIG } from '../../../shared/constants/environment/environment';
+// src/dominio/api/categoriesApi.js
+import httpClient from '../../../infraestructure/services/httpClientService';
 
 export const fetchCategories = async () => {
-  const response = await axios.get(`${API_CONFIG.BASE_URL}/categories`);
-  return response.data;
+  const response = await httpClient.get('/categories');
+  return response; // ya es .data desde httpClient
 };
 
 export const fetchMostTappedCategories = async () => {
-  const response = await axios.get(`${API_CONFIG.BASE_URL}/categorias/mas-tocadas`);
-  return response.data;
+  const response = await httpClient.get('/categorias/mas-tocadas');
+  return response;
 };
