@@ -1,13 +1,8 @@
-// presentation/screens/Categories/CategoriesScreen.js
-
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import Header from "../../components/Header";
-import { GetCategoriesUseCase } from "../../../domain/usecases/categories/GetCategoriesUseCase";
-import { provideCategoryRepository } from "../../../data/repositories/categories/ProvideCategoryRepository";
-
-// .map
-// Listas
+import { getCategoriesUseCase } from '../../../domain/usecases/categories/getCategoriesUseCase';
+import { categoriesRepository } from '../../../data/repositories/categories/categoriesRepository';
 
 
 const CategoriesScreen = () => {
@@ -16,11 +11,10 @@ const CategoriesScreen = () => {
   useEffect(() => {
     const loadCategories = async () => {
       console.log("🚀 Ejecutando GetCategoriesUseCase...");
-      const repository = provideCategoryRepository();
-      const useCase = new GetCategoriesUseCase(repository);
-      const result = await useCase.execute();
-      console.log("✅ Categorías cargadas:", result);
-      setCategories(result);
+      const getCategories = getCategoriesUseCase(categoriesRepository);
+      const all = await getCategories();
+      setCategories(all);
+      console.log("✅ Categorías cargadas:", all);
     };
 
     loadCategories();
