@@ -1,11 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux'; // Asegúrate de importar estos hooks
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { fetchCategories } from '../../../shared/store/categories/categoriesSlice'; // Asegúrate de importar la acción correcta
 import Header from '../../components/Header';
 
 const HomeScreen = () => {
-    useEffect(() => {
+    const dispatch = useDispatch(); // Usa useDispatch en el cuerpo del componente
+    const { all, status } = useSelector(state => state.categories); // Usa useSelector en el cuerpo del componente
 
-    }, []);
+    useEffect(() => {
+        console.log('Despachando la acción fetchCategories...');
+        dispatch(fetchCategories()); // Dispara la acción para cargar categorías cuando el componente se monta
+    }, [dispatch]); // Dependencia de dispatch para evitar un ciclo infinito
+
+    // Filtramos las categorías por las que tienen isDefault: true
+    const defaultCategories = all.filter(cat => cat.isDefault);
+
+    console.log('Estado de las categorías:', all);
+    console.log('Estado de la petición (status):', status);
+
+    if (status === 'loading') return <Text>Cargando...</Text>;
+
     return (
         <View style={styles.container}>
             <Header />
@@ -21,6 +36,13 @@ const HomeScreen = () => {
                     <Text style={styles.title}>Bienvenido a la Brújula Llanera</Text>
                     <Image source={require('../../../shared/assets/AvatarHeader.png')} />
                     <Text style={styles.subtitle}>Descubre los mejores lugares del llano</Text>
+                </View>
+
+                {/* Mostrar las categorías predeterminadas */}
+                <View style={styles.categoryList}>
+                    {defaultCategories.map((category, index) => (
+                        <Text key={index}>{category.name}</Text>
+                    ))}
                 </View>
             </ScrollView>
         </View>
@@ -69,6 +91,10 @@ const styles = StyleSheet.create({
         color: '#666',
         textAlign: 'center',
         marginBottom: 30,
+    },
+    categoryList: {
+        marginTop: 20,
+        padding: 10,
     }
 });
 
