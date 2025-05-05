@@ -17,24 +17,13 @@
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
-      ],
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
       "config": {
         "googleMaps": {
           "apiKey": "TU_API_KEY_DE_GOOGLE_MAPS"
         }
-      },
-      "package": "com.anonymous.labrujulallanera"
-    },
-    "newArchEnabled": true,
-    "extra": {
-      "eas": {
-        "projectId": "386a2332-feb2-4420-aae8-07b0cbd9ef1f"
       }
-    }
+    },
+    "newArchEnabled": true
   }
 }
