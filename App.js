@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import { store } from './src/shared/store/store'
 
 const App = () => {
-    console.log("🧪 Store en App.js:", store);
 
     return (
         <Provider store={store}>

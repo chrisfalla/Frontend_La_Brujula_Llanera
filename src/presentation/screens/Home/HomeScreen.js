@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // Asegúrate de importar estos hooks
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { fetchCategories } from '../../../shared/store/categories/categoriesSlice'; // Asegúrate de importar la acción correcta
+import { fetchCategories } from '../../../shared/store/categoriesSlice/categoriesSlice'; // Asegúrate de importar la acción correcta
 import Header from '../../components/Header';
 
 const HomeScreen = () => {
@@ -9,15 +9,12 @@ const HomeScreen = () => {
     const { all, status } = useSelector(state => state.categories); // Usa useSelector en el cuerpo del componente
 
     useEffect(() => {
-        console.log('Despachando la acción fetchCategories...');
         dispatch(fetchCategories()); // Dispara la acción para cargar categorías cuando el componente se monta
     }, [dispatch]); // Dependencia de dispatch para evitar un ciclo infinito
 
     // Filtramos las categorías por las que tienen isDefault: true
     const defaultCategories = all.filter(cat => cat.isDefault);
 
-    console.log('Estado de las categorías:', all);
-    console.log('Estado de la petición (status):', status);
 
     if (status === 'loading') return <Text>Cargando...</Text>;
 

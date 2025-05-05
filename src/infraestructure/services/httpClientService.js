@@ -20,18 +20,18 @@ const instance = axios.create({
 // });
 
 // Manejo de errores
-instance.interceptors.response.use(
-  response => response,
-  error => {
-    const { response } = error;
+// instance.interceptors.response.use(
+//   response => response,
+//   error => {
+//     const { response } = error;
 
-    if (!response) console.error('❌ Error de red');
-    else if (response.status === 401) console.warn('⚠️ No autorizado');
-    else if (response.status === 500) console.error('💥 Error del servidor');
+//     if (!response) console.error('❌ Error de red');
+//     else if (response.status === 401) console.warn('⚠️ No autorizado');
+//     else if (response.status === 500) console.error('💥 Error del servidor');
 
-    return Promise.reject(error);
-  }
-);
+//     return Promise.reject(error);
+//   }
+// );
 
 // 👉 Logging helper
 const logRequest = (method, url, data) => {

@@ -4,6 +4,7 @@ import { getCategoriesUseCase } from '../../../domain/usecases/categories/getCat
 // Supón que tienes un repository para obtener las categorías.
 import { categoriesRepository } from '../../../data/repositories/categories/categoriesRepository';
 
+
 // Async thunk para traer categorías del backend
 export const fetchCategories = createAsyncThunk(
     'categories/fetchCategories',
@@ -36,18 +37,14 @@ const categoriesSlice = createSlice({
       builder
         .addCase(fetchCategories.pending, (state) => {
           state.status = 'loading';
-          console.log('Categorías: Acción en estado "loading"'); // Log cuando la acción está en estado de carga
         })
         .addCase(fetchCategories.fulfilled, (state, action) => {
-          console.log('Categorías recibidas en "fulfilled":', action.payload); // Log cuando la acción se ha completado
           state.status = 'succeeded';
           state.all = action.payload;
-          console.log('Estado actualizado de categorías:', state.all); // Log del estado después de la acción
         })
         .addCase(fetchCategories.rejected, (state, action) => {
           state.status = 'failed';
           state.error = action.error.message;
-          console.log('Error en la carga de categorías:', action.error.message); // Log de error
         });
     }
   });
