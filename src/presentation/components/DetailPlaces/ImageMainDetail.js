@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.35, // Más opaca
         shadowRadius: 12, // Más difusa
         // Sombra para Android
-        elevation: 18, // Más alta
+        elevation: 1, // Más alta
         // backgroundColor: '#000', // Quitado para que la sombra no tape la imagen
     },
     mainImage: {
