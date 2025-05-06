@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import Header from "../../components/Header";
 import { getCategoriesUseCase } from '../../../domain/usecases/categories/getCategoriesUseCase';
 import { categoriesRepository } from '../../../data/repositories/categories/categoriesRepository';
 
