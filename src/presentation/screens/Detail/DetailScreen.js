@@ -41,7 +41,8 @@ const DetailScreen = ({ navigation }) => {
                 mainImage={placeDetail.mainImage}
                 name={placeDetail.name}
                 category="Gastronomía" // Esto debería venir de una tabla de categorías
-                category={categoryName}
+                // category={categoryName}
+                
                 onBackPress={handleBackPress}
             />
             <Gallery images={placeDetail.secondaryImages} />
