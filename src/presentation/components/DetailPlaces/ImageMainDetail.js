@@ -6,14 +6,14 @@ const ImageMainDetail = ({ mainImage, name, category, onBackPress }) => {
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
-                <ImageBackground 
-                    source={{ uri: mainImage }} 
+                <ImageBackground
+                    source={{ uri: mainImage }}
                     style={styles.mainImage}
                     resizeMode="cover"
                     imageStyle={styles.imageStyle}
                 >
                     <View style={styles.contentContainer}>
-                        <NavigationTopBar 
+                        <NavigationTopBar
                             onBackPress={onBackPress}
                             useBackground={false}
                             useHeart={true}
@@ -36,11 +36,22 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     imageContainer: {
-        width: '92%', 
-        aspectRatio: 370/430,
+        width: '92%',
+        aspectRatio: 370 / 430,
         borderRadius: 10, // Agregamos borderRadius al contenedor
         overflow: 'hidden', // Necesario para que se vea el borderRadius
         marginTop: '12.5%',
+        // Sombra para iOS
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 8, // Más pronunciada
+        },
+        shadowOpacity: 0.35, // Más opaca
+        shadowRadius: 12, // Más difusa
+        // Sombra para Android
+        elevation: 18, // Más alta
+        // backgroundColor: '#000', // Quitado para que la sombra no tape la imagen
     },
     mainImage: {
         width: '100%',
@@ -59,7 +70,7 @@ const styles = StyleSheet.create({
         padding: 10,
         paddingBottom: 16,
         paddingLeft: 15,
-        backgroundColor: 'rgba(0, 0, 0, 0.69)', 
+        backgroundColor: 'rgba(0, 0, 0, 0.69)',
     },
     name: {
         fontSize: 22,
@@ -70,7 +81,8 @@ const styles = StyleSheet.create({
     category: {
         fontSize: 14,
         color: '#fff',
-        opacity: 0.9,    },
+        opacity: 0.9,
+    },
 });
 
 export default ImageMainDetail;
