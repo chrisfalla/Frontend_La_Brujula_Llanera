@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // Asegúrate de importar estos hooks
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { fetchCategories } from '../../../shared/store/categoriesSlice/categoriesSlice'; // Asegúrate de importar la acción correcta
-import Header from '../../components/Header';
+import MainHeader from '../../components/MainHeader/MainHeader';
 
 const HomeScreen = () => {
     const dispatch = useDispatch(); // Usa useDispatch en el cuerpo del componente
@@ -20,7 +20,7 @@ const HomeScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Header />
+          <MainHeader username={'Christofer'}/>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.textScreens}>
                     <Text>
