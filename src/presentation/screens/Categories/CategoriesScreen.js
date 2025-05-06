@@ -1,49 +1,114 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 import Header from "../../components/Header";
-import { getCategoriesUseCase } from '../../../domain/usecases/categories/getCategoriesUseCase';
-import { categoriesRepository } from '../../../data/repositories/categories/categoriesRepository';
-
+import CustomSearch from "../../components/Search/Search";
 
 const CategoriesScreen = () => {
-  const [categories, setCategories] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredCategories, setFilteredCategories] = useState([]);
+
+  const getCategoryIcon = (categoryName) => {
+    const icons = {
+      'Ecoturismo': 'leaf',
+      'Cultura': 'book',
+      'Alojamiento': 'bed',
+      'Gastronomía': 'restaurant',
+      'Servicios': 'construct',
+      'Entretenimiento': 'game-controller',
+    };
+    return icons[categoryName] || 'help-circle';
+  };
 
   useEffect(() => {
-    const loadCategories = async () => {
-      const getCategories = getCategoriesUseCase(categoriesRepository);
-      const all = await getCategories();
-      setCategories(all);
-    };
-
     loadCategories();
   }, []);
 
-  return (
-    <View style={{ flex: 1 }}>
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={styles.item}>
+      <View style={styles.itemContent}>
+        <View style={styles.leftContent}>
+          <Ionicons
+            name={getCategoryIcon(item.name)}
+            size={22}
+            color="#236A34"
+            style={styles.icon}
+          />
+          <Text style={styles.text}>{item.name}</Text>
+        </View>
+        <Ionicons
+          name="chevron-forward"
+          size={22}
+          color="#236A34"
+          style={styles.chevronIcon}
+        />
+      </View>
+    </TouchableOpacity>
+  );
 
+  return (
+    <View style={styles.container}>
+      <Header title="Categorías" />
+      <CustomSearch
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Buscar categorías..."
+      />
+      <FlatList
+        data={filteredCategories}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContainer}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#fff",
     flex: 1,
+    backgroundColor: "white",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
+  listContainer: {
+    padding: 16,
   },
   item: {
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    marginBottom: 10,
+    padding: 15,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginBottom: 12,
+    borderWidth: 1.3,
+    borderColor: '#236A34',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+  },
+  itemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 15,
+    paddingRight: 8,
+  },
+  leftContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: 14,
+  },
+  chevronIcon: {
+    marginLeft: 20,
   },
   text: {
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000',
   },
 });
 
