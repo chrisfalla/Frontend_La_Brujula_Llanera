@@ -9,7 +9,7 @@ const HorizontalCardPlace = ({
   name,
   description,
   image,
-  onMapPress,
+  onMapPress, 
 }) => {
   return (
     <View style={styles.container}>
