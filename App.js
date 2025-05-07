@@ -1,26 +1,34 @@
 import 'react-native-gesture-handler';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import AppNavigation from './src/presentation/navigation/AppNavigation'; // Asegúrate de que la ruta sea correcta
+import AppNavigation from './src/presentation/navigation/AppNavigation';
 import { Provider } from 'react-redux';
-import { store } from './src/shared/store/store'
+import { store } from './src/shared/store/store';
+import { useFonts } from 'expo-font';
 
 const App = () => {
+  const [fontsLoaded] = useFonts({
+    'Poppins-Bold': require('./src/shared/assets/fonts/Poppins-Bold.ttf'),
+    'Poppins-Regular': require('./src/shared/assets/fonts/Poppins-Regular.ttf'),
+    'Poppins-SemiBold': require('./src/shared/assets/fonts/Poppins-SemiBold.ttf'),
+  });
 
-    return (
-        <Provider store={store}>
-            <View style={styles.container}>
-                <AppNavigation />
-            </View>
-        </Provider>
-    );
+  if (!fontsLoaded) return null;
+
+  return (
+    <Provider store={store}>
+      <View style={styles.container}>
+        <AppNavigation />
+      </View>
+    </Provider>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff', // Asegúrate de que el fondo sea blanco
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
 });
 
 export default App;
