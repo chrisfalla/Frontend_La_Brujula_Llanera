@@ -49,7 +49,7 @@ title: {
     ...TextStyles.PoppinsRegular15,
 },
 username: {
-    ...TextStyles.PoppinsSemibold15,
+    ...TextStyles.PoppinsSemiBold15,
 },
 iconContainer: {
     flexDirection: 'row',    
