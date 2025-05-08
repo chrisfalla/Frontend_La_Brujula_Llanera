@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet,  TouchableOpacity, Text, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Colors, TextStyles } from "../../../presentation/styles/styles";
 
 const MainHeader = ({ primarytIcon = "notifications", SecondIcon = "settings", username }) => {  {/* propiedades para llamar los iconos */}
 return (
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     paddingVertical:40,  
-    backgroundColor: "#fff",
+    backgroundColor: Colors.BackgroundPage,
     width: "100%",
 },
 avatar:{       
@@ -45,19 +46,17 @@ containertitle:{
     flex: 1,
 },
 title: {
-    fontSize: 20, 
-    fontWeight: 'normal'
+    ...TextStyles.PoppinsRegular15,
 },
 username: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    ...TextStyles.PoppinsSemibold15,
 },
 iconContainer: {
     flexDirection: 'row',    
 },
 icon:{
     fontSize:23,
-    color: "#236A34",
+    color: Colors.ColorPrimary,
     marginLeft:10,
 }
 });
