@@ -1,74 +1,65 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
+import { Colors, TextStyles, GlobalStyles } from "../../../presentation/styles/styles";
 
+const VerticalPlaceCard = ({ NameCard, ImagenPlaceCard }) => {
 
-const VerticalPlaceCard = ({NameCard, ImagenPlaceCard }) => {
-    
-return (
-    <View style={styles.mainContainer}>
-        <Image source={ImagenPlaceCard} style={styles.iamgenContainer} />
-        <View style={styles.visitContainer}>
-            <Ionicons name="star" size={20} color="gold" position="center" /> 
+    return (
+        <View style={[styles.mainContainer, { ...GlobalStyles.CardBaseStyle, padding: 0 }]}>
+            <Image source={{ uri: ImagenPlaceCard }} style={styles.iamgenContainer} />
+            <View style={styles.visitContainer}>
+                <Ionicons name="star" size={22} color="gold" />
+            </View>
+            <Text style={styles.textStyle}>{NameCard}</Text>
+            <View style={styles.iconStyle}>
+                <Ionicons name="location" size={22} color={Colors.ColorPrimary} />
+                <Ionicons name="caret-forward-circle" size={22} color={Colors.ColorPrimary} />
+            </View>
         </View>
-        <Text style={styles.textStyle}>{NameCard}</Text>
-        <View style={styles.iconStyle}>
-        <Ionicons name= "location" size={20} color="green" /> 
-        <Ionicons name= "caret-forward-circle" size={20} color="green"/> 
-        </View>
-
-        
-    </View>
-);
+    );
 };
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
     mainContainer: {
-        backgroundColor:"white",
-        width:174, 
-        height:230,
-        alignItems:"center",
-        borderRadius:10,
-        elevation: 4,
+        width: 174,
+        height: 230,
+        marginBottom: 16,
+        alignItems: "center",
         position: 'relative',
         overflow: 'visible',
-        marginRight:12, 
-        
+        marginRight: 12,
+        borderRadius: GlobalStyles.cornerRadius,
+        elevation: GlobalStyles.elevation,
     },
     iamgenContainer: {
-        backgroundColor:"#000000",
         width: 174,
         height: 150,
-        borderRadius:10,
-        
+        borderRadius: GlobalStyles.cornerRadius,
     },
-    visitContainer:{
+    visitContainer: {
         zIndex: 1,
-        width:116,
-        height:30,
-        position: 'absolute', // Posicionamiento absoluto
-        top: 136,            // 50% del height de la imagen (120/2 = 60) - ajusta según necesidad
-        left: "center",            // Distancia desde la izquierda
+        width: 116,
+        height: 30,
+        position: 'absolute',
+        top: 136,
+        left: 29,
         zIndex: 1,
-        alignItems:"center",
-        backgroundColor:"white", 
-        borderRadius:7,
-        elevation: 4,
-        
-        
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "white",
+        borderRadius: GlobalStyles.cornerRadius,
+        elevation: GlobalStyles.elevation,
     },
-    textStyle:{
-        fontSize:14,
-        color:"#000000",
-        fontWeight:"bold",
-        marginTop:22,
+    textStyle: {
+        ...TextStyles.PoppinsBold15,
+        marginTop: 22,
     },
-    iconStyle:{ flexDirection: 'row', 
+    iconStyle: {
+        flexDirection: 'row',
         alignItems: 'center',
-        marginTop:8,
+        gap: 8,
     },
-
-    
 });
 
 export default VerticalPlaceCard;
