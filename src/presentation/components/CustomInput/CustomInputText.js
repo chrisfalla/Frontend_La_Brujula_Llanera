@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-
+import { Colors, GlobalStyles, TextStyles } from '../../../presentation/styles/styles';
 
 const CustomInputText = ({ LabelText, PlaceholderText, HasError, SupportingText, IsDisabled, IsPassword }) => {
     const [isFocused, setIsFocused] = useState(false);
     
     return (
-        <View  style={styles.container}>
+        <View style={styles.container}>
             {/* Label encima del input */}
             <Text style={[styles.label, HasError && styles.labelError]}>{LabelText}</Text>
 
@@ -15,13 +15,13 @@ const CustomInputText = ({ LabelText, PlaceholderText, HasError, SupportingText,
                 style={[
                     styles.input, 
                     IsDisabled && styles.inputDisabled,
-                    isFocused && !HasError && styles.inputFocused, // El focus tiene prioridad si no hay error
-                    HasError && styles.inputError, // Si hay error, el borde es rojo sin importar el focus
+                    isFocused && !HasError && styles.inputFocused,
+                    HasError && styles.inputError,
                 ]} 
                 placeholder={PlaceholderText} 
                 secureTextEntry={IsPassword} 
                 editable={!IsDisabled} 
-                placeholderTextColor="#B0B0B0"
+                placeholderTextColor={Colors.DarkGray}
                 onFocus={() => setIsFocused(true)} 
                 onBlur={() => setIsFocused(false)} 
             />
@@ -34,46 +34,45 @@ const CustomInputText = ({ LabelText, PlaceholderText, HasError, SupportingText,
 
 const styles = StyleSheet.create({
     container: {
-        width:"100%",
+        width: "100%",
         marginBottom: 20,
     },
     label: {
-        fontSize: 13,
-        color: '#000',
+        ...TextStyles.PoppinsRegular15,
+        color: Colors.Black,
         marginBottom: 4,
-        fontWeight: "bold",
         paddingLeft: 15,
         textAlign: "left",
     },
     labelError: {
-        color: 'red',
+        color: Colors.ErrorAdvertisingColor,
     },
     input: {
         marginBottom: 5,
         width: "100%",
         height: 48,
-        borderWidth: 2, // Definimos el grosor
+        borderWidth: 2,
         paddingLeft: 15,
-        borderRadius: 20,
-        borderColor: "gray", // Color base
+        borderRadius:20,
+        borderColor: Colors.DarkGray,
     },
     inputDisabled: {
-        backgroundColor: '#E0E0E0',
+        backgroundColor: Colors.LightGray,
+        borderColor: Colors.LightGray,
     },
     inputFocused: {
-        borderColor: '#61CB7C', // Solo cambia el color sin tocar el grosor
-        borderWidth: 2, // Mantiene el mismo tamaño para evitar bordes dobles
+        borderColor: Colors.ColorOnPrimary,
+        borderWidth: 2,
     },
     inputError: {
-        borderColor: 'red',
+        borderColor: Colors.ErrorAdvertisingColor,
         borderWidth: 2,
     },
     errorText: {
-        color: 'red',
-        fontSize: 12,
+        ...TextStyles.PoppinsRegular13,
+        color: Colors.ErrorAdvertisingColor,
         marginTop: 2,
         marginBottom: 10,
-        fontWeight: "bold",
         paddingLeft: 15,
     },
 });
