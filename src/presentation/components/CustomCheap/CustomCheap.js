@@ -1,45 +1,60 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Colors, GlobalStyles, TextStyles } from '../../../presentation/styles/styles';
 
 const CustomCheap = ({ label, selected, onPress }) => {
   return (
-    <TouchableOpacity
-      style={[styles.tag, selected ? styles.tagSelected : styles.tagUnselected]}
-      onPress={onPress}
-    >
-      <Text style={[styles.text, selected ? styles.textSelected : styles.textUnselected]}>
-        {label}
-      </Text>
-    </TouchableOpacity>
+    <View style={styles.containerFather}>
+      <TouchableOpacity
+        style={[
+          styles.tag,
+          selected ? styles.tagSelected : styles.tagUnselected,
+          GlobalStyles.CardBaseStyle, // Aplicamos el estilo global con sombra
+        ]}
+        onPress={onPress}
+      >
+        <Text style={[styles.text, selected ? styles.textSelected : styles.textUnselected]}>
+          {label}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  containerFather: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+  },
   tag: {
     paddingVertical: 3,
     paddingHorizontal: 16,
-    borderRadius: 10,
+    borderRadius: GlobalStyles.cornerRadius, // Usamos el cornerRadius global
     margin: 5,
     borderWidth: 1,
+    // Aseguramos un fondo opaco para la sombra
+    backgroundColor: Colors.BackgroundPage, // Fondo consistente con el global
+    // Propiedades de sombra para iOS
+    shadowColor: Colors.Black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   tagUnselected: {
-    borderColor: 'black',
+    borderColor: Colors.Black,
   },
   tagSelected: {
-    borderColor: '#236A34',
-    shadowColor: 'white',
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
+    borderColor: Colors.ColorPrimary,
   },
   text: {
-    fontSize: 14,
+    ...TextStyles.PoppinsRegular13,
   },
   textUnselected: {
-    color: 'black',
+    color: Colors.Black,
   },
   textSelected: {
-    color: '#236A34',
+    color: Colors.ColorPrimary,
   },
 });
 

@@ -2,7 +2,8 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const StarRating = ({ average = 0 }) => {
+
+const Rating = ({ average = 0, useBackground = true }) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
         if (average >= i) {
@@ -14,7 +15,7 @@ const StarRating = ({ average = 0 }) => {
         }
     }
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, useBackground && styles.showcolor]}>
             {stars}
         </View>
     );
@@ -22,21 +23,22 @@ const StarRating = ({ average = 0 }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
-        backgroundColor: '#fff',
-        borderRadius: 16,
+       flexDirection:'row',
+       alignItems:'center',
+       alignSelf: 'center',
+       marginBottom: 8,
+    },
+    showcolor: {
+        backgroundColor: '#F9FAFE',
+        borderRadius: 7,
         paddingHorizontal: 18,
         paddingVertical: 6,
-        alignItems: 'center',
-        alignSelf: 'center',
-        marginTop: -22,
-        marginBottom: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.08,
         shadowRadius: 8,
         elevation: 2,
-    },
+      },
 });
 
-export default StarRating;
+export default Rating;

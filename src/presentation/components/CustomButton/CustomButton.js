@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Colors, TextStyles, GlobalStyles } from '../../../presentation/styles/styles';
 
 const TypeButton = Object.freeze({
     PRIMARY: "Primary",
     SECONDARY: "Secondary",
-}); 
+});
 
 const SizeButton = Object.freeze({
     SMALL: "Small",
@@ -12,19 +13,41 @@ const SizeButton = Object.freeze({
 });
 
 const CustomButton = ({ onPress, titletext, IsDisabled = false, type = "Primary", size = "Big" }) => {
+    const [isPressed, setIsPressed] = useState(false);
+
+    const handlePressIn = () => {
+        setIsPressed(true);
+    };
+
+    const handlePressOut = () => {
+        setIsPressed(false);
+    };
+
+    const handlePress = () => {
+        if (onPress) {
+            onPress();
+        }
+    };
+
     return (
         <TouchableOpacity
-            onPress={onPress}
+            onPress={handlePress}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
             disabled={IsDisabled}
             style={[
                 styles.touchableBase,
-                type === TypeButton.PRIMARY ? styles.primaryTouchable : styles.secondaryTouchable,
+                type === TypeButton.PRIMARY ?
+                    (isPressed ? styles.primaryPressedTouchable : styles.primaryTouchable) :
+                    styles.secondaryTouchable,
                 size === SizeButton.BIG ? styles.bigTouchable : styles.smallTouchable,
                 IsDisabled && styles.disabledButton
             ]}
         >
-            <Text style={[styles.buttonText, 
-                type === TypeButton.SECONDARY && styles.secondaryText]}>
+            <Text style={[
+                styles.buttonText,
+                type === TypeButton.SECONDARY && styles.secondaryText
+            ]}>
                 {titletext}
             </Text>
         </TouchableOpacity>
@@ -35,19 +58,24 @@ const styles = StyleSheet.create({
     touchableBase: {
         paddingVertical: 12,
         paddingHorizontal: 16,
-        borderRadius: 20,
+        borderRadius: GlobalStyles.cornerRadius,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 10,
     },
     primaryTouchable: {
-        backgroundColor: '#236A34', // Verde principal
-        borderColor: '#236A34',
+        backgroundColor: Colors.ColorPrimary,
+        borderColor: Colors.ColorPrimary,
+        borderWidth: 2,
+    },
+    primaryPressedTouchable: {
+        backgroundColor: Colors.ColorOnPrimary,
+        borderColor: Colors.ColorPrimary,
         borderWidth: 2,
     },
     secondaryTouchable: {
         backgroundColor: 'white',
-        borderColor: '#236A34',
+        borderColor: Colors.ColorPrimary,
         borderWidth: 2,
     },
     bigTouchable: {
@@ -61,12 +89,12 @@ const styles = StyleSheet.create({
         borderColor: '#A9A9A9',
     },
     buttonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        ...TextStyles.PoppinsSemiBold15,
         color: 'white',
+        textAlign: 'center',
     },
     secondaryText: {
-        color: '#236A34', // Verde para los botones secundarios
+        color: Colors.ColorPrimary,
     },
 });
 
