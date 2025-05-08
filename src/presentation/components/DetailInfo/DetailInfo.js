@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors, TextStyles, GlobalStyles } from '../../styles/styles';
+
 
 const tabs = ['Sobre nosotros', 'Contacto', 'Reviews'];
 
-const InfoDetail = ({ description, phoneNumber }) => {
+const  DetailInfo = ({ description, phoneNumber, mail }) => {
     const [activeTab, setActiveTab] = useState('Sobre nosotros');
     return (
         <View style={styles.container}>
@@ -33,12 +35,16 @@ const InfoDetail = ({ description, phoneNumber }) => {
             {activeTab === 'Contacto' ? (
                 <View style={styles.contactContainer}>
                     <View style={styles.contactRow}>
-                        <Ionicons name="logo-whatsapp" size={22} color="#236A34" style={{ marginRight: 8 }} />
+                        <Ionicons name="logo-whatsapp" size={22} color={Colors.ColorPrimary} style={{ marginRight: 8 }} />
                         <Text style={styles.contactText}>+57 {phoneNumber}</Text>
                     </View>
                     <View style={styles.contactRow}>
-                        <Ionicons name="call" size={22} color="#236A34" style={{ marginRight: 8 }} />
+                        <Ionicons name="call" size={22} color={Colors.ColorPrimary} style={{ marginRight: 8 }} />
                         <Text style={styles.contactText}>+57 {phoneNumber}</Text>
+                    </View>
+                    <View style={styles.contactRow}>
+                        <Ionicons name="mail" size={22} color={Colors.ColorPrimary} style={{ marginRight: 8 }} />
+                        <Text style={styles.contactText}> {mail}</Text>
                     </View>
                 </View>
             ) : (
@@ -58,7 +64,7 @@ const InfoDetail = ({ description, phoneNumber }) => {
                     </TouchableOpacity>
                     {/* Descripción */}
                     <View style={styles.descriptionContainer}>
-                        <Text style={styles.description}>{description}</Text>
+                        <Text style={TextStyles.PoppinsRegular13}>{description}</Text>
                     </View>
                 </>
             )}
@@ -85,14 +91,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     tabText: {
-        color: '#747474',
-        fontWeight: '400',
-        fontSize: 13.5, // Letra más pequeña
+        color: Colors.DarkGray,
+       ...TextStyles.PoppinsRegular13,
+        
     },
     activeTabText: {
-        color: '#236A34',
-        fontWeight: 'bold',
-        fontSize: 15, // Letra un poco más grande solo cuando está activo
+        color: Colors.ColorPrimary,
+        ...TextStyles.PoppinsBold15
     },
     mapContainer: {
         height: 150,
@@ -115,11 +120,12 @@ const styles = StyleSheet.create({
     },
     mapText: {
         color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily:'Poppins-Bold',
+        fontSize: 13,
     },
     descriptionContainer: {
         padding: 10,
+        textAlign: 'justify',
     },
     contactContainer: {
         marginTop: 16,
@@ -131,10 +137,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     contactText: {
-        fontSize: 16,
-        color: '#222',
-        fontWeight: '500',
+        ...TextStyles.PoppinsRegular15,
+        color: Colors.Black,
     },
 });
 
-export default InfoDetail;
+export default  DetailInfo;
