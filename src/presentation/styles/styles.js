@@ -38,7 +38,7 @@ const Colors = {
   };
   
   const GlobalStyles = {
-    cornerRadius: 10,
+    borderRadius: 10,
     elevation: 4,
     CardBaseStyle: {
       backgroundColor: Colors.BackgroundPage,
