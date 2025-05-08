@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import ImageMainDetail from '../../components/DetailPlaces/ImageMainDetail';
-import Gallery from '../../components/DetailPlaces/Gallery';
-import InfoDetail from '../../components/DetailPlaces/InfoDetail';
+import MainImage from '../../components/MainImage/MainImage';
+import GalleryImage from '../../components/GalleryImage/GalleryImage';
+import DetailInfo from '../../components/DetailInfo/DetailInfo';
 
 const DetailScreen = ({ navigation }) => {
     const [placeDetail, setPlaceDetail] = useState(null);
@@ -37,7 +37,7 @@ const DetailScreen = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
-            <ImageMainDetail
+            <MainImage
                 mainImage={placeDetail.mainImage}
                 name={placeDetail.name}
                 category="Gastronomía" // Esto debería venir de una tabla de categorías
@@ -45,8 +45,8 @@ const DetailScreen = ({ navigation }) => {
                 
                 onBackPress={handleBackPress}
             />
-            <Gallery images={placeDetail.secondaryImages} />
-            <InfoDetail 
+            <GalleryImage images={placeDetail.secondaryImages} />
+            <DetailInfo 
                 description={placeDetail.description}
                 coordinates={placeDetail.coordinates}
                 phoneNumber={placeDetail.phoneNumber}

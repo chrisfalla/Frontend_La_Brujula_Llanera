@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import NavigationTopBar from '../NavigationTopBar/NavigationTopBar';
+import { TextStyles } from '../../styles/styles';
 
-const ImageMainDetail = ({ mainImage, name, category, onBackPress }) => {
+const MainImage = ({ mainImage, name, category, onBackPress }) => {
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
@@ -15,7 +16,7 @@ const ImageMainDetail = ({ mainImage, name, category, onBackPress }) => {
                     <View style={styles.contentContainer}>
                         <NavigationTopBar
                             onBackPress={onBackPress}
-                            useBackground={false}
+                            useBackground={true}
                             useHeart={true}
                         />
                         <View style={styles.infoContainer}>
@@ -62,6 +63,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         flex: 1,
+        marginTop: 14,
         justifyContent: 'space-between',
         borderRadius: 10, // Agregamos borderRadius al overlay
         overflow: 'hidden',
@@ -71,18 +73,24 @@ const styles = StyleSheet.create({
         paddingBottom: 16,
         paddingLeft: 15,
         backgroundColor: 'rgba(0, 0, 0, 0.69)',
+       
+        
     },
     name: {
-        fontSize: 22,
-        fontWeight: 'bold',
+        fontFamily: 'Poppins-SemiBold',
+        fontSize: 24,
         color: '#fff',
-        marginBottom: 5,
+       
     },
     category: {
-        fontSize: 14,
+        ...TextStyles.PoppinsRegular15,
         color: '#fff',
         opacity: 0.9,
+        left: 5,
+
+        
+       
     },
 });
 
-export default ImageMainDetail;
+export default MainImage;

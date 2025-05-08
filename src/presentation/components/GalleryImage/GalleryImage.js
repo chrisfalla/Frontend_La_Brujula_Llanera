@@ -1,7 +1,9 @@
 import React from "react";
 import { View, StyleSheet, Image, Text } from "react-native";
+import { Colors, TextStyles, GlobalStyles } from '../../styles/styles';
 
-const Gallery = ({ images }) => {
+const GalleryImage = ({ images }) => {
+    
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Galería:</Text>
@@ -22,44 +24,46 @@ const Gallery = ({ images }) => {
 
     const styles = StyleSheet.create({
         container: {
-            paddingHorizontal: '4%', // Igual que el ancho de la imagen principal (92% => 4% a cada lado)
+            paddingHorizontal: 1,
             paddingTop: 20,
             paddingBottom: 0,
         },
         title: {
-            fontSize: 16,
-            fontWeight: "bold",
-            color: "#236A34",
-            marginBottom: 15,
+            ...TextStyles.PoppinsBold15,
+            color: Colors.ColorPrimary,
+            marginBottom: 14,
+            paddingHorizontal: 10,
         },
         imagesContainer: {
             flexDirection: "row",
             justifyContent: "flex-start",
+          
+            
         },
         imageWrapper: {
             width: 100,
             height: 100,
-            marginRight: '8.4%', // Más espacio entre fotos
-            borderRadius: 10,
-            backgroundColor: "#fff",
-            // Sombra para iOS
-            shadowColor: "black",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
+            marginHorizontal: 10,
+            borderRadius: GlobalStyles.cornerRadius,
+            backgroundColor: Colors.BackgroundPage,
+            // Sombra iOS
+            shadowColor: Colors.Black,
+            shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.25,
             shadowRadius: 3.84,
-            // Sombra para Android
-            elevation: 5,
+            // Sombra Android
+            elevation: GlobalStyles.elevation,
         },
         image: {
             width: "100%",
             height: "100%",
-            borderRadius: 10,
+            borderRadius: GlobalStyles.cornerRadius,
             borderWidth: 3,
-            borderColor: "#fff",
+            borderColor: Colors.BackgroundPage,
+            
+            
+            
         },
     });
 
-    export default Gallery;
+    export default GalleryImage;

@@ -1,9 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet, Touchable, TouchableOpacity } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
+import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 
 
-const CategoryCard = ({nameCategory, iconCategory, isSelectedCategory, onPressCard}) => {
+const CategoryCardSmall = ({nameCategory, iconCategory, isSelectedCategory, onPressCard}) => {
     
 return (
     <View style={styles.mainContainer}>
@@ -23,42 +24,42 @@ return (
 
 styles = StyleSheet.create({
     mainContainer: {
-        alignSelf:"flex-start",
-        marginRight:10,
-        alignItems: "center",
+       justifyContent:'flex-start',
+       alignItems:'center',
+    
         
     },
     iconContainer: {
-        backgroundColor:"#E0E0E0", 
+        backgroundColor: Colors.LightGray,
         borderRadius:10, 
         alignItems:"center", 
         justifyContent:"center",
+        marginHorizontal: 6,
         width: 70, // más ancho
         height: 70, // más alto
     },
     iconContainerSelected: {
-        backgroundColor:"#61CB7C", 
+        backgroundColor:Colors.ColorOnPrimary, 
         borderRadius:10, 
         alignItems:"center", 
-        justifyContent:"center",
-        elevation: 4,
+        justifyContent:"center",      
     },
     icon: {
         margin:14,
-
     },
     iconSelected: {
-        margin:11
+        margin:11,
     
     },
     text:{
-        alignSelf:"center",
-        fontWeight:"regular",
+        ...TextStyles.PoppinsRegular13,
         margin: 8,
+        textAlign:'center',
     },
     textSelected:{
-        fontWeight:"bold"
+        ...TextStyles.PoppinsSemibold13,
+        textAlign:'center',
     }
 });
 
-export default CategoryCard;
+export default CategoryCardSmall;
