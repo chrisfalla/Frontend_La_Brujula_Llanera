@@ -11,7 +11,7 @@ const mapToCategory = (dto) => new category({
 
 export const categoriesDatasource = {
   getCategories: async () => {
-    const dtos = await fetchCategfories();
+    const dtos = await fetchCategories();
     //.map, for que recorre la lista
     return dtos.map(mapToCategory);
   },

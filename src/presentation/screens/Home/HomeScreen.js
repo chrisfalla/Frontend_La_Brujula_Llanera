@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'; // Asegúrate de importa
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { fetchCategories } from '../../../shared/store/categoriesSlice/categoriesSlice'; // Asegúrate de importar la acción correcta
 import MainHeader from '../../components/MainHeader/MainHeader';
+import MostVisitedPlaces from '../../components/MostVisitedPlaces/MostVisitedPlaces';
 
 const HomeScreen = () => {
     const dispatch = useDispatch(); // Usa useDispatch en el cuerpo del componente
@@ -15,12 +16,11 @@ const HomeScreen = () => {
     // Filtramos las categorías por las que tienen isDefault: true
     const defaultCategories = all.filter(cat => cat.isDefault);
 
-
     if (status === 'loading') return <Text>Cargando...</Text>;
 
     return (
         <View style={styles.container}>
-          <MainHeader username={'Christofer'}/>
+            <MainHeader username={'Christofer'} />
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.textScreens}>
                     <Text>
@@ -41,6 +41,10 @@ const HomeScreen = () => {
                         <Text key={index}>{category.name}</Text>
                     ))}
                 </View>
+
+                {/* Mostrar los lugares más visitados */}
+                <MostVisitedPlaces />
+
             </ScrollView>
         </View>
     );

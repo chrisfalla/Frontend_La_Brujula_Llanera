@@ -1,105 +1,51 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ActivityIndicator, FlatList } from 'react-native';
 import PropTypes from 'prop-types';
+import useMostVisitedPlaces from '../../hooks/places/useMostVisitedPlaces';
 
-const MostVisitedPlace = ({ place, onPlacePress }) => {
+const MostVisitedPlaces = () => {
+    const { places, loading, error } = useMostVisitedPlaces();
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    }
+
+    if (error) {
+        return <Text>Error al cargar lugares: {error}</Text>;
+    }
+
     return (
-        <View style={styles.card}>
-            <Image
-                source={{
-                    uri: place.imageUrl || 'https://via.placeholder.com/400x200'
-                }}
-                style={styles.image}
-                resizeMode="cover"
+        <View style={styles.container}>
+            <Text style={styles.title}>Lugares Más Visitados</Text>
+            <FlatList
+                data={places}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <MostVisitedPlace
+                        place={item}
+                        onPlacePress={(place) => console.log('Ver más sobre:', place.name)}
+                    />
+                )}
             />
-            <View style={styles.labelContainer}>
-                <Text style={styles.labelText}>{place.name}</Text>
-            </View>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={() => onPlacePress(place)}
-                activeOpacity={0.8}
-            >
-                <Text style={styles.buttonText}>Ver más</Text>
-            </TouchableOpacity>
         </View>
     );
 };
 
-MostVisitedPlace.propTypes = {
-    place: PropTypes.shape({
-        idPlace: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        imageUrl: PropTypes.string,
-    }).isRequired,
-    onPlacePress: PropTypes.func.isRequired
+MostVisitedPlaces.propTypes = {
+    places: PropTypes.array.isRequired,
+    loading: PropTypes.bool.isRequired,
+    error: PropTypes.string,
 };
 
 const styles = StyleSheet.create({
-    card: {
-        width: Dimensions.get('window').width * 0.9,
-        height: Dimensions.get('window').width * 0.5,
-        marginHorizontal: Dimensions.get('window').width * 0.05,
-        marginBottom: 10,
-        borderRadius: 12,
-        shadowColor: '#000000',
-        shadowOffset: {
-            width: 2,
-            height: 8,
-        },
-        shadowOpacity: 0.45,
-        shadowRadius: 6,
-        elevation: 5,
-        overflow: 'hidden',
-        borderColor: '#fff',
-        borderWidth: 3,
+    container: {
+        padding: 16,
     },
-    image: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 8,
-        margin: 'auto'
-    },
-    labelContainer: {
-        position: 'absolute',
-        top: 16,
-        left: 0,
-        backgroundColor: '#236A34',
-        borderTopRightRadius: 12,
-        borderBottomRightRadius: 12,
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-        maxWidth: '80%',
-        height: 40,
-        justifyContent: 'center',
-    },
-    labelText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    button: {
-        position: 'absolute',
-        bottom: 16,
-        alignSelf: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        borderRadius: 8,
-        paddingVertical: 0,
-        width: '30%',
-        height: '13%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: '600',
-        textAlign: 'center',
-        textAlignVertical: 'center',
-        marginBottom: 2,
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
     },
 });
 
-export default MostVisitedPlace;
+export default MostVisitedPlaces;
