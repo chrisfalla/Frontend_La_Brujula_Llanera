@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 import PropTypes from 'prop-types';
+import { GlobalStyles, TextStyles,Colors } from '../../styles/styles';
 
 const MostVisitedPlace = ({ place, onPlacePress }) => {
     return (
@@ -37,34 +38,25 @@ MostVisitedPlace.propTypes = {
 
 const styles = StyleSheet.create({
     card: {
-        width: Dimensions.get('window').width * 0.9,
-        height: Dimensions.get('window').width * 0.5,
-        marginHorizontal: Dimensions.get('window').width * 0.05,
-        marginBottom: 10,
-        borderRadius: 12,
-        shadowColor: '#000000',
-        shadowOffset: {
-            width: 2,
-            height: 8,
-        },
-        shadowOpacity: 0.45,
-        shadowRadius: 6,
-        elevation: 5,
-        overflow: 'hidden',
+        ...GlobalStyles.borderRadius,
+        ...GlobalStyles.elevation,
+        width: 350,
+        height: 200,
         borderColor: '#fff',
         borderWidth: 3,
+        marginRight: 10,
     },
     image: {
         width: '100%',
         height: '100%',
-        borderRadius: 8,
+        borderRadius: 10,
         margin: 'auto'
     },
     labelContainer: {
         position: 'absolute',
         top: 16,
         left: 0,
-        backgroundColor: '#236A34',
+        backgroundColor: Colors.ColorPrimary,
         borderTopRightRadius: 12,
         borderBottomRightRadius: 12,
         borderTopLeftRadius: 0,
@@ -76,6 +68,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     labelText: {
+        ...TextStyles.PoppinsSemiBold15,
         color: '#fff',
         fontSize: 16,
         fontWeight: '600',
@@ -93,6 +86,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
+        ...TextStyles.PoppinsSemibold13,
         color: '#fff',
         fontSize: 14,
         fontWeight: '600',

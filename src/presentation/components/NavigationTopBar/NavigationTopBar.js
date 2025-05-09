@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { GlobalStyles, TextStyles, Colors } from '../../styles/styles'; 
 
 
 const NavigationTopBar = ( { primaryIcon = "chevron-back", SecondIcon = "heart-outline" ,onBackPress, useBackground = true, useHeart = true, title} ) => {
@@ -53,32 +54,30 @@ const styles = StyleSheet.create({
       alignItems: 'center',    
     },
     iconContainer: {
-      backgroundColor: 'white',
+      backgroundColor: Colors.BackgroundPage,
       borderRadius: 30,
       borderWidth: 3,
-      borderColor: '#d5dbda',
+      borderColor: Colors.LightGray,
       padding: 7,   
     },
     icon: {
-      color:'#236A34',
+      color: Colors.ColorPrimary,
       fontSize: 22,
     },
     iconNoBackground: {
-      color: '#236A34',
+      color: Colors.ColorPrimary,
       paddingHorizontal: 10,
       },
     heartActive: {
-      color: '#236A34',
+      color: Colors.ColorPrimary,
     },
     hiddenIcon: {
       opacity: 0, // 👈 oculta visualmente
     },
     title: {
-      flex: 1,
+      ...TextStyles.PoppinsSemiBold15,
       textAlign: 'center',
-      fontSize: 15,
-      fontWeight: 'bold',
-      color: '#236A34',
+      color: Colors.ColorPrimary,
     },
     titleHidden: {
       opacity: 0,

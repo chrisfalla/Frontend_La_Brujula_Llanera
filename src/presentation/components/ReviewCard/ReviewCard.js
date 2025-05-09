@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
+import { GlobalStyles, TextStyles,Colors } from '../../styles/styles';
 
 
 const ReviewCard = ({ username, comment, date }) => {
@@ -25,43 +26,32 @@ const ReviewCard = ({ username, comment, date }) => {
 };
 const styles = StyleSheet.create({
     card:{
-        backgroundColor: 'white',
-        borderRadius: 15,
-        padding: 15,
+        ...GlobalStyles.CardBaseStyle,
+        padding: 5,
         marginVertical: 8,
-        elevation: 8,
-        shadowColor: 'gray',
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 2 },
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         margin: 5,
-        marginHorizontal: 5,
     },
       avatarimg:{
-        backgroundColor: 'gray',
         width: 30,
         height: 30,
-        borderRadius:20,
         alignItems: 'center',
         justifyContent: 'center',
         
        
     },
     username:{
-        fontWeight: 'bold',
-        fontSize: 14,
+        ...TextStyles.PoppinsSemiBold15,
         marginLeft:10,
     },
     comment:{
-        fontSize:14,
+        ...TextStyles.PoppinsRegular15,
         marginLeft: 45,
         marginRight:15,        
-        textAlign: 'left',
-        fontWeight:'light'
+
     },
     footer:{
         marginLeft: 40,
@@ -69,9 +59,8 @@ const styles = StyleSheet.create({
         textAlign: 'left'
     },
     date:{
-        fontSize: 13,
-        color: 'gray',
-        fontWeight:'light'
+        ...TextStyles.PoppinsRegular15,
+        color: Colors.DarkGray,
     }
 });
 export default ReviewCard;

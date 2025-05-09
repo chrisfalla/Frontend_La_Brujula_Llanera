@@ -2,6 +2,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { GlobalStyles, Colors, TextStyles } from '../../styles/styles';
 
 const defaultImage = 'https://via.placeholder.com/50';
 
@@ -19,7 +20,7 @@ const HorizontalCardPlace = ({
       />
       <View style={styles.textContainer}>
         <Text style={styles.title} numberOfLines={1}>{name}</Text>
-        <Text style={styles.subTitle}>solo es un ejemplo de categorías</Text>
+        <Text style={styles.subTitle}>solo es un ejemplo </Text>
         <Text style={styles.description} numberOfLines={2}>
           {description}
         </Text>
@@ -38,20 +39,12 @@ const HorizontalCardPlace = ({
 
 const styles = StyleSheet.create({
   container: {
+    ...GlobalStyles.CardBaseStyle,
     flexDirection: 'row',
-    width: '100%',
     height: 91,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
     marginBottom: 16,
     alignSelf: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 15,
+
   },
   image: {
     width: 50,
@@ -68,19 +61,20 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#236A34',
+    ...TextStyles.PoppinsSemibold20,
+    color: Colors.ColorPrimary,
     marginBottom: 2,
     textAlign: 'center',
   },
   subTitle: {
     textAlign: 'center',
-    fontWeight: 'bold',
+    ...TextStyles.PoppinsRegular13,
     fontSize: 13,
     color: '#666666',
     marginBottom: 2,
   },
   description: {
+    ...TextStyles.PoppinsRegular13,
     textAlign: 'center',
     fontSize: 13,
     color: '#666666',
