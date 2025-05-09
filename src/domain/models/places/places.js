@@ -1,8 +1,9 @@
 export class Place {
     constructor({ idPlace, placeName, visitCount, imageUrl }) {
-        this.id = idPlace; // Identificador único del lugar
-        this.name = placeName; // Nombre del lugar
-        this.visitCount = visitCount; // Contador de visitas
-        this.imageUrl = imageUrl; // URL de la imagen del lugar
+      this.idPlace = idPlace;        // clave primária que usa tu FlatList
+      this.placeName = placeName;    // nombre del lugar, tal cual lo usas en JSX
+      this.visitCount = visitCount;
+      this.imageUrl = imageUrl;
     }
-}
+  }
+  

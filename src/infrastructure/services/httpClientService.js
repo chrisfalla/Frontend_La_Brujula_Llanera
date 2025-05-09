@@ -32,6 +32,18 @@ const instance = axios.create({
 //     return Promise.reject(error);
 //   }
 // );
+//logs
+const httpClient = axios.create({
+  baseURL: '/home/log-visited/more-visited', // ajusta si es necesario
+  timeout: 5000,
+});
+httpClient.interceptors.request.use(request => {
+  console.log(`📡 [${request.method.toUpperCase()}] Request to: ${request.url}`);
+  return request;
+});
+
+
+
 
 // 👉 Logging helper
 const logRequest = (method, url, data) => {

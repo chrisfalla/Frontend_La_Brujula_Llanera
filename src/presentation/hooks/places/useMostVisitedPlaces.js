@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getMostVisitedPlacesUseCase } from '../../domain/usecases/places/getMostVisitedPlacesUseCase';
+import { getMostVisitedPlacesUseCase } from '../../../domain/usecases/places/getMostVisitedPlacesUseCase';
 
 const useMostVisitedPlaces = () => {
     const [places, setPlaces] = useState([]);
@@ -7,21 +7,22 @@ const useMostVisitedPlaces = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const loadPlaces = async () => {
+        const fetchMostVisitedPlaces = async () => {
             try {
-                const response = await getMostVisitedPlacesUseCase();
-                setPlaces(response);
+                const data = await getMostVisitedPlacesUseCase();
+                setPlaces(data || []); // Si data es undefined o null, establece un arreglo vacío
             } catch (err) {
-                setError(err.message || 'Error al cargar los lugares.'); // Manejo de errores
+                setError(err);
             } finally {
                 setLoading(false);
             }
         };
 
-        loadPlaces();
+        fetchMostVisitedPlaces();
     }, []);
 
     return { places, loading, error };
 };
+
 
 export default useMostVisitedPlaces;

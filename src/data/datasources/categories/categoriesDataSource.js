@@ -1,4 +1,4 @@
-import { fetchCategories, fetchMostTappedCategories } from '../../../infraestructure/api/categories/categoriesApi';
+import { fetchCategories, fetchMostTappedCategories } from '../../../infrastructure/api/categories/categoriesApi';
 import { category } from '../../../domain/models/categories/category';
 
 //mapeo(cast) es convertir un json a una lista de objetos

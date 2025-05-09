@@ -1,5 +1,5 @@
-import { placesDatasource } from '../../data/datasources/places/mostVisitedPlacesDataSources';
+import { placesRepository } from '../../../data/repositories/places/placesRepository';
 
 export const getMostVisitedPlacesUseCase = async () => {
-    return await placesDatasource.getMostVisitedPlaces();
+  return await placesRepository.getMostVisitedPlaces();
 };

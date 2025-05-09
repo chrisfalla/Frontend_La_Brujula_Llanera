@@ -1,5 +1,5 @@
-import { fetchMostVisitedPlaces } from '../../../infraestructure/api/placesApi';
-import { Place } from '../../../domain/models/places/place'; // Asegúrate de tener un modelo de lugar
+import { fetchMostVisitedPlaces } from '../../../infrastructure/api/places/placesApi';
+import { Place } from '../../../domain/models/places/places'; // Esta importación es correcta
 
 export const placesDatasource = {
     getMostVisitedPlaces: async () => {
@@ -9,9 +9,9 @@ export const placesDatasource = {
 };
 
 // Función para mapear DTO a modelo
-const mapToPlace = (dto) => new Place({
+const mapToPlace = dto => new Place({
     idPlace: dto.idPlace,
     placeName: dto.placeName,
     visitCount: dto.visitCount,
     imageUrl: dto.imageUrl,
-});
+  });

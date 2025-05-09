@@ -1,40 +1,31 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
-import { GlobalStyles, TextStyles,Colors } from '../../styles/styles';
+import { GlobalStyles, TextStyles, Colors } from '../../styles/styles';
 
-const MostVisitedPlaces = () => {
-    const { places, loading, error } = useMostVisitedPlaces();
-
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
-    if (error) {
-        return <Text>Error al cargar lugares: {error}</Text>;
-    }
-
+const MostVisitedPlaces = ({ place, onPress }) => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Lugares Más Visitados</Text>
-            <FlatList
-                data={places}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <MostVisitedPlace
-                        place={item}
-                        onPlacePress={(place) => console.log('Ver más sobre:', place.name)}
-                    />
-                )}
-            />
-        </View>
+        <TouchableOpacity style={styles.card} onPress={() => onPress(place)}>
+            <Image source={{ uri: place.imageUrl }} style={styles.image} resizeMode="cover" />
+
+            <View style={styles.labelContainer}>
+                <Text style={styles.labelText}>{place.placeName}</Text>
+            </View>
+
+            <View style={styles.button}>
+                <Text style={styles.buttonText}>Ver más</Text>
+            </View>
+        </TouchableOpacity>
     );
 };
 
 MostVisitedPlaces.propTypes = {
-    places: PropTypes.array.isRequired,
-    loading: PropTypes.bool.isRequired,
-    error: PropTypes.string,
+    place: PropTypes.shape({
+        idPlace: PropTypes.number.isRequired,
+        placeName: PropTypes.string.isRequired,
+        imageUrl: PropTypes.string.isRequired,
+    }).isRequired,
+    onPress: PropTypes.func.isRequired,
 };
 
 const styles = StyleSheet.create({
@@ -46,12 +37,11 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 3,
         marginRight: 10,
+        overflow: 'hidden',
     },
     image: {
         width: '100%',
         height: '100%',
-        borderRadius: 10,
-        margin: 'auto'
     },
     labelContainer: {
         position: 'absolute',
@@ -60,8 +50,6 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.ColorPrimary,
         borderTopRightRadius: 12,
         borderBottomRightRadius: 12,
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
         paddingHorizontal: 16,
         paddingVertical: 6,
         maxWidth: '80%',
@@ -92,8 +80,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         textAlign: 'center',
-        textAlignVertical: 'center',
-        marginBottom: 2,
     },
 });
 
