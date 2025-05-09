@@ -6,7 +6,7 @@ export const fetchCategories = async () => {
   return response; // ya es .data desde httpClient
 };
 
-export const fetchMostTappedCategories = async () => {
+export const fetchMostTappedCategories = async () => { 
   const response = await httpClient.get('/categorias/mas-tocadas');
   return response;
 };

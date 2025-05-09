@@ -1,6 +1,7 @@
 import { fetchCategories, fetchMostTappedCategories } from '../../../infraestructure/api/categories/categoriesApi';
 import { category } from '../../../domain/models/categories/category';
 
+//mapeo(cast) es convertir un json a una lista de objetos
 const mapToCategory = (dto) => new category({
   id: dto.idCategory,
   name: dto.name,
@@ -10,7 +11,8 @@ const mapToCategory = (dto) => new category({
 
 export const categoriesDatasource = {
   getCategories: async () => {
-    const dtos = await fetchCategories();
+    const dtos = await fetchCategfories();
+    //.map, for que recorre la lista
     return dtos.map(mapToCategory);
   },
 

@@ -14,7 +14,7 @@ export const fetchCategories = createAsyncThunk(
   
       // Mapeamos a plain JS objects (dato simple)
       const plainCategories = categories.map(cat => ({
-        id: cat.id,
+        id: cat.id, 
         name: cat.name,
         icon: cat.icon,
         isDefault: cat.isDefault,

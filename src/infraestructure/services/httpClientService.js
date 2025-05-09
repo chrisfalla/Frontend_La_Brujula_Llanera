@@ -6,7 +6,7 @@ const instance = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json' 
   }
 });
 
@@ -43,11 +43,11 @@ const logResponse = (data) => {
   console.log('✅ Response:', JSON.stringify(data, null, 2));
 };
 
-// Métodos genéricos
+// Métodos genéricos     que es el config?
 const get = async (url, config = {}) => {
   logRequest('get', url);
-  const res = await instance.get(url, config);
-  logResponse(res.data);
+  const res = await instance.get(url, config);//peticion al back 
+  logResponse(res.data); //logs console 
   return res.data;
 };
 
