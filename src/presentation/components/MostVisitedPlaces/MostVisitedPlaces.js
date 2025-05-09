@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ActivityIndicator, FlatList } from 'react-native';
 import PropTypes from 'prop-types';
-import useMostVisitedPlaces from '../../hooks/places/useMostVisitedPlaces';
+import { GlobalStyles, TextStyles,Colors } from '../../styles/styles';
 
 const MostVisitedPlaces = () => {
     const { places, loading, error } = useMostVisitedPlaces();
@@ -38,13 +38,62 @@ MostVisitedPlaces.propTypes = {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 16,
+    card: {
+        ...GlobalStyles.borderRadius,
+        ...GlobalStyles.elevation,
+        width: 350,
+        height: 200,
+        borderColor: '#fff',
+        borderWidth: 3,
+        marginRight: 10,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 16,
+    image: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+        margin: 'auto'
+    },
+    labelContainer: {
+        position: 'absolute',
+        top: 16,
+        left: 0,
+        backgroundColor: Colors.ColorPrimary,
+        borderTopRightRadius: 12,
+        borderBottomRightRadius: 12,
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+        paddingHorizontal: 16,
+        paddingVertical: 6,
+        maxWidth: '80%',
+        height: 40,
+        justifyContent: 'center',
+    },
+    labelText: {
+        ...TextStyles.PoppinsSemiBold15,
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    button: {
+        position: 'absolute',
+        bottom: 16,
+        alignSelf: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        borderRadius: 8,
+        paddingVertical: 0,
+        width: '30%',
+        height: '13%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        ...TextStyles.PoppinsSemibold13,
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: '600',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        marginBottom: 2,
     },
 });
 

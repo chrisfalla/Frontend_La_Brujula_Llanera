@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { GlobalStyles, TextStyles, Colors } from '../../styles/styles';
 
 const CustomSearch = ({ placeholder, value, onChangeText, onSearch }) => {
     const [isFocused, setIsFocused] = useState(false);
@@ -21,7 +22,7 @@ const CustomSearch = ({ placeholder, value, onChangeText, onSearch }) => {
                 <TextInput
                     style={styles.input}
                     placeholder={placeholder || "Buscar..."}
-                    placeholderTextColor="#747474"
+                    placeholderTextColor= {Colors.Black}
                     value={value}
                     onChangeText={onChangeText}
                     onSubmitEditing={handleSubmit}
@@ -36,11 +37,11 @@ const CustomSearch = ({ placeholder, value, onChangeText, onSearch }) => {
                             onPress={() => onChangeText('')}
                             style={styles.clearButton}
                         >
-                            <Ionicons name="close-circle" size={20} color="#747474" />
+                            <Ionicons name="close-circle" size={20} color= {Colors.DarkGray} />
                         </TouchableOpacity>
                     )}
                     <TouchableOpacity onPress={handleSubmit}>
-                        <Ionicons name="search" size={24} color="#236A34" style={styles.searchIcon} />
+                        <Ionicons name="search" size={24} color= {Colors.ColorPrimary} style={styles.searchIcon} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -54,8 +55,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     label: {
-        fontWeight: 'semibold',
-        fontSize: 15,
+        ...TextStyles.PoppinsRegular15,
         marginBottom: 5,
         paddingHorizontal: 5,
     },
@@ -64,19 +64,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         borderRadius: 20,
-        borderWidth: 1.3,
-        borderColor: 'black',
+        borderWidth: 1,
+        borderColor: Colors.Black,
         paddingHorizontal: 15,
         height: 50,
     },
     searchContainerFocused: {
-        borderColor: '#236A34',
+        borderColor: Colors.ColorPrimary,
         borderWidth: 1.3,
     },
     input: {
+        ...TextStyles.PoppinsRegular15,
         flex: 1,
-        fontSize: 16,
-        color: '#000',
+        color: Colors.Black,
         height: '100%',
     },
     iconsContainer: {
