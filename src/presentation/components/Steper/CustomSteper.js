@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    padding:10,
   },
   circle: {
     width: 40,
