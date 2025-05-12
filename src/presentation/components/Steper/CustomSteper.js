@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { Colors, TextStyles } from "../../styles/styles";
 
 const CustomStepper = ({ step, totalSteps = 3 }) => {
-  {/* totalSteps definira en cuántos pasos se divide el proceso */}
+  {/*  Step es donde se define el paso actual y totalSteps definira en cuántos pasos se divide el proceso */}
   const lista = Array.from({ length: totalSteps }, (_, i) => i + 1);
   
   return (
@@ -46,9 +46,9 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   circle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 47,
+    height: 47,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1,
