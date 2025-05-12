@@ -1,12 +1,24 @@
-// src/dominio/api/categoriesApi.js
 import httpClient from '../../services/httpClientService';
 
 export const fetchCategories = async () => {
-  const response = await httpClient.get('/categories');
-  return response; // ya es .data desde httpClient
+  try {
+    const data = await httpClient.get('/categories'); 
+    // httpClient.get ya retorna res.data directamente
+    console.log('✅ [API] fetchCategories:', data);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ [API] fetchCategories error:', error);
+    return [];
+  }
 };
 
 export const fetchMostTappedCategories = async () => {
-  const response = await httpClient.get('/categorias/mas-tocadas');
-  return response;
+  try {
+    const data = await httpClient.get('/categorias/mas-tocadas');
+    console.log('✅ [API] fetchMostTappedCategories:', data);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ [API] fetchMostTappedCategories error:', error);
+    return [];
+  }
 };

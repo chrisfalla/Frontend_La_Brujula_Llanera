@@ -1,64 +1,108 @@
 import React from "react";
-import { View, Text, StyleSheet, Touchable, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 
+const CategoryCardSmall = ({ 
+    nameCategory, 
+    iconCategory, 
+    isSelectedCategory, 
+    onPressCard, 
+    isViewMore 
+}) => {
+    const [pressed, setPressed] = useState(false);
 
-const CategoryCardSmall = ({nameCategory, iconCategory, isSelectedCategory, onPressCard}) => {
-    
-return (
-    <View style={styles.mainContainer}>
-        <TouchableOpacity onPress={() => onPressCard(nameCategory)}>
-            <View style={[styles.iconContainer,
-                isSelectedCategory && styles.iconContainerSelected
-            ]}>
-                <Ionicons color={isSelectedCategory ? "white" : "black"} 
-                style={[styles.icon, isSelectedCategory && styles.iconSelected]}
-                size={isSelectedCategory ? 40 : 30}  name={iconCategory}></Ionicons>
+    if (isViewMore) {
+        return (
+            <View style={styles.mainContainer}>
+            <TouchableOpacity 
+                onPress={onPressCard}
+                onPressIn={() => setPressed(true)}
+                onPressOut={() => setPressed(false)}
+            >
+                <View style={[
+                styles.iconContainer, 
+                pressed && styles.iconContainerSelected
+                ]}>
+                <Ionicons 
+                    color="black" 
+                    style={styles.icon}
+                    size={30}
+                    name="grid-outline" // Icono de cuadrícula para representar "Ver Más"
+                />
+                </View>
+                <Text style={[styles.text, pressed && styles.textSelected]}>Ver Más</Text>
+            </TouchableOpacity>
             </View>
-            <Text style={[styles.text, isSelectedCategory && styles.textSelected]}>{nameCategory.length > 4 ? `${nameCategory.substring(0, 4)}...` : nameCategory}</Text>
-        </TouchableOpacity>
-    </View>
-);
+        );
+    }
+    
+    return (
+        <View style={styles.mainContainer}>
+            <TouchableOpacity onPress={onPressCard}>
+                <View style={[
+                    styles.iconContainer,
+                    isSelectedCategory && styles.iconContainerSelected
+                ]}>
+                    <Ionicons 
+                        color={isSelectedCategory ? "white" : "black"} 
+                        style={[styles.icon, isSelectedCategory && styles.iconSelected]}
+                        size={isSelectedCategory ? 40 : 30}  
+                        name={iconCategory} 
+                    />
+                </View>
+                <Text
+                    style={[
+                        styles.text, 
+                        isSelectedCategory && styles.textSelected
+                    ]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                >
+                    {nameCategory}
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
 };
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
     mainContainer: {
-       justifyContent:'flex-start',
-       alignItems:'center',
-    
-        
+       alignItems: 'center',
+       justifyContent: 'flex-start',
+       width: '100%',
+       height: 110, // Alto fijo para todas las cards (ajusta si lo necesitas)
     },
     iconContainer: {
         backgroundColor: Colors.LightGray,
-        borderRadius:10, 
-        alignItems:"center", 
-        justifyContent:"center",
-        marginHorizontal: 6,
-        width: 70, // más ancho
-        height: 70, // más alto
+        borderRadius: GlobalStyles.borderRadius,
+        alignItems: "center",
+        justifyContent: "center",
+        width: 65,
+        height: 65,
+        marginBottom: 5,
     },
     iconContainerSelected: {
-        backgroundColor:Colors.ColorOnPrimary, 
-        borderRadius:10, 
-        alignItems:"center", 
-        justifyContent:"center",      
+        backgroundColor: Colors.ColorPrimary,
+        borderRadius: GlobalStyles.borderRadius,
+        alignItems: "center",
+        justifyContent: "center",
     },
     icon: {
-        margin:14,
+        margin: 14,
     },
     iconSelected: {
-        margin:11,
-    
+        margin: 11,
     },
-    text:{
+    text: {
         ...TextStyles.PoppinsRegular13,
         margin: 8,
-        textAlign:'center',
+        textAlign: 'center',
     },
-    textSelected:{
+    textSelected: {
         ...TextStyles.PoppinsSemibold13,
-        textAlign:'center',
+        textAlign: 'center',
     }
 });
 

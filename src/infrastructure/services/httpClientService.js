@@ -33,14 +33,8 @@ const instance = axios.create({
 //   }
 // );
 //logs
-const httpClient = axios.create({
-  baseURL: '/home/log-visited/more-visited', // ajusta si es necesario
-  timeout: 5000,
-});
-httpClient.interceptors.request.use(request => {
-  console.log(`📡 [${request.method.toUpperCase()}] Request to: ${request.url}`);
-  return request;
-});
+// Eliminado el httpClient duplicado que tenía una baseURL incorrecta
+// y dejamos solo el instance principal que está correctamente configurado
 
 
 

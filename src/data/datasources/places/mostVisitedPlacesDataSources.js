@@ -9,9 +9,14 @@ export const placesDatasource = {
 };
 
 // Función para mapear DTO a modelo
-const mapToPlace = dto => new Place({
-    idPlace: dto.idPlace,
-    placeName: dto.placeName,
-    visitCount: dto.visitCount,
-    imageUrl: dto.imageUrl,
-  });
+const mapToPlace = dto => {
+    console.log('⚙️ Mapeando DTO a modelo Place:', dto);
+    // Asegúrate de que la URL no tenga un esquema incorrecto (como 'httpss://') 
+    const fixedImageUrl = dto.imageUrl?.replace('httpss://', 'https://');
+    return new Place({
+      idPlace: dto.idPlace,
+      placeName: dto.placeName,
+      visitCount: dto.visitCount,
+      imageUrl: fixedImageUrl || dto.imageUrl,
+    });
+  };

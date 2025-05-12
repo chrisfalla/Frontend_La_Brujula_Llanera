@@ -16,19 +16,25 @@ import useMostVisitedPlaces from "../../hooks/places/useMostVisitedPlaces";
 
 import MainHeader from "../../components/MainHeader/MainHeader";
 import MostVisitedPlaces from "../../components/MostVisitedPlaces/MostVisitedPlaces";
+import CategoryCardSmall from "../../components/CategoryCardSmall/CategoryCardSmall";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const PADDING_HORIZONTAL = 16; // Padding lateral del carrusel
 const CARD_WIDTH = SCREEN_WIDTH - PADDING_HORIZONTAL * 2; // Ancho visible (excluye padding)
 const CARD_MARGIN = 10; // Separación entre cards
-const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN; // Ajustado para el desplazamiento
+const SNAP_INTERVAL = CARD_WIDTH; // Ajustado para mejorar el desplazamiento
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const { all, status } = useSelector((state) => state.categories);
   const { places, loading, error } = useMostVisitedPlaces();
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0); // Cambiamos a useState
+
+  // Añadir logs para depuración
+  console.log('Estado de categorías:', status);
+  console.log('Todas las categorías:', all);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -55,6 +61,15 @@ const HomeScreen = () => {
     ? all.filter((cat) => cat.isDefault)
     : [];
 
+  const handleViewMore = () => {
+    console.log("Ver Más presionado");
+  };
+
+  // Limitamos a 3 cards de categorías (el 4to es "Ver Más")
+  const displayCategories = Array.isArray(all)
+    ? all.filter((cat) => cat.isDefault).slice(0, 3)
+    : [];
+
   if (status === "loading") return <Text>Cargando...</Text>;
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error al cargar lugares: {String(error)}</Text>;
@@ -72,6 +87,7 @@ const HomeScreen = () => {
   const handleScrollEnd = (e) => {
     const offset = e.nativeEvent.contentOffset.x;
     const newIndex = Math.round(offset / SNAP_INTERVAL);
+    console.log('Nuevo índice después de desplazamiento:', newIndex, 'de', places.length);
     setCurrentIndex(newIndex); // Actualizamos el estado
   };
 
@@ -79,13 +95,6 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <MainHeader username={"Christofer"} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Categorías predeterminadas */}
-        <View style={styles.categoryList}>
-          {defaultCategories.map((category, index) => (
-            <Text key={index}>{category.name}</Text>
-          ))}
-        </View>
-
         {/* Lugares más visitados */}
         <View>
           <Text style={styles.sectionTitle}>
@@ -98,14 +107,17 @@ const HomeScreen = () => {
             data={places || []}
             keyExtractor={(item) => item.idPlace.toString()}
             horizontal
-            renderItem={({ item }) => (
-              <MostVisitedPlaces
-                place={item}
-                onPress={() => console.log("Ver más sobre:", item.placeName)}
-                cardWidth={CARD_WIDTH}
-                cardMargin={CARD_MARGIN}
-              />
-            )}
+            renderItem={({ item, index }) => {
+              console.log(`Renderizando lugar ${index}:`, item);
+              return (
+                <MostVisitedPlaces
+                  place={item}
+                  onPress={() => console.log("Ver más sobre:", item.placeName)}
+                  cardWidth={CARD_WIDTH}
+                  cardMargin={CARD_MARGIN}
+                />
+              );
+            }}
             showsHorizontalScrollIndicator={false}
             snapToInterval={SNAP_INTERVAL}
             snapToAlignment="start"
@@ -113,6 +125,7 @@ const HomeScreen = () => {
             onScrollToIndexFailed={onScrollToIndexFailed}
             contentContainerStyle={styles.carouselContainer}
             onMomentumScrollEnd={handleScrollEnd}
+            initialNumToRender={places ? places.length : 0} // Asegurar que se rendericen todos los elementos inicialmente
           />
           {/* Indicadores de paginación */}
           {places && places.length > 1 && (
@@ -130,6 +143,35 @@ const HomeScreen = () => {
               ))}
             </View>
           )}
+          <Text style={styles.planText}>
+            <Text style={styles.textBlack}>Cual es</Text>
+            <Text style={styles.textPrimary}> tu </Text>
+            <Text style={styles.textPrimary}>Plan</Text>
+            <Text style={styles.textBreakLine}>               </Text>
+            <Text style={styles.textPrimary}>Plan</Text>
+            <Text style={styles.textBlack}> para el Día de </Text>
+            <Text style={styles.textPrimary}>Hoy</Text>
+            <Text style={styles.textBlack}>?</Text>
+          </Text>
+        </View>
+        {/* Todas las Categorías con 3 cards y card "Ver Más" a la derecha */}
+        <View style={styles.categoryListContainer}>
+          {displayCategories.map((item) => (
+            <View key={item.id} style={styles.cardWrapper}>
+              <CategoryCardSmall
+                nameCategory={item.name}
+                iconCategory={item.icon || "pricetag-outline"}
+                isSelectedCategory={selectedCategory === item.id}
+                onPressCard={() => {
+                  console.log('Categoría seleccionada:', item.name, 'con ID:', item.id);
+                  setSelectedCategory(item.id);
+                }}
+              />
+            </View>
+          ))}
+          <View style={styles.cardWrapper}>
+            <CategoryCardSmall isViewMore onPressCard={handleViewMore} />
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -151,16 +193,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   textPrimary: {
-    color: Colors.ColorPrimary, 
+    color: Colors.ColorPrimary,
   },
   textBlack: {
-    color: Colors.Black, 
+    color: Colors.Black,
   },
   pagination: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 8,
-    marginBottom: 8,
+    marginBottom: 20,
   },
   dot: {
     width: 8,
@@ -173,6 +215,36 @@ const styles = StyleSheet.create({
   },
   inactiveDot: {
     backgroundColor: Colors.DarkGray,
+  },
+  planText: {
+    fontFamily: "Poppins-Bold",
+    fontSize: 28,
+    marginBottom: 5,
+    textAlign: "start",
+  },
+  categoryListWrapperRow: {
+    width: '100%',
+    flexDirection: 'row',
+  },
+  categoryListRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 8,
+  },
+  categoryListContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Espacio igual entre cards, pegadas a los bordes
+    alignItems: "flex-start",
+    width: '100%',
+    marginVertical: 8,
+  },
+  categoryCardFlex: {
+    flex: 1,
+    alignItems: "center",
+  },
+  cardWrapper: {
+    width: "20%", 
   },
 });
 
