@@ -3,10 +3,23 @@ import { useDispatch, useSelector } from 'react-redux'; // Asegúrate de importa
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { fetchCategories } from '../../../shared/store/categoriesSlice/categoriesSlice'; // Asegúrate de importar la acción correcta
 import MainHeader from '../../components/MainHeader/MainHeader';
+import axios from '../../../infraestructure/services/httpClientService'; // Asegúrate de importar axios
 
 const HomeScreen = () => {
     const dispatch = useDispatch(); // Usa useDispatch en el cuerpo del componente
     const { all, status } = useSelector(state => state.categories); // Usa useSelector en el cuerpo del componente
+    
+    useEffect(() => {
+        const getPlaceDetails = async (idPlace) => {
+            try {
+                const response = await axios.get(`/placeDetail/${idPlace}`); // Cambia el endpoint según lo necesites
+                console.log('✅ Datos obtenidos:', response.data);
+            } catch (error) {
+                console.error('❌ Error al obtener los datos:', error.message);
+            }
+        };
+        getPlaceDetails(1);
+    }, []);
 
     useEffect(() => {
         dispatch(fetchCategories()); // Dispara la acción para cargar categorías cuando el componente se monta
