@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     },
     icon: {
       color: Colors.ColorPrimary,
-      fontSize: 22,
+      fontSize: 24,
     },
     iconNoBackground: {
       color: Colors.ColorPrimary,

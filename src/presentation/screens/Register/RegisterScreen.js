@@ -58,12 +58,17 @@ const RegisterScreen = () => {
       }
   
       Alert.alert('Éxito', 'Formulario enviado correctamente');
-      console.log('Formulario enviado', form);
   };
   
+  const onSubmit = (form) => {
+    if (validateForm(form)) {
+      // Aquí iría la lógica de registro
+    }
+  };
+
   const handleGoogleRegister = () => {
-      console.log('Registro con Google');
-    };
+    // Aquí iría la lógica de registro con Google
+  };
   
     return (
       <KeyboardAvoidingView

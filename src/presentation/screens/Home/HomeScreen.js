@@ -13,10 +13,15 @@ import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 
 import { fetchCategories } from "../../../shared/store/categoriesSlice/categoriesSlice";
 import useMostVisitedPlaces from "../../hooks/places/useMostVisitedPlaces";
+import useTopRatedPlacesByCategory from "../../hooks/places/useTopRatedPlacesByCategory";
+import { getMostVisitedPlacesUseCase } from "../../../domain/usecases/places/getMostVisitedPlacesUseCase";
+
+//Components
 
 import MainHeader from "../../components/MainHeader/MainHeader";
 import MostVisitedPlaces from "../../components/MostVisitedPlaces/MostVisitedPlaces";
 import CategoryCardSmall from "../../components/CategoryCardSmall/CategoryCardSmall";
+import VerticalPlaceCard from "../../components/VerticalPlaceCard/VerticalPlaceCard";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const PADDING_HORIZONTAL = 16; // Padding lateral del carrusel
@@ -29,16 +34,31 @@ const HomeScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { all, status } = useSelector((state) => state.categories);
   const { places, loading, error } = useMostVisitedPlaces();
+  const {
+    places: topRatedPlaces,
+    loading: loadingTopRated,
+    error: errorTopRated,
+  } = useTopRatedPlacesByCategory(selectedCategory);
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0); // Cambiamos a useState
-
-  // Añadir logs para depuración
-  console.log('Estado de categorías:', status);
-  console.log('Todas las categorías:', all);
 
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
+
+  // Logging cuando se selecciona una categoría o cambian datos
+  useEffect(() => {
+    if (selectedCategory) {
+      const categoryName =
+        all?.find((c) => c.id === selectedCategory)?.name || "Desconocida";
+    }
+  }, [selectedCategory, all]);
+
+  useEffect(() => {
+    if (topRatedPlaces && topRatedPlaces.length > 0) {
+      // Los lugares top-rated se han cargado correctamente
+    }
+  }, [topRatedPlaces]);
 
   useEffect(() => {
     if (!places || places.length === 0) return;
@@ -46,7 +66,7 @@ const HomeScreen = () => {
     const interval = setInterval(() => {
       if (flatListRef.current) {
         const nextIndex = (currentIndex + 1) % places.length;
-        setCurrentIndex(nextIndex); // Actualizamos el estado
+        setCurrentIndex(nextIndex);
         flatListRef.current.scrollToIndex({
           index: nextIndex,
           animated: true,
@@ -61,9 +81,7 @@ const HomeScreen = () => {
     ? all.filter((cat) => cat.isDefault)
     : [];
 
-  const handleViewMore = () => {
-    console.log("Ver Más presionado");
-  };
+  const handleViewMore = () => {};
 
   // Limitamos a 3 cards de categorías (el 4to es "Ver Más")
   const displayCategories = Array.isArray(all)
@@ -87,14 +105,19 @@ const HomeScreen = () => {
   const handleScrollEnd = (e) => {
     const offset = e.nativeEvent.contentOffset.x;
     const newIndex = Math.round(offset / SNAP_INTERVAL);
-    console.log('Nuevo índice después de desplazamiento:', newIndex, 'de', places.length);
-    setCurrentIndex(newIndex); // Actualizamos el estado
+    setCurrentIndex(newIndex);
   };
 
   return (
-    <View style={styles.container}>
-      <MainHeader username={"Christofer"} />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <View style={styles.outerContainer}>
+      <View style={styles.headerContainer}>
+        <MainHeader username={"Christofer"} />
+      </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollViewStyle}
+      >
         {/* Lugares más visitados */}
         <View>
           <Text style={styles.sectionTitle}>
@@ -108,11 +131,10 @@ const HomeScreen = () => {
             keyExtractor={(item) => item.idPlace.toString()}
             horizontal
             renderItem={({ item, index }) => {
-              console.log(`Renderizando lugar ${index}:`, item);
               return (
                 <MostVisitedPlaces
                   place={item}
-                  onPress={() => console.log("Ver más sobre:", item.placeName)}
+                  onPress={() => {/* TODO: Implementar navegación al detalle */}}
                   cardWidth={CARD_WIDTH}
                   cardMargin={CARD_MARGIN}
                 />
@@ -147,13 +169,14 @@ const HomeScreen = () => {
             <Text style={styles.textBlack}>Cual es</Text>
             <Text style={styles.textPrimary}> tu </Text>
             <Text style={styles.textPrimary}>Plan</Text>
-            <Text style={styles.textBreakLine}>               </Text>
+            <Text style={styles.textBreakLine}>                </Text>
             <Text style={styles.textPrimary}>Plan</Text>
             <Text style={styles.textBlack}> para el Día de </Text>
             <Text style={styles.textPrimary}>Hoy</Text>
             <Text style={styles.textBlack}>?</Text>
           </Text>
         </View>
+
         {/* Todas las Categorías con 3 cards y card "Ver Más" a la derecha */}
         <View style={styles.categoryListContainer}>
           {displayCategories.map((item) => (
@@ -163,7 +186,6 @@ const HomeScreen = () => {
                 iconCategory={item.icon || "pricetag-outline"}
                 isSelectedCategory={selectedCategory === item.id}
                 onPressCard={() => {
-                  console.log('Categoría seleccionada:', item.name, 'con ID:', item.id);
                   setSelectedCategory(item.id);
                 }}
               />
@@ -173,19 +195,75 @@ const HomeScreen = () => {
             <CategoryCardSmall isViewMore onPressCard={handleViewMore} />
           </View>
         </View>
+
+        {/* Sección de Lugares Mejor Calificados */}
+        <View style={styles.topRatedSection}>
+          {loadingTopRated ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Colors.ColorPrimary} />
+              <Text style={styles.loadingText}>
+                Cargando lugares destacados...
+              </Text>
+            </View>
+          ) : errorTopRated ? (
+            <Text style={styles.errorText}>Error: {String(errorTopRated)}</Text>
+          ) : topRatedPlaces && topRatedPlaces.length > 0 ? (
+            <View style={styles.topRatedOuterContainer}>
+              <View style={styles.topRatedGrid}>
+                {topRatedPlaces.map((item) => (
+                  <VerticalPlaceCard
+                    key={item.idPlace.toString()}
+                    NameCard={item.placeName}
+                    ImagenPlaceCard={item.imageUrl}
+                    ratingStars={item.ratingStars}
+                    imageCategoryName={item.imageCategoryName}
+                    onPress={() => {
+                      /* TODO: Implementar navegación al detalle */
+                    }}
+                  />
+                ))}
+              </View>
+            </View>
+          ) : selectedCategory ? (
+            <Text style={styles.noPlacesText}>
+              No hay lugares destacados para esta categoría.
+            </Text>
+          ) : (
+            <Text style={styles.noPlacesText}>
+              Selecciona una categoría para ver los lugares destacados.
+            </Text>
+          )}
+        </View>
       </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    backgroundColor: Colors.BackgroundPage,
+    overflow: "visible",
+  },
+  headerContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+    backgroundColor: Colors.BackgroundPage,
+  },
   container: {
     flex: 1,
-    ...GlobalStyles.ScreenBaseStyle,
+    ...GlobalStyles.ScreenBaseStyle, // Esto ya aplica padding: 16 automáticamente
+    overflow: "visible", // Permite que los elementos hijos sean visibles fuera de los límites
+  },
+  scrollViewStyle: {
+    overflow: "visible",
+    paddingHorizontal: 16, // Restauramos el padding aquí
   },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 20,
+    overflow: "visible", // Permitir que las sombras sean visibles
   },
   sectionTitle: {
     ...TextStyles.PoppinsSemiBold15,
@@ -197,6 +275,36 @@ const styles = StyleSheet.create({
   },
   textBlack: {
     color: Colors.Black,
+  },
+  topRatedSection: {
+    marginTop: 0,
+    marginHorizontal: -8, // Mantenemos el margen negativo para las sombras
+    overflow: "visible",
+  },
+  topRatedOuterContainer: {
+    paddingHorizontal: 8, // Compensamos el margen negativo
+    overflow: "visible", // Seguimos permitiendo que las sombras sean visibles
+  },
+  topRatedGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginTop: 10,
+    overflow: "visible", // Aseguramos que las sombras sean visibles
+    paddingHorizontal: 0, // Eliminamos padding adicional
+    paddingRight: 3, // Añadimos un padding en el lado derecho para separar del borde
+  },
+  noPlacesText: {
+    ...TextStyles.PoppinsRegular15,
+    color: Colors.DarkGray,
+    textAlign: "center",
+    marginTop: 20,
+  },
+  errorText: {
+    ...TextStyles.PoppinsRegular15,
+    color: "red",
+    textAlign: "center",
+    marginTop: 20,
   },
   pagination: {
     flexDirection: "row",
@@ -223,8 +331,8 @@ const styles = StyleSheet.create({
     textAlign: "start",
   },
   categoryListWrapperRow: {
-    width: '100%',
-    flexDirection: 'row',
+    width: "100%",
+    flexDirection: "row",
   },
   categoryListRow: {
     flexDirection: "row",
@@ -236,16 +344,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between", // Espacio igual entre cards, pegadas a los bordes
     alignItems: "flex-start",
-    width: '100%',
-    marginVertical: 8,
+    width: "100%",
+    marginTop: 0,
   },
   categoryCardFlex: {
     flex: 1,
     alignItems: "center",
   },
   cardWrapper: {
-    width: "20%", 
+    width: "20%",
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  loadingText: {
+    ...TextStyles.PoppinsRegular15,
+    color: Colors.DarkGray,
+    marginTop: 10,
+  },
+  categoryText: {
+    ...TextStyles.PoppinsRegular15,
+    color: Colors.DarkGray,
+    flex: 1,
   },
 });
-
 export default HomeScreen;

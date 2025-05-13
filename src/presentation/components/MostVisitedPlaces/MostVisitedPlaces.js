@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import { GlobalStyles, TextStyles, Colors } from '../../styles/styles';
 
 const MostVisitedPlaces = ({ place, onPress, cardWidth, cardMargin }) => {
-  console.log('Renderizando MostVisitedPlaces:', { place, cardWidth, cardMargin });
-  
   return (
     <TouchableOpacity
       style={[styles.card, { width: cardWidth, marginRight: cardMargin }]} // Reducimos un poco el ancho para asegurar que quepan todos
