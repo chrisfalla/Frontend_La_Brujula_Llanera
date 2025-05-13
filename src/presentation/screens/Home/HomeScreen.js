@@ -315,20 +315,16 @@ const HomeScreen = () => {
           ) : errorTags ? (
             <Text style={styles.errorText}>Error al cargar etiquetas: {errorTags}</Text>
           ) : tags && tags.length > 0 ? (
-            <FlatList
-              data={tags}
-              renderItem={({ item }) => (
+            <View style={styles.tagsContainer}>
+              {tags.map((item) => (
                 <CustomCheap
+                  key={item.idTag?.toString() || Math.random().toString()}
                   label={item.tagName}
                   selected={!!selectedTags[item.idTag]}
                   onPress={() => handleTagPress(item.idTag)}
                 />
-              )}
-              keyExtractor={(item) => item.idTag?.toString() || Math.random().toString()}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.tagsFlatListContainer}
-            />
+              ))}
+            </View>
           ) : (
             <Text style={styles.noPlacesText}>No hay etiquetas disponibles.</Text>
           )}
@@ -487,6 +483,12 @@ const styles = StyleSheet.create({
   tagsSectionContainer: {
     marginTop: 20,
     marginBottom: 10,
+  },
+  tagsContainer: {
+    flexDirection: 'row', // Asegura que los elementos se alineen en fila
+    flexWrap: 'wrap', // Permite que los elementos se bajen a la siguiente línea
+    justifyContent: 'flex-start', // Alinea los elementos al inicio del contenedor
+    alignItems: 'flex-start', // Alinea los elementos al inicio del contenedor
   },
   tagsFlatListContainer: {
     paddingVertical: 10,

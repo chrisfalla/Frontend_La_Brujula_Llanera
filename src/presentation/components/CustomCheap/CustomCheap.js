@@ -30,8 +30,8 @@ const styles = StyleSheet.create({
   tag: {
     paddingVertical: 3,
     paddingHorizontal: 16,
-    borderRadius: GlobalStyles.cornerRadius, // Usamos el cornerRadius global
-    margin: 5,
+    marginRight: 8,
+    marginBottom: 10,
     borderWidth: 1,
     // Aseguramos un fondo opaco para la sombra
     backgroundColor: Colors.BackgroundPage, // Fondo consistente con el global
