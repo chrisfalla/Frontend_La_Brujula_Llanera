@@ -11,3 +11,15 @@ export const fetchMostVisitedPlaces = async () => {
         return [];
     }
 };
+
+export const fetchTopRatedPlacesByCategory = async (idCategory) => {
+    try {
+        // Corregir la ruta para seguir la estructura de otros endpoints
+        const data = await httpClient.get(`/home/top-rated/${idCategory}`);
+        console.log('✅ [API] fetchTopRatedPlacesByCategory response:', data);
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        console.error('❌ [API] fetchTopRatedPlacesByCategory error:', error);
+        return [];
+    }
+};
