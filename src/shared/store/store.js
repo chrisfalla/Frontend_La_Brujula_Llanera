@@ -7,4 +7,12 @@ export const store = configureStore({
     categories: categoriesReducer,
     topRatedPlaces: topRatedPlacesReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignora estos paths específicos donde hay valores no serializables
+        ignoredActions: ['topRatedPlaces/fetchByCategory/fulfilled'],
+        ignoredPaths: ['topRatedPlaces.items'],
+      },
+    }),
 });
