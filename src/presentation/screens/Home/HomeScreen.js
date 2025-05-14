@@ -97,6 +97,13 @@ const HomeScreen = () => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
+  // Seleccionar la primera categoría por defecto al iniciar
+  useEffect(() => {
+    if (all && all.length > 0 && !selectedCategory) {
+      setSelectedCategory(all[0].id);
+    }
+  }, [all, selectedCategory]);
+
   // Handle category selection changes
   useEffect(() => {
     if (selectedCategory) {
@@ -135,6 +142,13 @@ const HomeScreen = () => {
     const tagIds = Object.keys(selectedTags).filter(id => selectedTags[id]);
     setActiveTagIds(tagIds.length > 0 ? tagIds : []);
   }, [selectedTags]);
+
+  useEffect(() => {
+    if (tags && tags.length > 0 && Object.keys(selectedTags).length === 0) {
+      // Selecciona el primer tag al iniciar
+      setSelectedTags({ [tags[0].idTag]: true });
+    }
+  }, [tags]);
 
   //============================================================================
   // DERIVED DATA & HELPER FUNCTIONS
@@ -178,10 +192,7 @@ const HomeScreen = () => {
   const handleViewMore = () => {};
 
   const handleTagPress = useCallback((tagId) => {
-    setSelectedTags(prev => ({
-      ...prev,
-      [tagId]: !prev[tagId]
-    }));
+    setSelectedTags({ [tagId]: true }); // Solo uno seleccionado a la vez
   }, []);
 
   const onScrollToIndexFailed = (info) => {
@@ -346,10 +357,10 @@ const HomeScreen = () => {
 
         {/* SECCIÓN 4: Etiquetas */}
         <View style={styles.tagsSectionContainer}>
-          <Text style={styles.sectionTitle}>
+          {/* <Text style={styles.sectionTitle}>
             <Text style={styles.textBlack}>Buscar por </Text>
             <Text style={styles.textPrimary}>Etiquetas</Text>
-          </Text>
+          </Text> */}
           {loadingTags ? (
             <ActivityIndicator size="large" color={Colors.ColorPrimary} />
           ) : errorTags ? (
@@ -372,13 +383,6 @@ const HomeScreen = () => {
 
         {/* NUEVA SECCIÓN 5: Lugares por Tags */}
         <View style={styles.placesByTagsContainer}>
-          {activeTagIds.length > 0 && (
-            <Text style={styles.sectionTitle}>
-              <Text style={styles.textBlack}>Lugares por </Text>
-              <Text style={styles.textPrimary}>Etiquetas</Text>
-            </Text>
-          )}
-          
           {loadingPlacesByTags ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={Colors.ColorPrimary} />
@@ -554,7 +558,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     overflow: "visible",
     paddingHorizontal: 0,
-    paddingRight: 3,
+    paddingRight: 1,
   },
   loadingContainer: {
     alignItems: "center",

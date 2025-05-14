@@ -86,7 +86,7 @@ const VerticalPlaceCard = ({
 
 const styles = StyleSheet.create({
   mainContainer: {
-    width: '48%', // Ligeramente ajustado para mejor espacio entre cards
+    width: '48.5%', // Ligeramente ajustado para mejor espacio entre cards
     marginHorizontal: 0, // Quitamos el margen horizontal para evitar el espacio extra
     alignItems: "center",
     alignSelf: 'flex-start',
@@ -104,13 +104,12 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: "100%",
     height: 140,
-    borderTopLeftRadius: GlobalStyles.borderRadius,
-    borderTopRightRadius: GlobalStyles.borderRadius,
+    borderRadius: GlobalStyles.borderRadius,
   },
   favoriteButton: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 4,
+    right: 4,
     zIndex: 3,
     backgroundColor: "white",
     width: 36,
@@ -127,8 +126,9 @@ const styles = StyleSheet.create({
   ratingContainer: {
     position: "absolute",
     bottom: -3, // Ahora justo en el borde de la imagen
-    left: "10%",
-    width: "80%",
+    // left: "10%",
+    width: "75%",
+    marginLeft: "12%",
     alignItems: "center",
     backgroundColor: Colors.BackgroundPage,
     paddingVertical: 4,
