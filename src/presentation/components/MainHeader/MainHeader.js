@@ -2,14 +2,17 @@ import React from "react";
 import { View, StyleSheet,  TouchableOpacity, Text, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors, TextStyles } from "../../../presentation/styles/styles";
+import { useSelector } from "react-redux";
 
 const MainHeader = ({ primarytIcon = "notifications", SecondIcon = "settings", username }) => {  {/* propiedades para llamar los iconos */}
+
+const usernames = useSelector(state => state.auth.user?.name || "Invitado");
 return (
     <View style={styles.header}>
         <Image source={require('../../../shared/assets/Avatar.png') } style={styles.avatar}/>
         <View style={styles.containertitle}>
         <Text style={styles.title}> Hola, </Text>
-        <Text style={styles.username} >{username} </Text>
+        <Text style={styles.username} >{usernames} </Text>
         </View>
         {/* ( muestra los iconos en la parte derecha de la pantalla ) */}
         <View style={styles.iconContainer}>          

@@ -2,7 +2,6 @@ import React from "react";
 import {  View,  Text,  StyleSheet,  ScrollView,  KeyboardAvoidingView,  Platform, Alert} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CustomStepper from "../../components/Steper/CustomSteper";
-import LogoTitle from "../../components/LogoTitle";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import CustomInputText from "../../components/CustomInput/CustomInputText";
 
@@ -28,7 +27,6 @@ return (
       style={{ flex: 1 }}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <LogoTitle />
       
         <View style={styles.content}>
           <Text style={styles.title}>
