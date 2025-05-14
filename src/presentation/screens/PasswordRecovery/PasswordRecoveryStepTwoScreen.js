@@ -2,7 +2,6 @@ import React from 'react';
 import {  View,  Text,  StyleSheet,  ScrollView,  KeyboardAvoidingView,  Platform,} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CustomStepper from '../../components/Steper/CustomSteper';
-import LogoTitle from '../../components/LogoTitle';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import CustomInputText from '../../components/CustomInput/CustomInputText';
 
@@ -21,7 +20,6 @@ const PasswordRecoveryStepTwoScreen = () => {
     >
       <View style={styles.inner}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <LogoTitle />
 
           <View style={styles.content}>
             <Text style={styles.title}>
