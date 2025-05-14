@@ -3,9 +3,6 @@ import { View, Text, Image,  StyleSheet, TouchableOpacity } from "react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { GlobalStyles, Colors,TextStyles } from "../../styles/styles";
 
-const handleRegister = () => {
-    navigation.navigate('Registro');
-};
 const handleLogin =() => {
     navigation.navigate('Login');
 
