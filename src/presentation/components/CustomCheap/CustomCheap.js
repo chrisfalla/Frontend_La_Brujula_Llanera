@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   tag: {
-    paddingVertical: 3,
+    paddingVertical: 0,
     paddingHorizontal: 16,
     marginRight: 8,
     marginBottom: 10,
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
   },
   text: {
     ...TextStyles.PoppinsRegular13,
+    paddingTop: 2,
   },
   textUnselected: {
     color: Colors.Black,

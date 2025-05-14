@@ -8,7 +8,7 @@ const Rating = ({ average = 0, useBackground = true, size = 28 }) => {
     // Añadimos la prop size para controlar el tamaño de las estrellas
     const stars = [];
     // Usamos un color más amarillo/dorado que coincide mejor con la imagen de referencia
-    const starColor = "#F3F02B"; 
+    const starColor = "gold"; 
     
     for (let i = 1; i <= 5; i++) {
         if (average >= i) {

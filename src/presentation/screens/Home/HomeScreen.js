@@ -3,7 +3,7 @@
 //==============================================================================
 
 // React imports
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -24,15 +24,17 @@ import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 // Hooks
 import useMostVisitedPlaces from "../../hooks/places/useMostVisitedPlaces";
 import useTopRatedPlacesByCategory from "../../hooks/places/useTopRatedPlacesByCategory";
+import usePlacesByTags from "../../hooks/places/usePlacesByTags"; // Nuevo hook
 import { useTags } from "../../hooks/tags/useTags";
 import { getMostVisitedPlacesUseCase } from "../../../domain/usecases/places/getMostVisitedPlacesUseCase";
 
 // Components
 import MainHeader from "../../components/MainHeader/MainHeader";
 import MostVisitedPlaces from "../../components/MostVisitedPlaces/MostVisitedPlaces";
-import CategoryCardSmall from "../../components/CategoryCardSmall/CategoryCardSmall";
+import CategoryCardSmall from "../../components/CategoryCardSmall/CategoryCardSmall";  // Corregido cierre de comillas
 import VerticalPlaceCard from "../../components/VerticalPlaceCard/VerticalPlaceCard";
 import CustomCheap from "../../components/CustomCheap/CustomCheap";
+import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace"; // Importamos el componente
 
 //==============================================================================
 // CONSTANTS
@@ -55,6 +57,7 @@ const HomeScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedTags, setSelectedTags] = useState({});
+  const [activeTagIds, setActiveTagIds] = useState([]);
   
   // Redux state
   const { all, status } = useSelector((state) => state.categories);
@@ -67,6 +70,13 @@ const HomeScreen = () => {
     error: errorTopRated,
   } = useTopRatedPlacesByCategory(selectedCategory);
   const { tags, loading: loadingTags, error: errorTags } = useTags();
+  
+  // Nuevo hook para lugares por tags
+  const {
+    places: placesByTags,
+    loading: loadingPlacesByTags,
+    error: errorPlacesByTags,
+  } = usePlacesByTags(activeTagIds);
   
   // Serializable data transformation
   const topRatedPlaces = useMemo(() => {
@@ -120,6 +130,12 @@ const HomeScreen = () => {
     return () => clearInterval(interval);
   }, [places, currentIndex]);
 
+  // Actualizar activeTagIds cuando cambian los tags seleccionados
+  useEffect(() => {
+    const tagIds = Object.keys(selectedTags).filter(id => selectedTags[id]);
+    setActiveTagIds(tagIds.length > 0 ? tagIds : []);
+  }, [selectedTags]);
+
   //============================================================================
   // DERIVED DATA & HELPER FUNCTIONS
   //============================================================================
@@ -133,15 +149,40 @@ const HomeScreen = () => {
     ? all.filter((cat) => cat.isDefault).slice(0, 3)
     : [];
 
+  // Utilidad para obtener el nombre de la categoría a partir del idPlace
+  const getCategoryNameByPlaceId = (idPlace) => {
+    // Busca en todas las categorías si alguna tiene un array de lugares y encuentra el idPlace
+    if (!Array.isArray(all)) return "Categoría desconocida";
+    for (const category of all) {
+      // Si tienes un array de lugares en cada categoría
+      if (Array.isArray(category.places) && category.places.some(place => place.idPlace === idPlace)) {
+        return category.name;
+      }
+      // Si tienes un array de ids de lugares
+      if (Array.isArray(category.placeIds) && category.placeIds.includes(idPlace)) {
+        return category.name;
+      }
+    }
+    return "Categoría desconocida";
+  };
+
+  // Utilidad para obtener el nombre de la categoría a partir del item (lugar)
+  const getCategoryNameByPlace = (item) => {
+    if (item.imageCategoryName && typeof item.imageCategoryName === 'string' && item.imageCategoryName.trim() !== '') {
+      return item.imageCategoryName;
+    }
+    return "Categoría desconocida";
+  };
+
   // Event handlers
   const handleViewMore = () => {};
 
-  const handleTagPress = (tagId) => {
+  const handleTagPress = useCallback((tagId) => {
     setSelectedTags(prev => ({
       ...prev,
       [tagId]: !prev[tagId]
     }));
-  };
+  }, []);
 
   const onScrollToIndexFailed = (info) => {
     const wait = new Promise((resolve) => setTimeout(resolve, 500));
@@ -306,10 +347,9 @@ const HomeScreen = () => {
         {/* SECCIÓN 4: Etiquetas */}
         <View style={styles.tagsSectionContainer}>
           <Text style={styles.sectionTitle}>
-            <Text style={styles.textBlack}>Explora por </Text>
+            <Text style={styles.textBlack}>Buscar por </Text>
             <Text style={styles.textPrimary}>Etiquetas</Text>
           </Text>
-          
           {loadingTags ? (
             <ActivityIndicator size="large" color={Colors.ColorPrimary} />
           ) : errorTags ? (
@@ -328,6 +368,48 @@ const HomeScreen = () => {
           ) : (
             <Text style={styles.noPlacesText}>No hay etiquetas disponibles.</Text>
           )}
+        </View>
+
+        {/* NUEVA SECCIÓN 5: Lugares por Tags */}
+        <View style={styles.placesByTagsContainer}>
+          {activeTagIds.length > 0 && (
+            <Text style={styles.sectionTitle}>
+              <Text style={styles.textBlack}>Lugares por </Text>
+              <Text style={styles.textPrimary}>Etiquetas</Text>
+            </Text>
+          )}
+          
+          {loadingPlacesByTags ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Colors.ColorPrimary} />
+              <Text style={styles.loadingText}>Cargando lugares...</Text>
+            </View>
+          ) : errorPlacesByTags ? (
+            <Text style={styles.errorText}>Error: {String(errorPlacesByTags)}</Text>
+          ) : placesByTags && placesByTags.length > 0 ? (
+            <View style={styles.placesByTagsOuterContainer}>
+              <FlatList
+                style={styles.flatListStyle} // Nuevo estilo para evitar recorte de sombra
+                data={placesByTags}
+                keyExtractor={item => item.idPlace?.toString() || Math.random().toString()}
+                renderItem={({ item }) => (
+                  <HorizontalCardPlace
+                    name={item.placeName}
+                    category={item.categoryInfo?.categoryName || 'Categoría desconocida'}
+                    address={item.placeAddress || 'Dirección no disponible'}
+                    image={item.imageUrl}
+                    onMapPress={() => {/* TODO: Implementar navegación */}}
+                  />
+                )}
+                scrollEnabled={false}
+                contentContainerStyle={styles.placesByTagsListContainer}
+              />
+            </View>
+          ) : activeTagIds.length > 0 ? (
+            <Text style={styles.noPlacesText}>
+              No hay lugares para las etiquetas seleccionadas.
+            </Text>
+          ) : null}
         </View>
       </ScrollView>
     </View>
@@ -363,7 +445,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBottom: 30, // Aumentar el padding inferior para dar más espacio
     overflow: "visible",
   },
   
@@ -457,11 +539,12 @@ const styles = StyleSheet.create({
   // Sección lugares destacados
   topRatedSection: {
     marginTop: 0,
-    marginHorizontal: -8,
+    marginHorizontal: -16, // Ajustar para que sea igual al padding del ScrollView
     overflow: "visible",
+    marginBottom: 10,
   },
   topRatedOuterContainer: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 16, // Ajustar para que coincida con el margen negativo
     overflow: "visible",
   },
   topRatedGrid: {
@@ -493,6 +576,24 @@ const styles = StyleSheet.create({
   tagsFlatListContainer: {
     paddingVertical: 10,
   },
+
+  // Nueva sección de lugares por tags
+  placesByTagsContainer: {
+    overflow: "visible",
+  },
+  placesByTagsOuterContainer: {
+    overflow: "visible",
+    marginRight: 4,
+  },
+  placesByTagsListContainer: {
+    overflow: "visible",
+    // paddingBottom: 0,
+    paddingHorizontal: 0,
+  },
+  flatListStyle: {
+    overflow: "visible", // Evita que el FlatList recorte las sombras de sus items
+  },
+  
 });
 
 export default HomeScreen;
