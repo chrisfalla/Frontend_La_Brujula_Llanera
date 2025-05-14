@@ -1,5 +1,5 @@
 import axios from 'axios';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { API_CONFIG } from '../../shared/constants/environment/environment';
 
 const instance = axios.create({
@@ -10,14 +10,21 @@ const instance = axios.create({
   }
 });
 
-// Token por header (comentado por ahora)
-// instance.interceptors.request.use(async (config) => {
-//   const token = await AsyncStorage.getItem('authToken');
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
+// Token por header (usando SecureStore en lugar de AsyncStorage)
+instance.interceptors.request.use(async (config) => {
+  try {
+    const userData = await SecureStore.getItemAsync('loggedUser');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.token) {
+        config.headers.Authorization = `Bearer ${user.token}`;
+      }
+    }
+  } catch (error) {
+    console.error('Error al obtener token', error);
+  }
+  return config;
+});
 
 // Manejo de errores
 // instance.interceptors.response.use(
