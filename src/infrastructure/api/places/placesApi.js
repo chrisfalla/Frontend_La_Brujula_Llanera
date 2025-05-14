@@ -23,3 +23,27 @@ export const fetchTopRatedPlacesByCategory = async (idCategory) => {
         return [];
     }
 };
+
+export const fetchTopRatedPlacesByTags = async (tagIds) => {
+    try {
+        // Si el API espera múltiples parámetros en lugar de separados por comas
+        let url = '/home/top-rated-by-tags';
+        
+        if (Array.isArray(tagIds) && tagIds.length > 0) {
+            // Construir la URL con múltiples parámetros tagId (tagId=1&tagId=2)
+            const params = tagIds.map(id => `tagId=${id}`).join('&');
+            url += `?${params}`;
+        } else if (tagIds) {
+            // Un solo tagId
+            url += `?tagId=${tagIds}`;
+        }
+        
+        console.log('🔍 Intentando URL:', url);
+        const data = await httpClient.get(url);
+        console.log('✅ [API] fetchTopRatedPlacesByTags response:', data);
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        console.error('❌ [API] fetchTopRatedPlacesByTags error:', error);
+        return [];
+    }
+};
