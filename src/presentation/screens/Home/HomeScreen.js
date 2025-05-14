@@ -289,8 +289,7 @@ const HomeScreen = () => {
             <Text style={styles.textBlack}>Cual es</Text>
             <Text style={styles.textPrimary}> tu </Text>
             <Text style={styles.textPrimary}>Plan</Text>
-            <Text style={styles.textBreakLine}>                </Text>
-            <Text style={styles.textPrimary}>Plan</Text>
+            <Text>                </Text>
             <Text style={styles.textBlack}> para el Día de </Text>
             <Text style={styles.textPrimary}>Hoy</Text>
             <Text style={styles.textBlack}>?</Text>
@@ -468,8 +467,10 @@ const styles = StyleSheet.create({
   planText: {
     fontFamily: "Poppins-Bold",
     fontSize: 28,
-    marginBottom: 5,
     textAlign: "start",
+    lineHeight: 32, // Agregado para reducir el espacio entre líneas
+    includeFontPadding: false, // Reduce el padding adicional en Android
+    marginBottom: 10,
   },
   noPlacesText: {
     ...TextStyles.PoppinsRegular15,
@@ -493,7 +494,6 @@ const styles = StyleSheet.create({
     color: Colors.DarkGray,
     flex: 1,
   },
-  
   // Carrusel y paginación
   pagination: {
     flexDirection: "row",
