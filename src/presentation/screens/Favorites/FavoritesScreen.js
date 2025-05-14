@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { fetchFavorites } from '../../../shared/store/favoritesSlice/favoritesSlice';
 import NavigationTopBar from '../../components/NavigationTopBar/NavigationTopBar';
-import CategoryCardSmall from '../../components/CategoryCardSmall/CategoryCardSmall'; 
+import VerticalPlaceCard from '../../components/VerticalPlaceCard/VerticalPlaceCard';
 
 const FavoritesScreen = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -12,33 +12,43 @@ const FavoritesScreen = ({ navigation }) => {
     const error = useSelector((state) => state.favorites?.error);
 
     useEffect(() => {
+        console.log("Despachando fetchFavorites en FavoritesScreen");
         dispatch(fetchFavorites());
     }, [dispatch]);
 
-    const handleCardPress = (category) => {
-        navigation.navigate('CategoryDetails', { category });
+    const handleCardPress = (item) => {
+        console.log("Elemento seleccionado:", item);
+        navigation.navigate('CategoryDetails', { category: item });
     };
+
+    console.log("Renderizando favoritos:", favorites);
 
     return (
         <View style={styles.container}>
             <NavigationTopBar 
-            SecondIcon={null}
-            useBackground={false}
-            title="Favoritos" />
-
+                SecondIcon={null}
+                useBackground={false}
+                title="Favoritos" 
+            />
             
             <ScrollView contentContainerStyle={styles.scrollView}>
-                {loading && <Text>Cargando...</Text>}
-                {error && <Text>Error al cargar los favoritos</Text>}
-                {favorites.map((category) => (
-                    <CategoryCardSmall
-                        key={category.id}
-                        nameCategory={category.name}
-                        iconCategory={category.icon}
-                        isSelectedCategory={false} // Cambia esto según tu lógica
-                        onPressCard={handleCardPress}
-                    />
-                ))}
+                {loading && <Text style={styles.message}>Cargando...</Text>}
+                {error && <Text style={styles.errorMessage}>Error al cargar los favoritos: {error}</Text>}
+                {favorites && favorites.length > 0 ? (
+                    favorites.map((item) => (
+                        <VerticalPlaceCard
+                            key={item.id}
+                            title={item.name || `Lugar ${item.id.substring(0, 4)}`}
+                           
+                            category={item.categoryId || 'General'}
+                            location="Llanos Orientales"
+                            rating={4.5}
+                            onPress={() => handleCardPress(item)}
+                        />
+                    ))
+                ) : (
+                    !loading && <Text style={styles.message}>No hay favoritos disponibles</Text>
+                )}
             </ScrollView>
         </View>
     );
@@ -51,9 +61,22 @@ const styles = StyleSheet.create({
         paddingTop: 10,
     },
     scrollView: {
-        padding: 16,
+        padding: 10,
+        flexDirection: 'column',
     },
+    message: {
+        textAlign: 'center',
+        padding: 20,
+        fontSize: 16,
+    },
+    errorMessage: {
+        textAlign: 'center',
+        padding: 20,
+        fontSize: 16,
+        color: 'red',
+    }
 });
+
 export default FavoritesScreen;
 
 
