@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/Home/HomeScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 import MapaScreen from '../screens/Map/MapaScreen';
-import ProfileScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
+import FavoritesScreen from '../screens/Favorites/FavoritesScreen';
 
 
 
@@ -81,7 +81,7 @@ const TabNavigator = () => {
             />    
             <Tab.Screen
                 name="Profile"
-                component={ProfileScreen}
+                component={FavoritesScreen}
                 options={{
                     title: 'Perfil',
                     headerShown: false
