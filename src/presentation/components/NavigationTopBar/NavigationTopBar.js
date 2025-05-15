@@ -5,12 +5,14 @@ import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
 
 const NavigationTopBar = ({
   primaryIcon = "chevron-back",
-  SecondIcon = "heart-outline",
+  SecondIcon, // Permitir que SecondIcon sea undefined
   onBackPress,
   onSecondIconPress,
   useBackground = true,
   useHeart = true,
   title,
+  showSecondIcon = false, // Nueva prop para controlar la visibilidad del segundo icono
+  removeBackground = false, // Nueva prop para eliminar el fondo
 }) => {
   const [isHeartActive, setIsHeartActive] = useState(false);
 
@@ -27,40 +29,42 @@ const NavigationTopBar = ({
       <View style={styles.container}>
         {/* Botón de retroceso */}
         <TouchableOpacity
-          style={useBackground ? styles.iconContainer : styles.iconNoBackground}
+          style={removeBackground ? styles.iconNoBackground : styles.iconContainer}
           onPress={onBackPress}
         >
           <Ionicons style={styles.icon} name={primaryIcon} />
         </TouchableOpacity>
 
-        {/* Título */}
-        <Text style={[styles.title, !title && styles.titleHidden]}>
-          {title ? title : null}
-        </Text>
+        {/* Título siempre centrado */}
+        <View style={styles.titleContainer}>
+          <Text style={[styles.title, !title && styles.titleHidden]}>
+            {title ? title : null}
+          </Text>
+        </View>
 
-        {/* Ícono secundario solo si existe */}
-   {SecondIcon ? (
-  <TouchableOpacity
-    style={
-      SecondIcon === "pencil"
-        ? styles.iconNoBackground
-        : styles.iconContainer
-    }
-    onPress={
-      SecondIcon === "pencil"
-        ? onSecondIconPress
-        : useHeart && SecondIcon === "heart-outline"
-        ? handleHeartPress
-        : null
-    }
-    disabled={!useHeart && SecondIcon === "heart-outline"}
-  >
-    <Ionicons style={styles.icon} name={secondaryIconName} />
-  </TouchableOpacity>
-) : (
-  <View style={styles.emptySpace} />
-)}
-
+        {/* Ícono secundario o espacio invisible del mismo ancho */}
+        {showSecondIcon && SecondIcon ? (
+          <TouchableOpacity
+            style={
+              SecondIcon === "pencil"
+                ? styles.iconNoBackground
+                : styles.iconContainer
+            }
+            onPress={
+              SecondIcon === "pencil"
+                ? onSecondIconPress
+                : useHeart && SecondIcon === "heart-outline"
+                ? handleHeartPress
+                : onSecondIconPress
+            }
+            disabled={!useHeart && SecondIcon === "heart-outline"}
+          >
+            <Ionicons style={styles.icon} name={secondaryIconName} />
+          </TouchableOpacity>
+        ) : (
+          // Espacio invisible que ocupa el mismo ancho que el icono
+          <View style={[removeBackground ? styles.iconNoBackground : styles.iconContainer, styles.invisibleIcon]} />
+        )}
       </View>
     </View>
   );
@@ -74,6 +78,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 0, // Eliminamos el padding horizontal para que los iconos estén más cerca de los bordes
   },
   iconContainer: {
     backgroundColor: Colors.BackgroundPage,
@@ -81,17 +86,25 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: Colors.LightGray,
     padding: 7,
+    minWidth: 4, // Reducimos el ancho mínimo
   },
   icon: {
     color: Colors.ColorPrimary,
     fontSize: 22,
+    textAlign: 'center', // Centra el icono horizontalmente
   },
   iconNoBackground: {
     color: Colors.ColorPrimary,
-    paddingHorizontal: 10,
+    paddingHorizontal: 0, // Eliminamos el padding horizontal
+    minWidth: 30, // Reducimos aún más el ancho mínimo
+    marginHorizontal: 0, // Eliminamos el margen horizontal
+    marginLeft: -10, // Agregamos un margen negativo para acercar más al borde
   },
-  hiddenIcon: {
-    opacity: 0,
+  titleContainer: {
+    flex: 1, // Ocupa todo el espacio disponible
+    alignItems: 'center', // Centra el título horizontalmente
+    // Agregamos un padding horizontal para que el texto tenga más espacio
+    paddingHorizontal: 0, // Ajustamos el padding horizontal del título
   },
   title: {
     ...TextStyles.PoppinsSemiBold15,
@@ -100,6 +113,9 @@ const styles = StyleSheet.create({
   },
   titleHidden: {
     opacity: 0,
+  },
+  invisibleIcon: {
+    opacity: 0, // Hace que el elemento sea invisible
   },
 });
 
