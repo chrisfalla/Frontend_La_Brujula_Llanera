@@ -4,11 +4,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { navigationRef } from '../../infraestructure/services/navigationService';
+import { navigationRef } from '../../infrastructure/services/navigationService';
 
 import RegisterStepOneScreen from '../screens/Register/RegisterStepOne/RegisterStepOneScreen';
 import RegisterStepTwoScreen from '../screens/Register/RegisterStepTwo/RegisterStepTwoScreen';
-import { userStorage } from '../../infraestructure/storage/userStorage';
+import { userStorage } from '../../infrastructure/storage/userStorage';
 
 import HomeScreen from '../screens/Home/HomeScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';

@@ -32,16 +32,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: "center",
-    padding: 20,
-    paddingVertical:40,  
+    marginBottom: 20,
+    padding: 5,
+    paddingVertical: 5,  
     backgroundColor: Colors.BackgroundPage,
     width: "100%",
 },
 avatar:{       
     width: 40,
     height: 40,
-    marginRigth:10, 
-     
+    marginRight: 10,
+    marginLeft: -2,
 },
 containertitle:{
     marginRight: 50,
@@ -50,9 +51,11 @@ containertitle:{
 },
 title: {
     ...TextStyles.PoppinsRegular15,
+    marginTop: 5,
 },
 username: {
     ...TextStyles.PoppinsSemiBold15,
+    marginTop: 5,
 },
 iconContainer: {
     flexDirection: 'row',    

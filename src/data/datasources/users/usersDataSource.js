@@ -1,4 +1,4 @@
-import { registerUserApi } from '../../../infraestructure/api/users/usersApi';
+import { registerUserApi } from '../../../infrastructure/api/users/usersApi';
 
 export const usersDatasource = {
   registerUser: async (userData) => {

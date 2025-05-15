@@ -28,27 +28,34 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   tag: {
-    paddingVertical: 3,
+    paddingVertical: 0,
     paddingHorizontal: 16,
-    borderRadius: GlobalStyles.cornerRadius, // Usamos el cornerRadius global
-    margin: 5,
+    marginRight: 8,
+    marginBottom: 10,
     borderWidth: 1,
-    // Aseguramos un fondo opaco para la sombra
-    backgroundColor: Colors.BackgroundPage, // Fondo consistente con el global
-    // Propiedades de sombra para iOS
+    backgroundColor: Colors.BackgroundPage,
+  },
+  tagUnselected: {
+    borderColor: Colors.Black,
+    // Sin sombra
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  tagSelected: {
+    borderColor: Colors.ColorPrimary,
+    // Sombra solo si está seleccionado
     shadowColor: Colors.Black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-  },
-  tagUnselected: {
-    borderColor: Colors.Black,
-  },
-  tagSelected: {
-    borderColor: Colors.ColorPrimary,
+    elevation: 4,
   },
   text: {
     ...TextStyles.PoppinsRegular13,
+    paddingTop: 2,
   },
   textUnselected: {
     color: Colors.Black,

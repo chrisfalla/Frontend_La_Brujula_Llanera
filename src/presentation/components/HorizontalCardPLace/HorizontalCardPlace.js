@@ -8,7 +8,8 @@ const defaultImage = 'https://via.placeholder.com/50';
 
 const HorizontalCardPlace = ({
   name,
-  description,
+  category,
+  address,
   image,
   onMapPress, 
 }) => {
@@ -19,13 +20,23 @@ const HorizontalCardPlace = ({
         style={styles.image}
       />
       <View style={styles.textContainer}>
-        <Text style={styles.title} numberOfLines={1}>{name}</Text>
-        <Text style={styles.subTitle}>solo es un ejemplo </Text>
+        <Text style={styles.title} numberOfLines={1}>
+          {name}
+        </Text>
+        <Text style={styles.subTitle} numberOfLines={1}>
+          {category || "Categoría desconocida"}
+        </Text>
         <Text style={styles.description} numberOfLines={2}>
-          {description}
+          {address || "Dirección no disponible"}
         </Text>
       </View>
       <View style={styles.actionsContainer}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={onMapPress}
+        >
+          <FontAwesome5 name="chevron-right" size={16} color="#FFFFFF" />
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconButton}
           onPress={onMapPress}
@@ -55,13 +66,13 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    marginHorizontal: 16,
+    marginHorizontal:16,
     height: '100%',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   title: {
     fontSize: 20,
-    ...TextStyles.PoppinsSemibold20,
+    fontFamily: 'Poppins-Bold',
     color: Colors.ColorPrimary,
     marginBottom: 2,
     textAlign: 'center',
@@ -69,16 +80,15 @@ const styles = StyleSheet.create({
   subTitle: {
     textAlign: 'center',
     ...TextStyles.PoppinsRegular13,
-    fontSize: 13,
-    color: '#666666',
+    color: Colors.Black,
     marginBottom: 2,
   },
   description: {
     ...TextStyles.PoppinsRegular13,
     textAlign: 'center',
-    fontSize: 13,
-    color: '#666666',
+    color: Colors.Black,
     lineHeight: 16,
+    marginBottom: 3,
   },
   actionsContainer: {
     width: 25,

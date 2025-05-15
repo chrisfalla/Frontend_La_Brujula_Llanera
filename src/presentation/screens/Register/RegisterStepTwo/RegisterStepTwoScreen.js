@@ -11,8 +11,8 @@ import { GlobalStyles, TextStyles } from '../../../styles/styles';
 import { registerUserUseCase } from '../../../../domain/usecases/user/registerUserUseCase';
 import { usersRepository } from '../../../../data/repositories/users/usersRepository';
 import { userRegisterRequest } from '../../../../domain/models/users/userRegisterRequest';
-import { navigate } from '../../../../infraestructure/services/navigationService';
-import { userStorage } from '../../../../infraestructure/storage/userStorage';
+import { navigate } from '../../../../infrastructure/services/navigationService';
+import { userStorage } from '../../../../infrastructure/storage/userStorage';
 
 const RegisterStepTwoScreen = () => {
   const route = useRoute();
@@ -69,11 +69,25 @@ const RegisterStepTwoScreen = () => {
         });
 
         const response = await registerUserUseCase(usersRepository)(userData);
-        await userStorage.save(response.user);
-        dispatch(login(response.user));
+        
+        if (!response || !response.user) {
+          throw new Error('Respuesta inválida del servidor');
+        }
+        
+        const saveResult = await userStorage.save(response.user);
+        if (saveResult) {
+          dispatch(login(response.user));
+          navigate('Home');
+        } else {
+          throw new Error('No se pudo guardar la información del usuario');
+        }
       } catch (error) {
-        Alert.alert('Error', 'No se pudo registrar el usuario. Inténtalo más tarde.');
-        console.error(error);
+        let errorMsg = 'No se pudo registrar el usuario. Inténtalo más tarde.';
+        if (error.response && error.response.data && error.response.data.message) {
+          errorMsg = error.response.data.message;
+        }
+        Alert.alert('Error', errorMsg);
+        console.error('Error durante el registro:', error);
       }
     }
   };
