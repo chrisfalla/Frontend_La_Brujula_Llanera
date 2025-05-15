@@ -1,23 +1,30 @@
 import axios from 'axios';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { API_CONFIG } from '../../shared/constants/environment/environment';
 
 const instance = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json' 
   }
 });
 
-// Token por header (comentado por ahora)
-// instance.interceptors.request.use(async (config) => {
-//   const token = await AsyncStorage.getItem('authToken');
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
+// Token por header (usando SecureStore en lugar de AsyncStorage)
+instance.interceptors.request.use(async (config) => {
+  try {
+    const userData = await SecureStore.getItemAsync('loggedUser');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.token) {
+        config.headers.Authorization = `Bearer ${user.token}`;
+      }
+    }
+  } catch (error) {
+    console.error('Error al obtener token', error);
+  }
+  return config;
+});
 
 // Manejo de errores
 // instance.interceptors.response.use(
@@ -32,6 +39,12 @@ const instance = axios.create({
 //     return Promise.reject(error);
 //   }
 // );
+//logs
+// Eliminado el httpClient duplicado que tenía una baseURL incorrecta
+// y dejamos solo el instance principal que está correctamente configurado
+
+
+
 
 // 👉 Logging helper
 const logRequest = (method, url, data) => {
@@ -43,11 +56,11 @@ const logResponse = (data) => {
   console.log('✅ Response:', JSON.stringify(data, null, 2));
 };
 
-// Métodos genéricos
+// Métodos genéricos     que es el config?
 const get = async (url, config = {}) => {
   logRequest('get', url);
-  const res = await instance.get(url, config);
-  logResponse(res.data);
+  const res = await instance.get(url, config);//peticion al back 
+  logResponse(res.data); //logs console 
   return res.data;
 };
 

@@ -6,7 +6,7 @@ import CustomButton from '../../../components/CustomButton/CustomButton';
 import CustomDecoratione from '../../../components/CustomDecoration/CustomDecoration';
 import { GlobalStyles, TextStyles } from '../../../styles/styles';
 import CustomStepper from '../../../components/Steper/CustomSteper';
-import { navigate } from '../../../../infraestructure/services/navigationService';
+import { navigate } from '../../../../infrastructure/services/navigationService';
 
 
 const RegisterStepOneScreen = () => {
