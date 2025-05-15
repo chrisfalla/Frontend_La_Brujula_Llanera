@@ -1,5 +1,5 @@
 import React from 'react';
-import {  View,  Text,  StyleSheet,  ScrollView,  KeyboardAvoidingView,  Platform,} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CustomStepper from '../../components/Steper/CustomSteper';
 import CustomButton from '../../components/CustomButton/CustomButton';
@@ -19,11 +19,16 @@ const PasswordRecoveryStepTwoScreen = () => {
       style={styles.container}
     >
       <View style={styles.inner}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-
+        <ScrollView contentContainerStyle={styles.scrollContainer}>          
           <View style={styles.content}>
+            <Image 
+              source={require('../../../shared/assets/MainLogo.png')} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            
             <Text style={styles.title}>
-              Recuperar <Text style={styles.highlight}>Contraseña</Text>
+              Recuperación de Contraseña - Paso 2
             </Text>
 
             <View style={styles.statusContainer}>
@@ -37,12 +42,11 @@ const PasswordRecoveryStepTwoScreen = () => {
             <CustomInputText
               LabelText={'Ingrese el código de validación'}
               PlaceholderText={'BL-253665'}
-              HasError={''}
+              HasError={null}
             />
           </View>
         </ScrollView>
 
-        {/* Botón fijo abajo */}
         <View style={styles.footer}>
           <CustomButton
             titletext="Continuar"
@@ -95,6 +99,12 @@ const styles = StyleSheet.create({
   footer: {
     padding: 20,
     backgroundColor: '#fff',
+  },
+  logo: {
+    alignSelf: 'center',
+    width: 200, 
+    height: 120,
+    marginBottom: 10
   },
 });
 

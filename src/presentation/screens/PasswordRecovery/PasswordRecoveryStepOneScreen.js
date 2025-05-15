@@ -1,5 +1,5 @@
 import React from "react";
-import {  View,  Text,  StyleSheet,  ScrollView,  KeyboardAvoidingView,  Platform, Alert} from "react-native";
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CustomStepper from "../../components/Steper/CustomSteper";
 import CustomButton from "../../components/CustomButton/CustomButton";
@@ -19,45 +19,43 @@ const PasswordRecoveryStepOneScreen = () => {
       "Hemos enviado un nuevo código a tu correo electrónico.",
       [{ text: "OK" }]
     );
-};
-return (
+  };
+
+  return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
       style={{ flex: 1 }}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-      
         <View style={styles.content}>
-          <Text style={styles.title}>
-            Recuperar <Text style={styles.highlight}>Contraseña</Text>
-          </Text>
-
+          <Image 
+            source={require('../../../shared/assets/MainLogo.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Recuperación de Contraseña - Paso 1</Text>
+          </View>
           <View style={styles.statusContainer}>
-              <CustomStepper step={1} />
-            </View>
+            <CustomStepper step={1} />
+          </View>
           <Text style={styles.subtitle}>
             A continuación se le guiará en el proceso de recuperación de su
             contraseña. Primero vamos a validar la existencia de su correo
             electrónico.
-
-            
           </Text>
-
           <CustomInputText
             LabelText="Ingresa correo electrónico registrado"
             PlaceholderText="ejemplo@email.com"
-            HasError={''}
-            
+            HasError={null}
           />
-
           <CustomButton
             titletext="Enviar código nuevamente"
             onPress={handleResendCode}
             type="Secondary"
             size="Big"
           />
-
           <CustomButton
             titletext="Continuar"
             onPress={handleContinue}
@@ -75,18 +73,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "space-between",
     padding: 20,
-    paddingBottom:0,
+    paddingBottom: 0,
     backgroundColor: "#fff",
   },
   statusContainer: {
     width: "100%",
     alignItems: "center",
     marginVertical: 20,
-    
   },
   content: {
-   
-    marginBottom:0,
+    marginBottom: 0,
     marginTop: 0,
     width: "100%",
   },
@@ -105,8 +101,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 20,
   },
-
+  logo: {
+    alignSelf: 'center',
+    width: 200, 
+    height: 120,
+    marginBottom: 20
+  },
 });
-
 
 export default PasswordRecoveryStepOneScreen;

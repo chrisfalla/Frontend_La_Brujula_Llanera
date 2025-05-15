@@ -41,7 +41,11 @@ const CustomInputText = ({
         onBlur={() => setIsFocused(false)}
       />
 
-      {HasError && <Text style={styles.errorText}>{SupportingText}</Text>}
+      {HasError ? (
+        <Text style={styles.errorText}>
+          {typeof HasError === 'string' ? HasError : 'Error de validación'}
+        </Text>
+      ) : null}
     </View>
   );
 };
