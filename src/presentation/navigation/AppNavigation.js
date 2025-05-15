@@ -13,89 +13,67 @@ import { userStorage } from '../../infraestructure/storage/userStorage';
 import HomeScreen from '../screens/Home/HomeScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 import MapaScreen from '../screens/Map/MapaScreen';
-import ProfileScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
-
-
+import ProfileScreen from '../screens/Profile/ProfileScreen';
+import { useDispatch, useSelector } from 'react-redux';
+import {login} from '../../shared/store/authSlice/authSlice'
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
-    return (
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
+// 👇 Hook para acceder al auth state
+const useAuth = () => useSelector(state => state.auth);
 
-                    switch (route.name) {
-                        case 'Home':
-                            iconName = focused ? 'home' : 'home-outline';
-                            break;
-                            
-                            case 'Categories':
-                            iconName = focused ? 'search' : 'search-outline';
-                            break;
+// ✅ Navegador de tabs principal
+const TabNavigator = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+        switch (route.name) {
+          case 'Home':
+            iconName = focused ? 'home' : 'home-outline';
+            break;
+          case 'Categories':
+            iconName = focused ? 'search' : 'search-outline';
+            break;
+          case 'Map':
+            iconName = focused ? 'location' : 'location-outline';
+            break;
+          case 'Profile':
+            iconName = focused ? 'person' : 'person-outline';
+            break;
+          default:
+            iconName = 'help-outline';
+        }
+        return <Ionicons name={iconName} size={size} color={color} />;
+      },
+      tabBarActiveTintColor: '#236A34',
+      tabBarInactiveTintColor: 'black',
+      tabBarLabelStyle: { fontSize: 12 },
+      tabBarStyle: {
+        height: 54,
+        paddingBottom: 5,
+        backgroundColor: '#fff',
+        borderTopWidth: 0,
+      },
+    })}
+  >
+    <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Categories" component={CategoriesScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Map" component={MapaScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+  </Tab.Navigator>
+);
 
-                            case 'Map':
-                            iconName = focused ? 'location' : 'location-outline';
-                            break;
-                            
-                            case 'Profile':
-                            iconName = focused ? 'person' : 'person-outline';
-                            break;
-                        default:
-                            iconName = 'help-outline';
-                    }
+// ✅ Navegador de autenticación (registro)
+const AuthStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="RegisterStepOne" component={RegisterStepOneScreen} />
+    <Stack.Screen name="RegisterStepTwo" component={RegisterStepTwoScreen} />
+  </Stack.Navigator>
+);
 
-                    return <Ionicons name={iconName} size={size} color={color} />;
-                },
-                tabBarActiveTintColor: '#236A34',
-                tabBarInactiveTintColor: 'black',
-                tabBarLabelStyle: { fontSize: 12 },
-                tabBarStyle: {
-                    height: 54,
-                    paddingBottom: 5,
-                    backgroundColor: '#fff',
-                    borderTopWidth: 0,
-                },
-            })}
-        >
-            <Tab.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{
-                    title: 'Inicio',
-                    headerShown: false
-                }}
-            />    
-            <Tab.Screen
-            name="Categories"
-            component={CategoriesScreen}
-            options={{
-                title: 'Categories',
-                headerShown: false
-            }}
-            />
-            <Tab.Screen
-            name="Map"
-            component={MapaScreen}
-            options={{
-                title: 'Mapa',
-                headerShown: false
-            }}
-            />    
-            <Tab.Screen
-                name="Profile"
-                component={ProfileScreen}
-                options={{
-                    title: 'Perfil',
-                    headerShown: false
-                }}
-            />
-
-        </Tab.Navigator>
-    );
-};
+// ✅ Navegador principal con `useEffect` para detectar cambios en login
 
 const AppNavigator = () => {
     const dispatch = useDispatch();
