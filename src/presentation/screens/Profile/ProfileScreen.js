@@ -8,7 +8,7 @@ const handleLogin =() => {
 
 };
 
-const LoginProfileScreen = () => {
+const ProfileScreen = () => {
 return (
     <View style={styles.container}>
 
@@ -110,4 +110,4 @@ menuItemLast: {
 
 });
 
-export default LoginProfileScreen;
+export default ProfileScreen;
