@@ -103,7 +103,6 @@ const PasswordRecoveryStepOneScreen = () => {
               autoCapitalize="none"
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              customInputStyle={isFocused ? styles.focusedInputStyle : null} // Aplicamos estilo personalizado
             />
           </View>
         </ScrollView>
@@ -220,10 +219,6 @@ const styles = StyleSheet.create({
     color: Colors.ErrorAdvertisingColor,
     marginTop: 2,
     paddingLeft: 15,
-  },
-  focusedInputStyle: {
-    backgroundColor: Colors.LightGray,
-    borderColor: Colors.DarkGray,
   },
 });
 
