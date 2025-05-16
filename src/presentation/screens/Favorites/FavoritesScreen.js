@@ -5,23 +5,31 @@ import {
   StyleSheet,
   ActivityIndicator,
   FlatList,
+  Button,
+  ScrollView
 } from 'react-native';
 import NavigationTopBar from '../../components/NavigationTopBar/NavigationTopBar';
 import VerticalPlaceCard from '../../components/VerticalPlaceCard/VerticalPlaceCard';
 import { GlobalStyles, TextStyles, Colors } from '../../styles/styles';
-import { getDefaultFavoritesUseCase } from '../../../domain/usecases/favorites/getDefaultFavoritesUseCase';
+import { getFavoritesUseCase } from '../../../domain/usecases/favorites/getFavoritesUseCase';
+import { useSelector } from 'react-redux'; // Cambiado de "@/redux/store" a "react-redux"
+
 
 const FavoritesScreen = ({ navigation }) => {
   const [favoritePlaces, setFavoritePlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const userId = useSelector((state) => state.auth.user?.id);
+
+
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
         console.log('🔍 Fetching favorite places...');
         setLoading(true);
-        const favorites = await getDefaultFavoritesUseCase();
+        const favorites = await getFavoritesUseCase(userId);
+
         console.log('✅ Favorites received:', favorites);
         setFavoritePlaces(favorites);
       } catch (err) {
@@ -34,20 +42,66 @@ const FavoritesScreen = ({ navigation }) => {
 
     fetchFavorites();
   }, []);
+  
+  const user = useSelector(state => state.auth.user);
+useEffect(() => {
+  console.log("👤 Usuario actual desde Redux:", user);
+}, [user]);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <VerticalPlaceCard
-        NameCard={item.name}
-        ImagenPlaceCard={item.imageUrl}
-        ratingStars={item.rating}
-        imageCategoryName={item.categoryName}
-        onPress={() => {
-          console.log('Pressed favorite:', item.name);
-        }}
-      />
-    </View>
-  );
+  // Test API connection directly
+  useEffect(() => {
+    const testAPI = async () => {
+      try {
+        console.log('🧪 Testing API connection directly...');
+        const userId = user?.id || 44;
+        
+        // Usando fetch nativo para evitar cualquier problema con httpClient
+        const response = await fetch(`https://backend-la-brujula-llanera.onrender.com/favorites/${userId}`);
+        const data = await response.json();
+        
+        console.log('🧪 Direct API response:', data);
+        
+        if (data && data.places && data.places.length > 0) {
+          console.log('✅ La API devuelve datos correctamente.');
+          
+          // Extraer y mostrar URLs de imágenes para diagnóstico
+          data.places.forEach(place => {
+            console.log(`📸 Imagen para ${place.name}:`, 
+              place.image?.url || 
+              place.image?.imageUrl || 
+              JSON.stringify(place.image)
+            );
+          });
+        } else {
+          console.log('⚠️ La API devuelve un array vacío o no tiene estructura places.');
+        }
+      } catch (error) {
+        console.error('❌ Error en prueba directa API:', error);
+      }
+    };
+    
+    testAPI();
+  }, [user]);
+
+  // Función para renderizar cada favorito
+  const renderItem = ({ item }) => {
+    // Añadimos log para verificar las imágenes
+    console.log(`🖼️ Renderizando item ${item.name} con imagen: ${item.imageUrl}`);
+    
+    return (
+      <View style={styles.card}>
+        <VerticalPlaceCard
+          NameCard={item.name}
+          ImagenPlaceCard={item.imageUrl || 'https://via.placeholder.com/150'} // Imagen de respaldo
+          ratingStars={item.rating}
+          imageCategoryName={item.categoryName || "Lugar"}
+          onPress={() => {
+            console.log('Pressed favorite:', item.name);
+          }}
+        />
+      </View>
+    );
+  };
 
   if (loading) {
     return (

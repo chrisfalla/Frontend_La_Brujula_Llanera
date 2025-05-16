@@ -1,47 +1,51 @@
 import httpClientService from "../../services/httpClientService";
+import { store } from 'react-redux'; 
 
 const FAVORITES_ENDPOINTS = {
-    GET_FAVORITES: '/favorites',
-    GET_USER_FAVORITES: '/favorites/user',
-    GET_DEFAULT: '/favorites/44',
-    
-
+  GET_ALL_FAVORITES: '/favorites',
+  GET_USER_FAVORITES: '/favorites/{idUserFk}',  
 };
 
-export const getFavorites = async () => {
+export const getFavorites = async (userId) => {
   try {
-    console.log('📡 [API] Getting all favorites');
-    const response = await httpClientService.get(FAVORITES_ENDPOINTS.GET_FAVORITES);
+    // Si no se proporciona userId como parámetro, intentamos obtenerlo del store
+    if (!userId) {
+      const state = store.getState();
+      userId = state?.auth?.user?.id || state?.auth?.user?.idUser;
+      
+      console.log('🔄 [API] Obteniendo userId del store:', userId);
+      
+      if (!userId) {
+        console.warn('⚠️ [API] No se encontró userId en el store ni se proporcionó como parámetro');
+        return [];
+      }
+    }
+
+    // Construir el endpoint reemplazando el placeholder
+    const endpoint = `/favorites/${userId}`; // Forma directa
+    
+    console.log('📡 [API] Getting favorites for user:', userId);
+    console.log('📡 [API] Request URL:', endpoint);
+
+    const response = await httpClientService.get(endpoint);
     console.log('✅ [API] Get favorites response:', response);
-    return response;  // httpClientService already extracts data
+    
+    // Asegurarnos de que siempre devolvemos un array
+    if (!response) return [];
+    return Array.isArray(response) ? response : (Array.isArray(response.places) ? response.places : []);
   } catch (error) {
     console.error("❌ [API] Error fetching favorites:", error);
     return [];
   }
 };
 
+// Mantenemos las exportaciones existentes para compatibilidad con el resto del código
 export const getDefaultFavorites = async () => {
-  try {
-    console.log('📡 [API] Getting default favorites');
-    const response = await httpClientService.get(FAVORITES_ENDPOINTS.GET_DEFAULT);
-    console.log('✅ [API] Get default favorites response:', response);
-    
-    // Check if the response is in the expected format
-    if (response && (Array.isArray(response) || response.places)) {
-      return response;
-    } else {
-      console.warn('⚠️ [API] Unexpected response format:', response);
-      // Return a minimal valid structure to prevent crashes
-      return [];
-    }
-  } catch (error) {
-    console.error("❌ [API] Error fetching default favorites:", error);
-    return [];
-  }
+  // Por defecto, usa ID 44 como fallback
+  return getFavorites(44);
 };
 
-// For backward compatibility
 export const fetchFavorites = getFavorites;
 export const fetchDefaultFavorites = getDefaultFavorites;
-export const fetchFavoritesUseCase = getDefaultFavorites;
+export const fetchFavoritesUseCase = getFavorites;
 export const fetchFavoritesDefaultUseCase = getDefaultFavorites;

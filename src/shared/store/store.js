@@ -22,8 +22,8 @@ export const store = configureStore({
         ignoredActions: [
           'topRatedPlaces/fetchByCategory/fulfilled',
           'placesByTags/fetchByTags/fulfilled',
-          'favorites/getFavorites/fulfilled',
-          'favorites/getDefaultFavorites/fulfilled',
+         ,
+          
 
         ],
         ignoredPaths: [
