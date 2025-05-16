@@ -47,9 +47,18 @@ const Colors = {
       padding: 14,
     },
     ScreenBaseStyle: {
-      padding: 16,
+      paddingHorizontal: 16,
       backgroundColor: Colors.BackgroundPage,
     },
+    PickerStyle:
+    {
+      backgroundColor: '#fff',
+      borderColor: Colors.Black,       // color del borde del campo
+      borderWidth: 1,                // grosor del borde
+      borderRadius: 20,              // redondeado del borde
+      height: 48,
+      paddingHorizontal: 12,
+    }
   };
   
   export { Colors, TextStyles, GlobalStyles };

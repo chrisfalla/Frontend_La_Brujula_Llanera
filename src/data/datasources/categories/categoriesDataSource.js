@@ -1,11 +1,12 @@
-import { fetchCategories, fetchMostTappedCategories } from '../../../infraestructure/api/categories/categoriesApi';
-import { category } from '../../../domain/models/categories/category';
+import { fetchCategories, fetchMostTappedCategories } from '../../../infrastructure/api/categories/categoriesApi';
+import { Category } from '../../../domain/models/categories/category';
 
-const mapToCategory = (dto) => new category({
+// Ojo al typo: dto.isDefault, no "isDefult"
+const mapToCategory = dto => new Category({
   id: dto.idCategory,
   name: dto.name,
   icon: dto.icon,
-  isDefault: dto.isDefult
+  isDefault: dto.isDefault,
 });
 
 export const categoriesDatasource = {
@@ -13,7 +14,6 @@ export const categoriesDatasource = {
     const dtos = await fetchCategories();
     return dtos.map(mapToCategory);
   },
-
   getMostTappedCategories: async () => {
     const dtos = await fetchMostTappedCategories();
     return dtos.map(mapToCategory);

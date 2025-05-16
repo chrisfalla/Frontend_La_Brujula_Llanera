@@ -12,7 +12,7 @@ const SizeButton = Object.freeze({
     BIG: "Big",
 });
 
-const CustomButton = ({ onPress, titletext, IsDisabled = false, type = "Primary", size = "Big" }) => {
+const CustomButton = ({ onPress, titletext, IsDisabled = false, type = "Primary", size = "Big", style }) => {
     const [isPressed, setIsPressed] = useState(false);
 
     const handlePressIn = () => {
@@ -41,7 +41,8 @@ const CustomButton = ({ onPress, titletext, IsDisabled = false, type = "Primary"
                     (isPressed ? styles.primaryPressedTouchable : styles.primaryTouchable) :
                     styles.secondaryTouchable,
                 size === SizeButton.BIG ? styles.bigTouchable : styles.smallTouchable,
-                IsDisabled && styles.disabledButton
+                IsDisabled && styles.disabledButton,
+                style
             ]}
         >
             <Text style={[
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     touchableBase: {
         paddingVertical: 12,
         paddingHorizontal: 16,
-        borderRadius: GlobalStyles.cornerRadius,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 10,
