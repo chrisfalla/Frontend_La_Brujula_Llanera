@@ -9,7 +9,7 @@ import { navigationRef } from '../../infrastructure/services/navigationService';
 import RegisterStepOneScreen from '../screens/Register/RegisterStepOne/RegisterStepOneScreen';
 import RegisterStepTwoScreen from '../screens/Register/RegisterStepTwo/RegisterStepTwoScreen';
 import { userStorage } from '../../infrastructure/storage/userStorage';
-
+import AnonymousProfileScreen from '../screens/Profile/AnonymousProfileScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 import MapaScreen from '../screens/Map/MapaScreen';
@@ -24,7 +24,7 @@ const Tab = createBottomTabNavigator();
 const useAuth = () => useSelector(state => state.auth);
 
 // ✅ Navegador de tabs principal
-const TabNavigator = () => (
+const TabNavigator = ({isLoggedIn}) => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
@@ -61,7 +61,7 @@ const TabNavigator = () => (
     <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
     <Tab.Screen name="Categories" component={CategoriesScreen} options={{ headerShown: false }} />
     <Tab.Screen name="Map" component={MapaScreen} options={{ headerShown: false }} />
-    <Tab.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Profile" component={isLoggedIn ? ProfileScreen : AnonymousProfileScreen} options={{ headerShown: false }} />
   </Tab.Navigator>
 );
 
@@ -94,13 +94,13 @@ const AppNavigator = () => {
         setIsLoading(false);
       };
       loadUser();
-    }, []);
+    }, [dispatch]);
   
     if (isLoading) return null; // puedes mostrar un splash o loader
   
     return (
       <NavigationContainer ref={navigationRef}>
-        {(isLoggedIn || isGuest) ? <TabNavigator /> : <AuthStack />}
+        {(isLoggedIn || isGuest) ? <TabNavigator isLoggedIn={isLoggedIn} /> : <AuthStack />}
       </NavigationContainer>
     );
   };
