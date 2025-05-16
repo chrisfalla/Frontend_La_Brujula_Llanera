@@ -13,15 +13,24 @@ export const getDefaultFavoritesUseCase = async () => {
       favoritesData : 
       (favoritesData?.places || []);
     
-    // Map to domain objects
-    const favorites = favoritesArray.map(item => new Favorite({
-      idPlace: item.idPlace || item.id,
-      name: item.name || item.placeName,
-      rating: item.rating || item.ratingStars || 0,
-      imageUrl: (item.image?.url) || item.imageUrl || item.imageUri,
-      categoryName: item.categoryName || (item.image?.categoryName) || '',
-      userId: item.userId || item.idUser
-    })).filter(Boolean);
+    console.log('Raw favorites data:', favoritesArray);
+    
+    // Map to domain objects with more robust property access
+    const favorites = favoritesArray.map(item => {
+      if (!item) return null;
+      
+      // Debug the item structure
+      console.log('Processing item:', JSON.stringify(item).substring(0, 100) + '...');
+      
+      return new Favorite({
+        idPlace: item.idPlace || item.id || Math.random().toString(),
+        name: item.name || item.placeName || 'Lugar sin nombre',
+        rating: parseFloat(item.rating || item.ratingStars || 0),
+        imageUrl: (item.image?.url) || item.imageUrl || item.imageUri || 'https://via.placeholder.com/150',
+        categoryName: item.categoryName || (item.image?.categoryName) || item.categoryInfo?.name || 'Categoría',
+        userId: item.userId || item.idUser || '1'
+      });
+    }).filter(Boolean); // Remove any null values
     
     console.log('✅ [USE-CASE] Favoritos por defecto obtenidos:', favorites.length);
     return favorites;

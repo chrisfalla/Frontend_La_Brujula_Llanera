@@ -22,6 +22,6 @@ const mapToPlace = dto => {
         imageUrl: fixedImageUrl ?? dto.imageUrl ?? '',
         rating: dto.rating ?? dto.ratingStars ?? 0,
     categoryName: dto.categoryName ?? '',
-        userId: dto.userId ?? '',
+        userId: dto.userId ??  '',
     });
 };

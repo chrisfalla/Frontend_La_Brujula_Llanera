@@ -112,6 +112,7 @@ const FavoritesScreen = ({ navigation }) => {
           numColumns={2}
           renderItem={renderItem}
           contentContainerStyle={styles.scrollView}
+          columnWrapperStyle={styles.columnWrapper} // Añadimos este estilo
         />
       )}
     </View>
@@ -122,10 +123,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingVertical: 10,
   },
   scrollView: {
-    padding: 10,
-    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 10, // Padding uniforme
+  },
+  columnWrapper: {
+    justifyContent: 'space-between', // Distribuye el espacio entre las columnas
+    marginHorizontal: 5, // Margen horizontal uniforme
   },
   centerContainer: {
     flex: 1,
@@ -150,8 +156,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   card: {
-    width: '50%',
-    margin: '1%',
+    width: '49%', // Ligeramente menos para dejar espacio entre cards
+    marginVertical: 5, // Margen vertical uniforme
   },
 });
 
