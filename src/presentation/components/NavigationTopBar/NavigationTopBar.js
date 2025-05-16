@@ -39,28 +39,27 @@ const NavigationTopBar = ({
         </Text>
 
         {/* Ícono secundario solo si existe */}
-   {SecondIcon ? (
-  <TouchableOpacity
-    style={
-      SecondIcon === "pencil"
-        ? styles.iconNoBackground
-        : styles.iconContainer
-    }
-    onPress={
-      SecondIcon === "pencil"
-        ? onSecondIconPress
-        : useHeart && SecondIcon === "heart-outline"
-        ? handleHeartPress
-        : null
-    }
-    disabled={!useHeart && SecondIcon === "heart-outline"}
-  >
-    <Ionicons style={styles.icon} name={secondaryIconName} />
-  </TouchableOpacity>
-) : (
-  <View style={styles.emptySpace} />
-)}
-
+        {SecondIcon ? (
+          <TouchableOpacity
+            style={
+              SecondIcon === "pencil"
+                ? styles.iconNoBackground
+                : styles.iconContainer
+            }
+            onPress={
+              SecondIcon === "pencil"
+                ? onSecondIconPress
+                : useHeart && SecondIcon === "heart-outline"
+                ? handleHeartPress
+                : null
+            }
+            disabled={!useHeart && SecondIcon === "heart-outline"}
+          >
+            <Ionicons style={styles.icon} name={secondaryIconName} />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.emptySpace} />
+        )}
       </View>
     </View>
   );
@@ -69,11 +68,14 @@ const NavigationTopBar = ({
 const styles = StyleSheet.create({
   header: {
     width: "100%",
+    position: "relative", // Necesario para posicionamiento absoluto del título
   },
   container: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    height: 45, // Altura fija para calcular mejor la posición del título
+    position: "relative", // Para que el título se posicione relativo a este contenedor
   },
   iconContainer: {
     backgroundColor: Colors.BackgroundPage,
@@ -81,6 +83,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: Colors.LightGray,
     padding: 7,
+    zIndex: 2, // Para que esté por encima del título
   },
   icon: {
     color: Colors.ColorPrimary,
@@ -89,14 +92,21 @@ const styles = StyleSheet.create({
   iconNoBackground: {
     color: Colors.ColorPrimary,
     paddingHorizontal: 10,
+    zIndex: 2, // Para que esté por encima del título
   },
   hiddenIcon: {
     opacity: 0,
   },
   title: {
     ...TextStyles.PoppinsSemiBold15,
+    position: "absolute", // Posicionamiento absoluto
+    left: 0,
+    right: 0, // Extender al ancho completo
     textAlign: "center",
     color: Colors.ColorPrimary,
+    zIndex: 1, // Asegura que esté sobre los otros elementos
+    top: "50%", // Centra verticalmente
+    transform: [{ translateY: -10 }], // Ajusta verticalmente (la mitad de la altura del texto aproximadamente)
   },
   titleHidden: {
     opacity: 0,
