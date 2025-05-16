@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   },
   text: {
     ...TextStyles.PoppinsBold15,
+    marginTop: 4,
   },
 });
 
