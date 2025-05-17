@@ -3,13 +3,17 @@ import categoriesReducer from './categoriesSlice/categoriesSlice';
 import topRatedPlacesReducer from './topRatedPlacesSlice/topRatedPlacesSlice';
 import placesByTagsReducer from './placesByTagsSlice/placesByTagsSlice';
 import authReducer from './authSlice/authSlice';
+import favoritesReducer from './favoritesSlice/favoritesSlice';
+
 
 export const store = configureStore({
   reducer: {
     categories: categoriesReducer,
     topRatedPlaces: topRatedPlacesReducer,
     placesByTags: placesByTagsReducer,
-    auth:authReducer
+    auth: authReducer,
+    favorites: favoritesReducer,
+   
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -17,11 +21,15 @@ export const store = configureStore({
         // Ignora estos paths específicos donde hay valores no serializables
         ignoredActions: [
           'topRatedPlaces/fetchByCategory/fulfilled',
-          'placesByTags/fetchByTags/fulfilled'
+          'placesByTags/fetchByTags/fulfilled',
+         ,
+          
+
         ],
         ignoredPaths: [
           'topRatedPlaces.items',
-          'placesByTags.items'
+          'placesByTags.items',
+          
         ],
       },
     }),
