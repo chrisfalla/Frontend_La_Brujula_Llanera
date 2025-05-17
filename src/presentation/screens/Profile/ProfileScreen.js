@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, Image,  StyleSheet, TouchableOpacity, Linking } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, Linking } from "react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
-import { GlobalStyles, Colors,TextStyles } from "../../styles/styles";
+import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import { getTermsAndConditionsUrlUseCase } from '../../../domain/usecases/termsAndConditions/getTermsAndConditionsUrlUseCase';
 
 // Helper para aplicar opacidad a un color hexadecimal
@@ -21,6 +22,10 @@ function withOpacity(hexColor, opacity) {
 
 const ProfileScreen = () => {
     const navigation = useNavigation();
+    
+    // Obtener el usuario del estado de Redux
+    const user = useSelector(state => state.auth.user);
+    const userName = user?.name || 'Usuario';
 
     const handleLogin = () => {
         navigation.navigate('Login');
@@ -61,7 +66,7 @@ const ProfileScreen = () => {
             <Image source={require('../../../shared/assets/Avatar.png')} style={styles.avatar} />
 
             {/* Saludo */}
-            <Text style={styles.greeting}>Hola, <Text style= {styles.strong}>User ID </Text> </Text>
+            <Text style={styles.greeting}>Hola, <Text style={styles.strong}>{userName}</Text></Text>
 
             <View style={styles.menuLine} />
 
