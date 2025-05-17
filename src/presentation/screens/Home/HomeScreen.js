@@ -3,7 +3,13 @@
 //==============================================================================
 
 // React imports
-import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   View,
   Text,
@@ -31,7 +37,7 @@ import { getMostVisitedPlacesUseCase } from "../../../domain/usecases/places/get
 // Components
 import MainHeader from "../../components/MainHeader/MainHeader";
 import MostVisitedPlaces from "../../components/MostVisitedPlaces/MostVisitedPlaces";
-import CategoryCardSmall from "../../components/CategoryCardSmall/CategoryCardSmall";  // Corregido cierre de comillas
+import CategoryCardSmall from "../../components/CategoryCardSmall/CategoryCardSmall"; // Corregido cierre de comillas
 import VerticalPlaceCard from "../../components/VerticalPlaceCard/VerticalPlaceCard";
 import CustomCheap from "../../components/CustomCheap/CustomCheap";
 import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace"; // Importamos el componente
@@ -58,10 +64,10 @@ const HomeScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedTags, setSelectedTags] = useState({});
   const [activeTagIds, setActiveTagIds] = useState([]);
-  
+
   // Redux state
   const { all, status } = useSelector((state) => state.categories);
-  
+
   // Custom hooks
   const { places, loading, error } = useMostVisitedPlaces();
   const {
@@ -70,28 +76,28 @@ const HomeScreen = () => {
     error: errorTopRated,
   } = useTopRatedPlacesByCategory(selectedCategory);
   const { tags, loading: loadingTags, error: errorTags } = useTags();
-  
+
   // Nuevo hook para lugares por tags
   const {
     places: placesByTags,
     loading: loadingPlacesByTags,
     error: errorPlacesByTags,
   } = usePlacesByTags(activeTagIds);
-  
+
   // Serializable data transformation
   const topRatedPlaces = useMemo(() => {
     if (!topRatedPlacesRaw) return [];
-    
-    return topRatedPlacesRaw.map(place => ({
+
+    return topRatedPlacesRaw.map((place) => ({
       ...place,
-      visitCount: place.visitCount === undefined ? null : place.visitCount
+      visitCount: place.visitCount === undefined ? null : place.visitCount,
     }));
   }, [topRatedPlacesRaw]);
-  
+
   //============================================================================
   // EFFECTS
   //============================================================================
-  
+
   // Fetch categories on mount
   useEffect(() => {
     dispatch(fetchCategories());
@@ -139,7 +145,7 @@ const HomeScreen = () => {
 
   // Actualizar activeTagIds cuando cambian los tags seleccionados
   useEffect(() => {
-    const tagIds = Object.keys(selectedTags).filter(id => selectedTags[id]);
+    const tagIds = Object.keys(selectedTags).filter((id) => selectedTags[id]);
     setActiveTagIds(tagIds.length > 0 ? tagIds : []);
   }, [selectedTags]);
 
@@ -153,7 +159,7 @@ const HomeScreen = () => {
   //============================================================================
   // DERIVED DATA & HELPER FUNCTIONS
   //============================================================================
-  
+
   // Categories filtering
   const defaultCategories = Array.isArray(all)
     ? all.filter((cat) => cat.isDefault)
@@ -169,11 +175,17 @@ const HomeScreen = () => {
     if (!Array.isArray(all)) return "Categoría desconocida";
     for (const category of all) {
       // Si tienes un array de lugares en cada categoría
-      if (Array.isArray(category.places) && category.places.some(place => place.idPlace === idPlace)) {
+      if (
+        Array.isArray(category.places) &&
+        category.places.some((place) => place.idPlace === idPlace)
+      ) {
         return category.name;
       }
       // Si tienes un array de ids de lugares
-      if (Array.isArray(category.placeIds) && category.placeIds.includes(idPlace)) {
+      if (
+        Array.isArray(category.placeIds) &&
+        category.placeIds.includes(idPlace)
+      ) {
         return category.name;
       }
     }
@@ -182,7 +194,11 @@ const HomeScreen = () => {
 
   // Utilidad para obtener el nombre de la categoría a partir del item (lugar)
   const getCategoryNameByPlace = (item) => {
-    if (item.imageCategoryName && typeof item.imageCategoryName === 'string' && item.imageCategoryName.trim() !== '') {
+    if (
+      item.imageCategoryName &&
+      typeof item.imageCategoryName === "string" &&
+      item.imageCategoryName.trim() !== ""
+    ) {
       return item.imageCategoryName;
     }
     return "Categoría desconocida";
@@ -227,7 +243,7 @@ const HomeScreen = () => {
       <View style={styles.headerContainer}>
         <MainHeader username={"Christofer"} />
       </View>
-      
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -240,7 +256,7 @@ const HomeScreen = () => {
             <Text style={styles.textPrimary}>mas Visitados</Text>
             <Text style={styles.textBlack}> en Nuestra App</Text>
           </Text>
-          
+
           {/* Carrusel horizontal */}
           <FlatList
             ref={flatListRef}
@@ -251,7 +267,9 @@ const HomeScreen = () => {
               return (
                 <MostVisitedPlaces
                   place={item}
-                  onPress={() => {/* TODO: Implementar navegación al detalle */}}
+                  onPress={() => {
+                    /* TODO: Implementar navegación al detalle */
+                  }}
                   cardWidth={CARD_WIDTH}
                   cardMargin={CARD_MARGIN}
                 />
@@ -266,7 +284,7 @@ const HomeScreen = () => {
             onMomentumScrollEnd={handleScrollEnd}
             initialNumToRender={places ? places.length : 0}
           />
-          
+
           {/* Indicadores de paginación */}
           {places && places.length > 1 && (
             <View style={styles.pagination}>
@@ -283,13 +301,13 @@ const HomeScreen = () => {
               ))}
             </View>
           )}
-          
+
           {/* Texto promocional */}
           <Text style={styles.planText}>
             <Text style={styles.textBlack}>Cual es</Text>
             <Text style={styles.textPrimary}> tu </Text>
             <Text style={styles.textPrimary}>Plan</Text>
-            <Text>                </Text>
+            <Text> </Text>
             <Text style={styles.textBlack}> para el Día de </Text>
             <Text style={styles.textPrimary}>Hoy</Text>
             <Text style={styles.textBlack}>?</Text>
@@ -329,17 +347,22 @@ const HomeScreen = () => {
           ) : topRatedPlaces && topRatedPlaces.length > 0 ? (
             <View style={styles.topRatedOuterContainer}>
               <View style={styles.topRatedGrid}>
-                {topRatedPlaces.map((item) => (
-                  <VerticalPlaceCard
-                    key={item.idPlace.toString()}
-                    NameCard={item.placeName}
-                    ImagenPlaceCard={item.imageUrl}
-                    ratingStars={item.ratingStars}
-                    imageCategoryName={item.imageCategoryName}
-                    onPress={() => {
-                      /* TODO: Implementar navegación al detalle */
-                    }}
-                  />
+                {topRatedPlaces.map((item, index) => (
+                  <View 
+                    key={item.idPlace.toString()} 
+                    style={index % 2 === 0 ? styles.leftCardContainer : styles.rightCardContainer}
+                  >
+                    <VerticalPlaceCard
+                      NameCard={item.placeName}
+                      ImagenPlaceCard={item.imageUrl}
+                      ratingStars={item.ratingStars}
+                      imageCategoryName={item.imageCategoryName}
+                      onPress={() => {
+                        /* TODO: Implementar navegación al detalle */
+                      }}
+                      style={{width: '100%'}} // Forzar ancho al 100% del contenedor
+                    />
+                  </View>
                 ))}
               </View>
             </View>
@@ -356,14 +379,12 @@ const HomeScreen = () => {
 
         {/* SECCIÓN 4: Etiquetas */}
         <View style={styles.tagsSectionContainer}>
-          {/* <Text style={styles.sectionTitle}>
-            <Text style={styles.textBlack}>Buscar por </Text>
-            <Text style={styles.textPrimary}>Etiquetas</Text>
-          </Text> */}
           {loadingTags ? (
             <ActivityIndicator size="large" color={Colors.ColorPrimary} />
           ) : errorTags ? (
-            <Text style={styles.errorText}>Error al cargar etiquetas: {errorTags}</Text>
+            <Text style={styles.errorText}>
+              Error al cargar etiquetas: {errorTags}
+            </Text>
           ) : tags && tags.length > 0 ? (
             <View style={styles.tagsContainer}>
               {tags.map((item) => (
@@ -376,7 +397,9 @@ const HomeScreen = () => {
               ))}
             </View>
           ) : (
-            <Text style={styles.noPlacesText}>No hay etiquetas disponibles.</Text>
+            <Text style={styles.noPlacesText}>
+              No hay etiquetas disponibles.
+            </Text>
           )}
         </View>
 
@@ -388,20 +411,28 @@ const HomeScreen = () => {
               <Text style={styles.loadingText}>Cargando lugares...</Text>
             </View>
           ) : errorPlacesByTags ? (
-            <Text style={styles.errorText}>Error: {String(errorPlacesByTags)}</Text>
+            <Text style={styles.errorText}>
+              Error: {String(errorPlacesByTags)}
+            </Text>
           ) : placesByTags && placesByTags.length > 0 ? (
             <View style={styles.placesByTagsOuterContainer}>
               <FlatList
                 style={styles.flatListStyle} // Nuevo estilo para evitar recorte de sombra
                 data={placesByTags}
-                keyExtractor={item => item.idPlace?.toString() || Math.random().toString()}
+                keyExtractor={(item) =>
+                  item.idPlace?.toString() || Math.random().toString()
+                }
                 renderItem={({ item }) => (
                   <HorizontalCardPlace
                     name={item.placeName}
-                    category={item.categoryInfo?.categoryName || 'Categoría desconocida'}
-                    address={item.placeAddress || 'Dirección no disponible'}
+                    category={
+                      item.categoryInfo?.categoryName || "Categoría desconocida"
+                    }
+                    address={item.placeAddress || "Dirección no disponible"}
                     image={item.imageUrl}
-                    onMapPress={() => {/* TODO: Implementar navegación */}}
+                    onMapPress={() => {
+                      /* TODO: Implementar navegación */
+                    }}
                   />
                 )}
                 scrollEnabled={false}
@@ -440,7 +471,7 @@ const styles = StyleSheet.create({
     ...GlobalStyles.ScreenBaseStyle,
     overflow: "visible",
   },
-  
+
   // Scroll view
   scrollViewStyle: {
     overflow: "visible",
@@ -451,7 +482,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30, // Aumentar el padding inferior para dar más espacio
     overflow: "visible",
   },
-  
+
   // Estilos de texto
   sectionTitle: {
     ...TextStyles.PoppinsSemiBold15,
@@ -513,7 +544,7 @@ const styles = StyleSheet.create({
   inactiveDot: {
     backgroundColor: Colors.DarkGray,
   },
-  
+
   // Lista de categorías
   categoryListContainer: {
     flexDirection: "row",
@@ -539,43 +570,50 @@ const styles = StyleSheet.create({
   cardWrapper: {
     width: "20%",
   },
-  
+
   // Sección lugares destacados
   topRatedSection: {
-    marginTop: 0,
-    marginHorizontal: -16, // Ajustar para que sea igual al padding del ScrollView
+    marginTop: 20,
+    marginHorizontal: -16,
     overflow: "visible",
     marginBottom: 10,
   },
   topRatedOuterContainer: {
-    paddingHorizontal: 16, // Ajustar para que coincida con el margen negativo
+    paddingHorizontal: 16,
     overflow: "visible",
   },
   topRatedGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: "row", 
+    flexWrap: "wrap", 
     justifyContent: "space-between",
-    marginTop: 10,
+    width: "100%",
     overflow: "visible",
-    paddingHorizontal: 0,
-    paddingRight: 1,
   },
-  loadingContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
+  leftCardContainer: {
+    width: "48.5%", // Ancho exacto
+    marginBottom: 15,
+    alignItems: 'center', // Centrar contenido
+    paddingHorizontal: 0, // Sin padding horizontal
+    marginHorizontal: 0, // Sin margen horizontal
   },
-  
+  rightCardContainer: {
+    width: "48.5%", // Exactamente el mismo ancho
+    marginBottom: 15,
+    alignItems: 'center', // Centrar contenido
+    paddingHorizontal: 0, // Sin padding horizontal
+    marginHorizontal: 0, // Sin margen horizontal
+  },
+
   // Sección tags
   tagsSectionContainer: {
     marginTop: 20,
     marginBottom: 10,
   },
   tagsContainer: {
-    flexDirection: 'row', // Asegura que los elementos se alineen en fila
-    flexWrap: 'wrap', // Permite que los elementos se bajen a la siguiente línea
-    justifyContent: 'flex-start', // Alinea los elementos al inicio del contenedor
-    alignItems: 'flex-start', // Alinea los elementos al inicio del contenedor
+    flexDirection: "row", // Asegura que los elementos se alineen en fila
+    flexWrap: "wrap", // Permite que los elementos se bajen a la siguiente línea
+    justifyContent: "flex-start", // Alinea los elementos al inicio del contenedor
+    alignItems: "flex-start", // Alinea los elementos al inicio del contenedor
   },
   tagsFlatListContainer: {
     paddingVertical: 10,
@@ -597,7 +635,6 @@ const styles = StyleSheet.create({
   flatListStyle: {
     overflow: "visible", // Evita que el FlatList recorte las sombras de sus items
   },
-  
 });
 
 export default HomeScreen;
