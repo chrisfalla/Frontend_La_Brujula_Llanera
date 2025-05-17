@@ -86,7 +86,7 @@ const VerticalPlaceCard = ({
 
 const styles = StyleSheet.create({
   mainContainer: {
-    width: '48.5%', // Ligeramente ajustado para mejor espacio entre cards
+    width: '100%', // Ligeramente ajustado para mejor espacio entre cards
     marginHorizontal: 0, // Quitamos el margen horizontal para evitar el espacio extra
     alignItems: "center",
     alignSelf: 'flex-start',
