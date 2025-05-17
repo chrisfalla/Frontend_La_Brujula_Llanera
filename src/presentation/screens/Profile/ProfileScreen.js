@@ -8,6 +8,20 @@ const handleLogin =() => {
 
 };
 
+// Helper para aplicar opacidad a un color hexadecimal
+function withOpacity(hexColor, opacity) {
+    // Elimina el '#' si existe
+    hexColor = hexColor.replace('#', '');
+    // Si es formato corto, expande a largo
+    if (hexColor.length === 3) {
+        hexColor = hexColor.split('').map(c => c + c).join('');
+    }
+    const r = parseInt(hexColor.substring(0,2), 16);
+    const g = parseInt(hexColor.substring(2,4), 16);
+    const b = parseInt(hexColor.substring(4,6), 16);
+    return `rgba(${r},${g},${b},${opacity})`;
+}
+
 const ProfileScreen = () => {
 return (
     <View style={styles.container}>
@@ -16,18 +30,19 @@ return (
     <Image source={require('../../../shared/assets/Avatar.png')} style={styles.avatar} />
 
       {/* Saludo */}
-    <Text style={styles.greeting}>Hola, <Text style= {styles.strong}>Damian Caro </Text> </Text>
+    <Text style={styles.greeting}>Hola, <Text style= {styles.strong}>User ID </Text> </Text>
 
     <View style={styles.menuLine} />
 
       {/* Opciones del menú */}
     <View style={styles.menu}>
-        <MenuItem title="Mi informacion" />
-        <MenuItem title="Mis favoritos" />
-        <MenuItem title="Terminos y condiones" isLast={true}/>
+        <MenuItem title="Mi Informacion" />
+        <MenuItem title="Mis Favoritos" />
+        <MenuItem title="Terminos y Condiciones" isLast={true}/>
     </View>
     
     <CustomButton 
+    style={{width: "75%"}}
     titletext={'Cerrar sesión'}
     onPress={handleLogin}
     type="Primary"
@@ -43,7 +58,7 @@ return (
 // Componente de ítems del menú
 const MenuItem = ({ title, isLast }) => (
 <TouchableOpacity style={[styles.menuItem, isLast && styles.menuItemLast ]}>
-    <Text style= {{...TextStyles.PoppinsRegular15}}>{title}</Text>
+    <Text style={[TextStyles.PoppinsRegular15, styles.menuItemText]}>{title}</Text>
     <Text style={styles.arrow}>›</Text>
 </TouchableOpacity>
 
@@ -76,17 +91,16 @@ strong: {
 },
 
 menuLine: {
-        height: 1,
-        backgroundColor: Colors.LightGray,
-        width: "100%",
-        marginVertical: 5,
-        marginTop: 35,
-    },
+    height: 1,
+    backgroundColor: withOpacity(Colors.ColorPrimary, 0.3),
+    width: "100%",
+    marginTop: 35,
+},
 
 
 menu: {
     width: "100%", // Ahora ocupa todo el ancho disponible
-    alignSelf: "stretch", // Asegura que se extienda completamente
+    // paddingVertical: 20,
     
 },
 
@@ -96,13 +110,20 @@ menuItem: {
     alignItems: "center", // Se mantiene, pero ahora dentro de un contenedor con width limitado
     paddingVertical: 5,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.LightGray,
+    borderBottomColor: withOpacity(Colors.ColorPrimary, 0.3), // Ahora sí usa el color primario con opacidad
+},
+
+menuItemText: {
+    position: "relative",
+    top: 2, // Mueve el texto un poco hacia abajo
 },
 
 arrow: {
     fontSize: 30,
     color: Colors.Black,
     paddingRight: 10,
+    position: "relative",
+    top: -3, // Mueve la flecha un poco hacia arriba
 },
 menuItemLast: {
         marginBottom: 80, // Espacio adicional solo en el último elemento
