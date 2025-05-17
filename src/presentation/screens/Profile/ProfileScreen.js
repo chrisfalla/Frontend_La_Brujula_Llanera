@@ -1,12 +1,9 @@
 import React from "react";
-import { View, Text, Image,  StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image,  StyleSheet, TouchableOpacity, Linking } from "react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { GlobalStyles, Colors,TextStyles } from "../../styles/styles";
-
-const handleLogin =() => {
-    navigation.navigate('Login');
-
-};
+import { useNavigation } from '@react-navigation/native';
+import { getTermsAndConditionsUrlUseCase } from '../../../domain/usecases/termsAndConditions/getTermsAndConditionsUrlUseCase';
 
 // Helper para aplicar opacidad a un color hexadecimal
 function withOpacity(hexColor, opacity) {
@@ -23,45 +20,88 @@ function withOpacity(hexColor, opacity) {
 }
 
 const ProfileScreen = () => {
-return (
-    <View style={styles.container}>
+    const navigation = useNavigation();
 
-      {/* Avatar */}
-    <Image source={require('../../../shared/assets/Avatar.png')} style={styles.avatar} />
-
-      {/* Saludo */}
-    <Text style={styles.greeting}>Hola, <Text style= {styles.strong}>User ID </Text> </Text>
-
-    <View style={styles.menuLine} />
-
-      {/* Opciones del menú */}
-    <View style={styles.menu}>
-        <MenuItem title="Mi Informacion" />
-        <MenuItem title="Mis Favoritos" />
-        <MenuItem title="Terminos y Condiciones" isLast={true}/>
-    </View>
+    const handleLogin = () => {
+        navigation.navigate('Login');
+    };
     
-    <CustomButton 
-    style={{width: "75%"}}
-    titletext={'Cerrar sesión'}
-    onPress={handleLogin}
-    type="Primary"
-    size='Small'
-    />
+    const handleNavigateToInformation = () => {
+        navigation.navigate('ProfileInformation');
+    };
+
+    const handleNavigateToFavorites = () => {
+        navigation.navigate('Favorites');
+    };
     
-    
-    </View>
-);
+    const handleOpenTermsAndConditions = async () => {
+        try {
+            const url = await getTermsAndConditionsUrlUseCase();
+            console.log("URL de términos y condiciones:", url);
+            
+            if (!url) {
+                console.error('URL de términos y condiciones no disponible');
+                return;
+            }
+            
+            const canOpen = await Linking.canOpenURL(url);
+            if (canOpen) {
+                await Linking.openURL(url);
+            } else {
+                console.error('No se puede abrir la URL:', url);
+            }
+        } catch (error) {
+            console.error('Error al abrir los términos y condiciones:', error);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            {/* Avatar */}
+            <Image source={require('../../../shared/assets/Avatar.png')} style={styles.avatar} />
+
+            {/* Saludo */}
+            <Text style={styles.greeting}>Hola, <Text style= {styles.strong}>User ID </Text> </Text>
+
+            <View style={styles.menuLine} />
+
+            {/* Opciones del menú */}
+            <View style={styles.menu}>
+                <MenuItem 
+                    title="Mi Información" 
+                    onPress={handleNavigateToInformation} 
+                />
+                <MenuItem 
+                    title="Mis Favoritos" 
+                    onPress={handleNavigateToFavorites}
+                />
+                <MenuItem 
+                    title="Términos y Condiciones" 
+                    isLast={true}
+                    onPress={handleOpenTermsAndConditions} 
+                />
+            </View>
+            
+            <CustomButton 
+                style={{width: "75%"}}
+                titletext={'Cerrar sesión'}
+                onPress={handleLogin}
+                type="Primary"
+                size='Small'
+            />
+        </View>
+    );
 };
 
-
 // Componente de ítems del menú
-const MenuItem = ({ title, isLast }) => (
-<TouchableOpacity style={[styles.menuItem, isLast && styles.menuItemLast ]}>
-    <Text style={[TextStyles.PoppinsRegular15, styles.menuItemText]}>{title}</Text>
-    <Text style={styles.arrow}>›</Text>
-</TouchableOpacity>
-
+const MenuItem = ({ title, isLast, onPress }) => (
+    <TouchableOpacity 
+        style={[styles.menuItem, isLast && styles.menuItemLast]} 
+        onPress={onPress}
+    >
+        <Text style={[TextStyles.PoppinsRegular15, styles.menuItemText]}>{title}</Text>
+        <Text style={styles.arrow}>›</Text>
+    </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
