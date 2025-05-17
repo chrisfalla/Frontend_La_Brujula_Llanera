@@ -24,6 +24,15 @@ const NavigationTopBar = ({
   const secondaryIconName =
     isHeartActive && SecondIcon === "heart-outline" ? "heart" : SecondIcon;
 
+  // Determinar el manejador de eventos correcto para el segundo icono
+  const handleSecondIconPress = () => {
+    if (SecondIcon === "heart-outline" && useHeart) {
+      handleHeartPress();
+    } else if (onSecondIconPress) {
+      onSecondIconPress();
+    }
+  };
+
   return (
     <View style={styles.header}>
       <View style={styles.container}>
@@ -35,13 +44,6 @@ const NavigationTopBar = ({
           <Ionicons style={styles.icon} name={primaryIcon} />
         </TouchableOpacity>
 
-        {/* Título */}
-        <Text style={[styles.title, !title && styles.titleHidden]}>
-          {title ? title : null}
-        </Text>
-
-        {/* Ícono secundario solo si existe */}
-        {SecondIcon ? (
         {/* Título siempre centrado */}
         <View style={styles.titleContainer}>
           <Text style={[styles.title, !title && styles.titleHidden]}>
@@ -57,20 +59,12 @@ const NavigationTopBar = ({
                 ? styles.iconNoBackground
                 : styles.iconContainer
             }
-            onPress={
-              SecondIcon === "pencil"
-                ? onSecondIconPress
-                : useHeart && SecondIcon === "heart-outline"
-                ? handleHeartPress
-                : null
-                : onSecondIconPress
-            }
+            onPress={handleSecondIconPress}
             disabled={!useHeart && SecondIcon === "heart-outline"}
           >
             <Ionicons style={styles.icon} name={secondaryIconName} />
           </TouchableOpacity>
         ) : (
-          <View style={styles.emptySpace} />
           // Espacio invisible que ocupa el mismo ancho que el icono
           <View style={[removeBackground ? styles.iconNoBackground : styles.iconContainer, styles.invisibleIcon]} />
         )}
@@ -99,7 +93,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.LightGray,
     padding: 7,
     zIndex: 2, // Para que esté por encima del título
-    minWidth: 4, // Reducimos el ancho mínimo
+    minWidth: 40, // Ancho mínimo para el icono
   },
   icon: {
     color: Colors.ColorPrimary,
@@ -107,19 +101,14 @@ const styles = StyleSheet.create({
     textAlign: 'center', // Centra el icono horizontalmente
   },
   iconNoBackground: {
-    color: Colors.ColorPrimary,
-    paddingHorizontal: 10,
     zIndex: 2, // Para que esté por encima del título
-    paddingHorizontal: 0, // Eliminamos el padding horizontal
-    minWidth: 30, // Reducimos aún más el ancho mínimo
-    marginHorizontal: 0, // Eliminamos el margen horizontal
-    marginLeft: -10, // Agregamos un margen negativo para acercar más al borde
+    paddingHorizontal: 10,
+    minWidth: 30, // Ancho mínimo reducido
+    marginLeft: -10, // Margen negativo para acercar más al borde
   },
   titleContainer: {
     flex: 1, // Ocupa todo el espacio disponible
     alignItems: 'center', // Centra el título horizontalmente
-    // Agregamos un padding horizontal para que el texto tenga más espacio
-    paddingHorizontal: 0, // Ajustamos el padding horizontal del título
   },
   title: {
     ...TextStyles.PoppinsSemiBold15,

@@ -1,60 +1,80 @@
 import React from "react";
-import { View, Text, Image,  StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image,  StyleSheet, TouchableOpacity, Linking } from "react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { GlobalStyles, Colors,TextStyles } from "../../styles/styles";
-
-const handleRegister = () => {
-    navigation.navigate('Registro');
-};
-const handleLogin =() => {
-    navigation.navigate('Login');
-
-};
+import { useNavigation } from '@react-navigation/native';
+import { getTermsAndConditionsUrlUseCase } from '../../../domain/usecases/termsAndConditions/getTermsAndConditionsUrlUseCase';
 
 const AnonymousProfileScreen = () => {
-return (
-    <View style={styles.container}>
-
-      {/* Avatar */}
-    <Image source={require('../../../shared/assets/AvatarHeader.png')} style={styles.avatar} />
-
-      {/* Saludo */}
-    <Text style={styles.greeting}>Actualmente esta usando la app como visitante</Text>
-
-    <Text style={styles.text}>Si desea poder acceder a contactar los diferentes sitios que estan en 
-    <Text style= {styles.strong}>La Brujula Llanera </Text> inicie sesion o registrese.</Text>
+    const navigation = useNavigation();
     
-    <CustomButton 
-    titletext={'Iniciar sesión'}
-    onPress={handleLogin}
-    type="Primary"
-    size='Small'
-    />
-    <CustomButton 
-    titletext={'Registrarse'}
-    onPress={handleRegister} 
-    type="Secondary"
-    size='Small'
-    />
-    <View style={styles.menuLine} />
+    const handleRegister = () => {
+        navigation.navigate('Registro');
+    };
+    
+    const handleLogin = () => {
+        navigation.navigate('Login');
+    };
 
-      {/* Opciones del menú */}
-    <View style={styles.menu}>
-        <MenuItem title="Términos y condiciones" />
-        <MenuItem title="Acerca de" />
-    </View>
-    </View>
-);
+    const handleOpenTermsAndConditions = async () => {
+        try {
+            const url = await getTermsAndConditionsUrlUseCase();
+            if (await Linking.canOpenURL(url)) {
+                await Linking.openURL(url);
+            } else {
+                console.log('No se puede abrir la URL:', url);
+            }
+        } catch (error) {
+            console.error('Error al abrir los términos y condiciones:', error);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            {/* Avatar */}
+            <Image source={require('../../../shared/assets/AvatarHeader.png')} style={styles.avatar} />
+
+            {/* Saludo */}
+            <Text style={styles.greeting}>Actualmente esta usando la app como visitante</Text>
+
+            <Text style={styles.text}>Si desea poder acceder a contactar los diferentes sitios que estan en 
+            <Text style= {styles.strong}>La Brujula Llanera </Text> inicie sesion o registrese.</Text>
+            
+            <CustomButton 
+                titletext={'Iniciar sesión'}
+                onPress={handleLogin}
+                type="Primary"
+                size='Small'
+            />
+            <CustomButton 
+                titletext={'Registrarse'}
+                onPress={handleRegister} 
+                type="Secondary"
+                size='Small'
+            />
+            <View style={styles.menuLine} />
+
+            {/* Opciones del menú */}
+            <View style={styles.menu}>
+                <MenuItem 
+                    title="Términos y condiciones" 
+                    onPress={handleOpenTermsAndConditions}
+                />
+                <MenuItem title="Acerca de" />
+            </View>
+        </View>
+    );
 };
 
-
 // Componente de ítems del menú
-const MenuItem = ({ title }) => (
-<TouchableOpacity style={styles.menuItem}>
-    <Text style= {{...TextStyles.PoppinsRegular15}}>{title}</Text>
-    <Text style={styles.arrow}>›</Text>
-</TouchableOpacity>
-
+const MenuItem = ({ title, onPress }) => (
+    <TouchableOpacity 
+        style={styles.menuItem} 
+        onPress={onPress}
+    >
+        <Text style= {{...TextStyles.PoppinsRegular15}}>{title}</Text>
+        <Text style={styles.arrow}>›</Text>
+    </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({

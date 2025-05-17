@@ -21,20 +21,21 @@ import LoginScreen from '../screens/Login/LoginScreen';
 import PasswordRecoveryStepOneScreen from '../screens/PasswordRecovery/PasswordRecoveryStepOneScreen';
 import PasswordRecoveryStepTwoScreen from '../screens/PasswordRecovery/PasswordRecoveryStepTwoScreen';
 import PasswordRecoveryStepThreeScreen from '../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen';
+import ProfileInformationScreen from '../screens/ProfileInformation/ProfileInformationScreen';
+import FavoritesScreen from '../screens/Favorites/FavoritesScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Stack para pantallas que no están en los tabs
+// Stack para pantallas que no están en los tabs pero requieren autenticación
 const RootStack = ({ isLoggedIn }) => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen
-      name="MainTabs"
-      component={() => <TabNavigator isLoggedIn={isLoggedIn} />}
-    />
-    <Stack.Screen name="RecoveryOne" component={PasswordRecoveryStepOneScreen} />
-    <Stack.Screen name="Recovery2" component={PasswordRecoveryStepTwoScreen} />
-    <Stack.Screen name="Recovery3" component={PasswordRecoveryStepThreeScreen} />
+    <Stack.Screen name="MainTabs">
+      {() => <TabNavigator isLoggedIn={isLoggedIn} />}
+    </Stack.Screen>
+    {/* Pantallas para usuarios logueados */}
+    <Stack.Screen name="ProfileInformation" component={ProfileInformationScreen} />
+    <Stack.Screen name="Favorites" component={FavoritesScreen} />
   </Stack.Navigator>
 );
 
@@ -98,6 +99,8 @@ const AuthStack = () => (
     <Stack.Screen name="RecoveryOne" component={PasswordRecoveryStepOneScreen} />
     <Stack.Screen name="RecoveryTwo" component={PasswordRecoveryStepTwoScreen} />
     <Stack.Screen name="RecoveryThree" component={PasswordRecoveryStepThreeScreen} />
+    {/* Aquí también podemos incluir Login si queremos un flujo completo de autenticación */}
+    <Stack.Screen name="Login" component={LoginScreen} />
   </Stack.Navigator>
 );
 
@@ -123,7 +126,13 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      {(isLoggedIn || isGuest) ? <RootStack isLoggedIn={isLoggedIn} /> : <AuthStack />}
+      {(isLoggedIn || isGuest) ? (
+        // Usuario autenticado o invitado
+        <RootStack isLoggedIn={isLoggedIn} />
+      ) : (
+        // Usuario no autenticado
+        <AuthStack />
+      )}
     </NavigationContainer>
   );
 };
