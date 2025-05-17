@@ -3,46 +3,54 @@ import { View, Text, Image,  StyleSheet, TouchableOpacity } from "react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { GlobalStyles, Colors,TextStyles } from "../../styles/styles";
 
+const handleRegister = () => {
+    navigation.navigate('Registro');
+};
 const handleLogin =() => {
     navigation.navigate('Login');
 
 };
 
-const ProfileScreen = () => {
+const AnonymousProfileScreen = () => {
 return (
     <View style={styles.container}>
 
       {/* Avatar */}
-    <Image source={require('../../../shared/assets/Avatar.png')} style={styles.avatar} />
+    <Image source={require('../../../shared/assets/AvatarHeader.png')} style={styles.avatar} />
 
       {/* Saludo */}
-    <Text style={styles.greeting}>Hola, <Text style= {styles.strong}>Damian Caro </Text> </Text>
+    <Text style={styles.greeting}>Actualmente esta usando la app como visitante</Text>
 
-    <View style={styles.menuLine} />
-
-      {/* Opciones del menú */}
-    <View style={styles.menu}>
-        <MenuItem title="Mi informacion" />
-        <MenuItem title="Mis favoritos" />
-        <MenuItem title="Terminos y condiones" isLast={true}/>
-    </View>
+    <Text style={styles.text}>Si desea poder acceder a contactar los diferentes sitios que estan en 
+    <Text style= {styles.strong}>La Brujula Llanera </Text> inicie sesion o registrese.</Text>
     
     <CustomButton 
-    titletext={'Cerrar sesión'}
+    titletext={'Iniciar sesión'}
     onPress={handleLogin}
     type="Primary"
     size='Small'
     />
-    
-    
+    <CustomButton 
+    titletext={'Registrarse'}
+    onPress={handleRegister} 
+    type="Secondary"
+    size='Small'
+    />
+    <View style={styles.menuLine} />
+
+      {/* Opciones del menú */}
+    <View style={styles.menu}>
+        <MenuItem title="Términos y condiciones" />
+        <MenuItem title="Acerca de" />
+    </View>
     </View>
 );
 };
 
 
 // Componente de ítems del menú
-const MenuItem = ({ title, isLast }) => (
-<TouchableOpacity style={[styles.menuItem, isLast && styles.menuItemLast ]}>
+const MenuItem = ({ title }) => (
+<TouchableOpacity style={styles.menuItem}>
     <Text style= {{...TextStyles.PoppinsRegular15}}>{title}</Text>
     <Text style={styles.arrow}>›</Text>
 </TouchableOpacity>
@@ -60,14 +68,21 @@ container: {
 avatar: {
     width: 100,
     height: 100,
-    marginBottom:70,
-    marginTop: 50,
+    marginBottom:30,
+    marginTop: 30,
 },
 
 greeting: {
     ...TextStyles.PoppinsSemiBold15,
     textAlign: 'center',
     marginHorizontal: 30,   
+},
+text:{
+    ...TextStyles.PoppinsRegular15,
+    marginTop:20,
+    marginBottom:5,
+    marginHorizontal: 30,
+    textAlign: 'center',
 },
 
 strong: {
@@ -104,10 +119,7 @@ arrow: {
     color: Colors.Black,
     paddingRight: 10,
 },
-menuItemLast: {
-        marginBottom: 80, // Espacio adicional solo en el último elemento
-    },
 
 });
 
-export default ProfileScreen;
+export default AnonymousProfileScreen;

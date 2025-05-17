@@ -10,7 +10,7 @@ import { Text } from 'react-native';
 import RegisterStepOneScreen from '../screens/Register/RegisterStepOne/RegisterStepOneScreen';
 import RegisterStepTwoScreen from '../screens/Register/RegisterStepTwo/RegisterStepTwoScreen';
 import { userStorage } from '../../infrastructure/storage/userStorage';
-
+import AnonymousProfileScreen from '../screens/Profile/AnonymousProfileScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 import MapaScreen from '../screens/Map/MapaScreen';
@@ -25,21 +25,21 @@ import PasswordRecoveryStepThreeScreen from '../screens/PasswordRecovery/Passwor
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Modificamos para crear un Stack fuera del TabNavigator para pantallas que no deberían estar en tabs
-const RootStack = () => (
+// Stack para pantallas que no están en los tabs
+const RootStack = ({ isLoggedIn }) => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MainTabs" component={TabNavigator} />
+    <Stack.Screen
+      name="MainTabs"
+      component={() => <TabNavigator isLoggedIn={isLoggedIn} />}
+    />
     <Stack.Screen name="RecoveryOne" component={PasswordRecoveryStepOneScreen} />
     <Stack.Screen name="Recovery2" component={PasswordRecoveryStepTwoScreen} />
     <Stack.Screen name="Recovery3" component={PasswordRecoveryStepThreeScreen} />
   </Stack.Navigator>
 );
 
-// Hook para acceder al auth state
-const useAuth = () => useSelector(state => state.auth);
-
 // Navegador de tabs principal
-const TabNavigator = () => (
+const TabNavigator = ({ isLoggedIn }) => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
@@ -65,7 +65,7 @@ const TabNavigator = () => (
         }
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      tabBarLabel: ({ color }) => <Text style={{color, fontSize: 12}}>{route.name}</Text>,
+      tabBarLabel: ({ color }) => <Text style={{ color, fontSize: 12 }}>{route.name}</Text>,
       tabBarActiveTintColor: '#236A34',
       tabBarInactiveTintColor: 'black',
       tabBarStyle: {
@@ -79,18 +79,24 @@ const TabNavigator = () => (
     <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
     <Tab.Screen name="Categories" component={CategoriesScreen} options={{ headerShown: false }} />
     <Tab.Screen name="Map" component={MapaScreen} options={{ headerShown: false }} />
-    <Tab.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-    <Tab.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+    <Tab.Screen
+      name="Profile"
+      component={isLoggedIn ? ProfileScreen : AnonymousProfileScreen}
+      options={{ headerShown: false }}
+    />
+    {!isLoggedIn && (
+      <Tab.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+    )}
   </Tab.Navigator>
 );
 
-// Navegador de autenticación (registro)
+// Navegador de autenticación (registro y recuperación)
 const AuthStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="RegisterStepOne" component={RegisterStepOneScreen} />
     <Stack.Screen name="RegisterStepTwo" component={RegisterStepTwoScreen} />
     <Stack.Screen name="RecoveryOne" component={PasswordRecoveryStepOneScreen} />
-    <Stack.Screen name="Recovery2" component={PasswordRecoveryStepTwoScreen} />
+    <Stack.Shortcut name="Recovery2" component={PasswordRecoveryStepTwoScreen} />
     <Stack.Screen name="Recovery3" component={PasswordRecoveryStepThreeScreen} />
   </Stack.Navigator>
 );
@@ -111,13 +117,13 @@ const AppNavigator = () => {
       setIsLoading(false);
     };
     loadUser();
-  }, []);
+  }, [dispatch]);
 
-  if (isLoading) return null;
+  if (isLoading) return null; // Puedes mostrar un splash o loader aquí
 
   return (
     <NavigationContainer ref={navigationRef}>
-      {(isLoggedIn || isGuest) ? <RootStack /> : <AuthStack />}
+      {(isLoggedIn || isGuest) ? <RootStack isLoggedIn={isLoggedIn} /> : <AuthStack />}
     </NavigationContainer>
   );
 };
