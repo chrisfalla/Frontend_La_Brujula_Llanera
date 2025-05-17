@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet,  TouchableOpacity, ScrollView,  } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import CustomInputText from '../../components/CustomInput/CustomInputText';
 import CustomButton from '../../components/CustomButton/CustomButton';
-import LogoTitle from '../../components/LogoTitle';
-import CustomDecoration from '../../components/CustomDecoration/CustomDecoration'
-
+import CustomDecoration from '../../components/CustomDecoration/CustomDecoration';
 
 const LoginScreen = ({ navigation }) => {
     const [formData, setFormData] = useState({
@@ -25,17 +23,19 @@ const LoginScreen = ({ navigation }) => {
     };
 
     const handleForgotPassword = () => {
-        navigation.navigate('Recovery');
+        // Asegúrate de que este nombre coincida con el definido en LoginStack
+        navigation.navigate('RecoveryOne');
     };
 
     const handleRegister = () => {
-        navigation.navigate('Registro');
+        navigation.navigate('RegisterStepOne');
     };
+    
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-            <LogoTitle />
+                <Text style={styles.logoText}>La Brújula Llanera</Text>
                 <Text style={styles.title}>Iniciar <Text style={styles.title2}>Sesión</Text></Text>
                 <View style={styles.formContainer}>
                     <CustomInputText
@@ -130,6 +130,14 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         borderRadius: 1,
       },
+    logoText: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#236A34',
+        marginTop: 50,
+        marginBottom: 20,
+        textAlign: 'center'
+    },
 });
 
 export default LoginScreen;

@@ -11,7 +11,11 @@ const CustomInputText = ({
   IsPassword,
   value,
   onChangeText,
-  style
+  style,
+  onFocus,
+  onBlur,
+  useBgColorOnFocus = false,  // Nuevo prop con valor predeterminado false
+  customInputStyle, // Nuevo prop para estilos específicos del input
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -32,16 +36,31 @@ const CustomInputText = ({
           IsDisabled && styles.inputDisabled,
           isFocused && !HasError && styles.inputFocused,
           HasError && styles.inputError,
+          customInputStyle, // Aplicamos estilos personalizados si existen
         ]}
         placeholder={PlaceholderText}
         secureTextEntry={IsPassword}
         editable={IsDisabled !== true}
         placeholderTextColor={Colors.DarkGray}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onFocus={(e) => {
+          setIsFocused(true);
+          if (typeof onFocus === 'function') {
+            onFocus(e);
+          }
+        }}
+        onBlur={(e) => {
+          setIsFocused(false);
+          if (typeof onBlur === 'function') {
+            onBlur(e);
+          }
+        }}
       />
 
-      {HasError && <Text style={styles.errorText}>{SupportingText}</Text>}
+      {HasError ? (
+        <Text style={styles.errorText}>
+          {typeof HasError === 'string' ? HasError : 'Error de validación'}
+        </Text>
+      ) : null}
     </View>
   );
 };
@@ -65,9 +84,9 @@ const styles = StyleSheet.create({
     height: 48,
     borderWidth: 1,
     paddingLeft: 15,
+    paddingBottom: 8,
     borderRadius: 20,
     borderColor: Colors.DarkGray,
-    backgroundColor: 'white',
     ...TextStyles.PoppinsRegular15,
   },
   inputDisabled: {
@@ -77,6 +96,7 @@ const styles = StyleSheet.create({
   inputFocused: {
     borderColor: Colors.ColorOnPrimary,
     borderWidth: 1,
+    // Removemos la línea de backgroundColor para no afectar globalmente
   },
   inputError: {
     borderColor: Colors.ErrorAdvertisingColor,

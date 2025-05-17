@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 10,
+        height: 49,
     },
     primaryTouchable: {
         backgroundColor: Colors.ColorPrimary,
