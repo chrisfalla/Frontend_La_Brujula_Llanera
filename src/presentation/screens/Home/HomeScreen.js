@@ -591,14 +591,12 @@ const styles = StyleSheet.create({
   },
   leftCardContainer: {
     width: "48.5%", // Ancho exacto
-    marginBottom: 15,
     alignItems: 'center', // Centrar contenido
     paddingHorizontal: 0, // Sin padding horizontal
     marginHorizontal: 0, // Sin margen horizontal
   },
   rightCardContainer: {
     width: "48.5%", // Exactamente el mismo ancho
-    marginBottom: 15,
     alignItems: 'center', // Centrar contenido
     paddingHorizontal: 0, // Sin padding horizontal
     marginHorizontal: 0, // Sin margen horizontal
@@ -625,11 +623,9 @@ const styles = StyleSheet.create({
   },
   placesByTagsOuterContainer: {
     overflow: "visible",
-    marginRight: 4,
   },
   placesByTagsListContainer: {
     overflow: "visible",
-    // paddingBottom: 0,
     paddingHorizontal: 0,
   },
   flatListStyle: {
