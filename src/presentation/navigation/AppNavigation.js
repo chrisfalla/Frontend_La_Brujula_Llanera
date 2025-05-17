@@ -96,8 +96,8 @@ const AuthStack = () => (
     <Stack.Screen name="RegisterStepOne" component={RegisterStepOneScreen} />
     <Stack.Screen name="RegisterStepTwo" component={RegisterStepTwoScreen} />
     <Stack.Screen name="RecoveryOne" component={PasswordRecoveryStepOneScreen} />
-    <Stack.Shortcut name="Recovery2" component={PasswordRecoveryStepTwoScreen} />
-    <Stack.Screen name="Recovery3" component={PasswordRecoveryStepThreeScreen} />
+    <Stack.Screen name="RecoveryTwo" component={PasswordRecoveryStepTwoScreen} />
+    <Stack.Screen name="RecoveryThree" component={PasswordRecoveryStepThreeScreen} />
   </Stack.Navigator>
 );
 
