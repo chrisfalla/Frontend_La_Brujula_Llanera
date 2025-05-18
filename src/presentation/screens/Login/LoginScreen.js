@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, StatusBar, SafeAreaView } from 'react-native';
 import CustomInputText from '../../components/CustomInput/CustomInputText';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import CustomDecoration from '../../components/CustomDecoration/CustomDecoration';
+import { GlobalStyles, Colors, TextStyles } from '../../styles/styles';
 
 const LoginScreen = ({ navigation }) => {
     const [formData, setFormData] = useState({
@@ -33,17 +34,29 @@ const LoginScreen = ({ navigation }) => {
     
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}> 
+        <StatusBar
+                barStyle="dark-content"  // Para iconos oscuros en fondo claro
+                backgroundColor="#ffffff" // Fondo blanco para Android
+                translucent={false}      // No translúcido para evitar superposiciones
+            />                 
             <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-                <Text style={styles.logoText}>La Brújula Llanera</Text>
-                <Text style={styles.title}>Iniciar <Text style={styles.title2}>Sesión</Text></Text>
+                <Image style={styles.logoLeft}
+                    source={require('../../../shared/assets/logoLeft.png')} />
+                <Image style={styles.logoRight}
+                    source={require('../../../shared/assets/logoRigth.png')} />
+                <Image style={styles.img}
+                    source={require('../../../shared/assets/MainLogo.png')} />
+
+                <Text style={styles.title}>Iniciar <Text style={styles.titleText}>Sesión </Text> </Text>
                 <View style={styles.formContainer}>
-                    <CustomInputText
+                    <CustomInputText style={styles.input}
                         LabelText={'Ingresa su email'}
                         PlaceholderText={'ejemplo@ejemplo.com'}
                         HasError={errors.email}
                     />
                     <CustomInputText
+                        style={styles.input}
                         LabelText={'Ingresa su contraseña'}
                         PlaceholderText={'*********'}
                         IsPassword={true}
@@ -52,30 +65,32 @@ const LoginScreen = ({ navigation }) => {
                     <TouchableOpacity onPress={handleForgotPassword}>
                         <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
                     </TouchableOpacity>
-                    <CustomButton titletext='Iniciar sesión'
+                    
+                    <CustomButton style={styles.buttonOne}
+                    titletext='Iniciar sesión'
                     onPress={handleLogin} 
                     type="Primary"
                     size="Big"
                     />
-                    <Text>ó</Text>
-                    <CustomButton 
+                    <Text style={styles.separator}>ó</Text>
+                    <CustomButton style={styles.buttonTwo} 
                     titletext='Registrarse'
                     onPress={handleRegister} 
                     type="Secondary"
                     size="Big"/>
-                    <View style={styles.divider} />
+               
                 </View>
                 <View style={styles.footerContainer}>
                     <Text style={styles.footer}>
                         Al ingresar, aceptas nuestros Términos y condiciones, y Política de privacidad
                     </Text>
                 </View>
-                <CustomDecoration
-                type='Left'
+                <CustomDecoration 
+                type='Left' styles={styles.divider}
                 />
             </ScrollView>
-        
-        </View>
+
+        </SafeAreaView>
     );
 };
 
@@ -87,57 +102,83 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
         alignItems: 'center',
-        padding: 10,
+
+    },
+    logoRight:{ 
+        position: 'absolute',    
+        right: 0,
+        top: 0,
+        zIndex: 1,
+    },
+
+    logoLeft:{
+        position: 'absolute',
+        marginVertical: 150,
+        left: 0,
+        top: 0,    
     },
     
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        margin: 15,
+    img:{
+        width: 164,
+        height: 151,
+        marginTop: 30,
+        marginBottom: 30,
     },
-    title2: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        margin: 0,
-        color: '#236A34',
+    title:{
+        color: Colors.Black,
+        ...TextStyles.PoppinsSemibold20,
+        textAlign: 'center',      
     },
-   
+    titleText:{
+      color: Colors.ColorPrimary,
+      ...TextStyles.PoppinsSemibold20
+    },   
     formContainer: {
         width: "100%",
         alignItems: "center",
         paddingHorizontal: 10,
+        marginTop: 20,
+        fontSize: 12,
+    },
+    input: {
+        marginBottom: 20,
     },
     forgotPassword: {
-        color: "#747474",
-        marginLeft: 150,
-        marginBottom: 10,
+        color: Colors.DarkGray,
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        left: 90,
+        marginBottom: 0,
         textDecorationLine: "underline",
     },
-  
+    buttonOne: {
+        marginTop: 50,
+        marginBottom: 10,
+    },
+    buttonTwo: {
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    separator: {
+        color: Colors.DarkGray,
+        fontFamily: 'Poppins',
+        fontSize: 14,
+        marginBottom: 5,
+        marginTop: 5,
+        textAlign: 'center',
+    },
     footerContainer: {
-       
-        marginBottom:20,
-        width: '80%',
+        width: '90%',
+        marginTop: 50,
+        marginBottom: 50,
     },
     footer: {
         textAlign: 'center',
+        fontFamily: 'Poppins',
         fontSize: 12,
+        color: Colors.Black,
     },
-    divider: {
-        width: '100%',
-        height: 1,
-        backgroundColor: '#CFCFCF',
-        marginVertical: 5,
-        borderRadius: 1,
-      },
-    logoText: {
-        fontSize: 26,
-        fontWeight: 'bold',
-        color: '#236A34',
-        marginTop: 50,
-        marginBottom: 20,
-        textAlign: 'center'
-    },
+  
 });
 
 export default LoginScreen;
