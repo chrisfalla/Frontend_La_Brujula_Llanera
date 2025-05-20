@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {  View,  Text,  StyleSheet,  Pressable,  Platform,} from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-import { Colors, TextStyles, GlobalStyles } from "../../styles/styles";
+import { Colors, TextStyles } from "../../styles/styles";
+
+/** si se va a usar  DropDownPicker y DateTimePicker en la misma pantalla se debe usar scrollView **/
 
 const CustomDropdown = ({
   LabelText,
   items = [],
   value,
   setValue,
-  placeholder = "Seleccionar",
+  placeholder,
   HasError,
   SupportingText,
   style,
@@ -18,8 +21,12 @@ const CustomDropdown = ({
   onOpen,
   onClose,
   disabled = false,
+  isDatePicker = false,
+  minimumDate,
+  maximumDate,
 }) => {
   const [open, setOpen] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleOpen = () => {
     setOpen(true);
@@ -31,6 +38,16 @@ const CustomDropdown = ({
     if (onClose) onClose();
   };
 
+  const handleDateChange = (event, selectedDate) => {
+    if (Platform.OS !== "ios") {
+      setShowDatePicker(false);
+    }
+
+    if (selectedDate) {
+      setValue(selectedDate.toISOString());
+    }
+  };
+
   return (
     <View style={[styles.container, style, { zIndex }]}>
       {LabelText && (
@@ -39,32 +56,70 @@ const CustomDropdown = ({
         </Text>
       )}
 
-      <DropDownPicker
-        open={open}
-        value={value}
-        items={items}
-        setOpen={handleOpen}
-        setValue={setValue}
-        placeholder={placeholder}
-        style={[
-          styles.dropdown,
-          HasError && styles.dropdownError,
-          disabled && styles.dropdownDisabled,
-          value !== null && value !== undefined && styles.dropdownSelected,
-        ]}
-        textStyle={styles.dropdownText}
-        placeholderStyle={styles.placeholderText}
-        listMode="SCROLLVIEW"
-        scrollViewProps={{
-          nestedScrollEnabled: true,
-        }}
-        zIndex={zIndex}
-        zIndexInverse={zIndexInverse}
-        onOpen={handleOpen}
-        onClose={handleClose}
-        disabled={disabled}
-        dropDownContainerStyle={styles.dropDownContainer}
-      />
+      {isDatePicker ? (
+        <>
+          <Pressable
+            onPress={() => !disabled && setShowDatePicker(true)}
+            style={[
+              styles.dropdown,
+              HasError && styles.dropdownError,
+              disabled && styles.dropdownDisabled,
+              value && styles.dropdownSelected,
+              { justifyContent: "center" },
+            ]}
+            disabled={disabled}
+          >
+            <Text
+              style={[
+                styles.dropdownText,
+                !value && styles.placeholderText,
+              ]}
+            >
+              {value
+                ? new Date(value).toLocaleDateString()
+                : placeholder}
+            </Text>
+          </Pressable>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={value ? new Date(value) : new Date()}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+              minimumDate={minimumDate}
+              maximumDate={maximumDate}
+            />
+          )}
+        </>
+      ) : (
+        <DropDownPicker
+          open={open}
+          value={value}
+          items={items}
+          setOpen={setOpen}
+          setValue={setValue}
+          placeholder={placeholder}
+          style={[
+            styles.dropdown,
+            HasError && styles.dropdownError,
+            disabled && styles.dropdownDisabled,
+            value !== null && value !== undefined && styles.dropdownSelected,
+          ]}
+          textStyle={styles.dropdownText}
+          placeholderStyle={styles.placeholderText}
+          listMode="SCROLLVIEW"
+          scrollViewProps={{
+            nestedScrollEnabled: true,
+          }}
+          zIndex={zIndex}
+          zIndexInverse={zIndexInverse}
+          onOpen={handleOpen}
+          onClose={handleClose}
+          disabled={disabled}
+          dropDownContainerStyle={styles.dropDownContainer}
+        />
+      )}
 
       {HasError && typeof HasError === "string" && (
         <Text style={styles.errorText}>{HasError}</Text>
@@ -79,8 +134,9 @@ const CustomDropdown = ({
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 10,
+   
     width: "100%",
-    height: "auto",
   },
   label: {
     ...TextStyles.PoppinsRegular15,
@@ -105,7 +161,7 @@ const styles = StyleSheet.create({
   },
   dropdownError: {
     borderColor: Colors.ErrorAdvertisingColor,
-    borderWidth: 1.3,
+    borderWidth: 1,
   },
   dropdownDisabled: {
     backgroundColor: Colors.LightGray,
@@ -123,6 +179,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.DarkGray,
     borderWidth: 1,
     borderRadius: 10,
+    backgroundColor: Colors.White,
   },
   errorText: {
     ...TextStyles.PoppinsRegular13,
