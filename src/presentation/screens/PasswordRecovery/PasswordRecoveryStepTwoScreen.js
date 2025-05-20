@@ -103,7 +103,7 @@ const PasswordRecoveryStepTwoScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.BackgroundPage,
   },
   inner: {
     flex: 1,
