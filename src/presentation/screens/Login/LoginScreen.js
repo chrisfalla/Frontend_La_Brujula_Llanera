@@ -5,26 +5,58 @@ import CustomButton from '../../components/CustomButton/CustomButton';
 import CustomDecoration from '../../components/CustomDecoration/CustomDecoration';
 import { GlobalStyles, Colors, TextStyles } from '../../styles/styles';
 
+//imports login chris
+import { loginUserUseCase } from '../../../domain/usecases/user/loginUserUseCase';
+import { usersRepository } from '../../../data/repositories/users/usersRepository';
+import { userLogin } from '../../../domain/models/users/userLogin';
+import { login } from '../../../shared/store/authSlice/authSlice';
+import { userStorage } from '../../../infrastructure/storage/userStorage';
+import { useDispatch } from 'react-redux';
+
 const LoginScreen = ({ navigation }) => {
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         email: "",
         password: ""
     });
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
-    const handleLogin = () => {
-        if (!formData.email || !formData.password) {
-            setErrors({
-                email: !formData.email ? "Email es requerido" : "",
-                password: !formData.password ? "Contraseña es requerida" : ""
+    const handleInputChange = (key, value) => {
+        setFormData(prev => ({ ...prev, [key]: value }));
+        setErrors(prev => ({ ...prev, [key]: "" }));
+    };
+
+    const handleLogin = async () => {
+        let localErrors = {};
+        if (!formData.email) localErrors.email = "Email es requerido";
+        if (!formData.password) localErrors.password = "Contraseña es requerida";
+        setErrors(localErrors);
+        if (Object.keys(localErrors).length > 0) return;
+
+        setLoading(true);
+        try {
+            const credentials = new userLogin({
+                email: formData.email,
+                password: formData.password
             });
-            return;
+            const response = await loginUserUseCase(usersRepository)(credentials);
+
+            if (response && response.user && response.token) {
+                await userStorage.save(response.user);
+                dispatch(login(response.user));
+                navigation.replace('Home');
+            } else {
+                setErrors({ password: "Credenciales incorrectas" });
+            }
+        } catch (error) {
+            setErrors({ password: "Error al iniciar sesión" });
+        } finally {
+            setLoading(false);
         }
-        navigation.replace('TabNavigator');
     };
 
     const handleForgotPassword = () => {
-        // Asegúrate de que este nombre coincida con el definido en LoginStack
         navigation.navigate('RecoveryOne');
     };
 
@@ -53,24 +85,31 @@ const LoginScreen = ({ navigation }) => {
                     <CustomInputText style={styles.input}
                         LabelText={'Ingresa su email'}
                         PlaceholderText={'ejemplo@ejemplo.com'}
-                        HasError={errors.email}
+                        value={formData.email}
+                        onChangeText={value => handleInputChange('email', value)}
+                        HasError={!!errors.email}
+                        SupportingText={errors.email}
                     />
                     <CustomInputText
                         style={styles.input}
                         LabelText={'Ingresa su contraseña'}
                         PlaceholderText={'*********'}
                         IsPassword={true}
-                        HasError={errors.password}                        
+                        value={formData.password}
+                        onChangeText={value => handleInputChange('password', value)}
+                        HasError={!!errors.password}
+                        SupportingText={errors.password}
                     />
                     <TouchableOpacity onPress={handleForgotPassword}>
                         <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
                     </TouchableOpacity>
                     
                     <CustomButton style={styles.buttonOne}
-                    titletext='Iniciar sesión'
+                    titletext={loading ? 'Cargando...' : 'Iniciar sesión'}
                     onPress={handleLogin} 
                     type="Primary"
                     size="Big"
+                    disabled={loading}
                     />
                     <Text style={styles.separator}>ó</Text>
                     <CustomButton style={styles.buttonTwo} 
