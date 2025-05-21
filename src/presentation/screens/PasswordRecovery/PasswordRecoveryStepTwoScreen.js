@@ -35,7 +35,7 @@ const PasswordRecoveryStepTwoScreen = () => {
     }
 
     setCodeError(null);
-    navigation.navigate("Recovery3", { email, code });
+    navigation.navigate("RecoveryThree", { email, code });
   };
 
   const handleResendCode = () => {
@@ -89,6 +89,13 @@ const PasswordRecoveryStepTwoScreen = () => {
 
         <View style={styles.footer}>
           <CustomButton
+            titletext="Enviar código nuevamente"
+            onPress={handleResendCode}
+            type="Secondary"
+            size="Big"
+            style={{ marginBottom: 10 }}
+          />
+          <CustomButton
             titletext="Validar Código"
             onPress={handleContinue}
             type="Primary"
@@ -137,7 +144,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.BackgroundPage,
   },
   logo: {
     alignSelf: "center",

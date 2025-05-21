@@ -6,7 +6,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -19,7 +18,6 @@ const PasswordRecoveryStepOneScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(null);
-  const [isFocused, setIsFocused] = useState(false); // Nuevo estado
 
   const validateEmail = (text) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,26 +36,7 @@ const PasswordRecoveryStepOneScreen = () => {
     }
     
     setEmailError(null);
-    navigation.navigate("Recovery2", { email });
-  };
-
-  const handleResendCode = () => {
-    if (!email) {
-      setEmailError("Ingrese un correo para enviar el código");
-      return;
-    }
-    
-    if (!validateEmail(email)) {
-      setEmailError("Por favor ingrese un correo válido");
-      return;
-    }
-    
-    setEmailError(null);
-    Alert.alert(
-      "Código reenviado",
-      `Hemos enviado un nuevo código a ${email}.`,
-      [{ text: "OK" }]
-    );
+    navigation.navigate("RecoveryTwo", { email });
   };
 
   return (
@@ -101,22 +80,11 @@ const PasswordRecoveryStepOneScreen = () => {
               value={email}
               keyboardType="email-address"
               autoCapitalize="none"
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
             />
           </View>
         </ScrollView>
         
         <View style={styles.footer}>
-          {isFocused && (
-            <CustomButton
-              titletext="Enviar código nuevamente"
-              onPress={handleResendCode}
-              type="Secondary"
-              size="Big"
-              style={{ marginBottom: 2 }}
-            />
-          )}
           <CustomButton
             titletext="Continuar"
             onPress={handleContinue}
@@ -164,7 +132,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.BackgroundPage,
   },
   logo: {
     alignSelf: "center",
