@@ -75,6 +75,7 @@ const NavigationTopBar = ({
 
 const styles = StyleSheet.create({
   header: {
+    marginTop: 10,
     width: "100%",
     position: "relative", // Necesario para posicionamiento absoluto del título
   },
@@ -103,8 +104,7 @@ const styles = StyleSheet.create({
   iconNoBackground: {
     zIndex: 2, // Para que esté por encima del título
     paddingHorizontal: 10,
-    minWidth: 30, // Ancho mínimo reducido
-    marginLeft: -10, // Margen negativo para acercar más al borde
+    minWidth: 40, // Ancho mínimo reducido
   },
   titleContainer: {
     flex: 1, // Ocupa todo el espacio disponible
@@ -113,20 +113,20 @@ const styles = StyleSheet.create({
   title: {
     ...TextStyles.PoppinsSemiBold15,
     position: "absolute", // Posicionamiento absoluto
-    left: 0,
-    right: 0, // Extender al ancho completo
     textAlign: "center",
     color: Colors.ColorPrimary,
     zIndex: 1, // Asegura que esté sobre los otros elementos
     top: "50%", // Centra verticalmente
-    transform: [{ translateY: -10 }], // Ajusta verticalmente (la mitad de la altura del texto aproximadamente)
+    transform: [{ translateY: -32 }], // Ajusta verticalmente (la mitad de la altura del texto aproximadamente)
   },
   titleHidden: {
     opacity: 0,
   },
   invisibleIcon: {
-    opacity: 0, // Hace que el elemento sea invisible
-  },
+  opacity: 0,
+  minWidth: 40,
+  alignItems: 'center',
+},
 });
 
 export default NavigationTopBar;
