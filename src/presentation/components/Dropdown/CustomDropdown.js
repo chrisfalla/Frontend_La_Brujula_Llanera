@@ -12,7 +12,7 @@ const CustomDropdown = ({
   LabelText,
   items = [],
   value,
-  setValue,
+  setValue = () => {},
   placeholder,
   HasError,
   SupportingText,
@@ -23,13 +23,9 @@ const CustomDropdown = ({
   onClose,
   disabled = false,
   isDatePicker = false,
-  minimumDate,
-  maximumDate,
-  
 }) => {
   const [open, setOpen] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  
 
   const handleOpen = () => {
     setOpen(true);
@@ -50,7 +46,6 @@ const CustomDropdown = ({
       setValue(selectedDate.toISOString());
     }
   };
-  
 
   return (
     <View style={[styles.container, style, { zIndex }]}>
@@ -66,10 +61,15 @@ const CustomDropdown = ({
             onPress={() => !disabled && setShowDatePicker(true)}
             style={[
               styles.dropdown,
+              (showDatePicker || value) && !HasError && styles.dropdownSelected,
               HasError && styles.dropdownError,
               disabled && styles.dropdownDisabled,
               value && styles.dropdownSelected,
-             { justifyContent: "space-between", flexDirection: "row", alignItems: "center" },
+              {
+                justifyContent: "space-between",
+                flexDirection: "row",
+                alignItems: "center",
+              },
             ]}
             disabled={disabled}
           >
@@ -95,8 +95,6 @@ const CustomDropdown = ({
               mode="date"
               display="default"
               onChange={handleDateChange}
-              minimumDate={minimumDate}
-              maximumDate={maximumDate}
               showArrow={true}
             />
           )}
@@ -107,20 +105,23 @@ const CustomDropdown = ({
           value={value}
           items={items}
           setOpen={setOpen}
-          setValue={setValue}
+          setValue={(callback) => {
+            const selectedValue = callback(); // Invoca el callback para obtener el valor
+            setValue(selectedValue);
+          }}
           placeholder={placeholder}
           style={[
             styles.dropdown,
+            open && !HasError && styles.dropdownSelected,
             HasError && styles.dropdownError,
             disabled && styles.dropdownDisabled,
-            value !== null && value !== undefined && styles.dropdownSelected,
           ]}
           textStyle={styles.dropdownText}
           placeholderStyle={styles.placeholderText}
-        dropDownDirection="AUTOMATIC" 
+          dropDownDirection="AUTOMATIC"
           listMode="SCROLLVIEW"
           scrollViewProps={{
-          nestedScrollEnabled: true,
+            nestedScrollEnabled: true,
           }}
           zIndex={zIndex}
           zIndexInverse={zIndexInverse}
@@ -145,7 +146,7 @@ const CustomDropdown = ({
 const styles = StyleSheet.create({
   container: {
     paddingTop: 10,
-    position: 'relative',
+    position: "relative",
     width: "100%",
   },
   label: {
@@ -156,24 +157,25 @@ const styles = StyleSheet.create({
   labelError: {
     color: Colors.ErrorAdvertisingColor,
   },
-  
+
   dropdown: {
-  width: "100%",
-  height: 48,
-  borderWidth: 1,
-  paddingLeft: 15,
-  paddingRight: 10, // Añadir espacio a la derecha
-  borderRadius: 20,
-  borderColor: Colors.DarkGray,
-  ...TextStyles.PoppinsRegular15,
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "space-between",
-  
+    width: "100%",
+    height: 48,
+    borderWidth: 1,
+    paddingLeft: 15,
+    paddingRight: 10, // Añadir espacio a la derecha
+    borderRadius: 20,
+    borderColor: Colors.DarkGray,
+    backgroundColor: Colors.BackgroundPage,
+    ...TextStyles.PoppinsRegular15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   dropdownSelected: {
     borderColor: Colors.ColorOnPrimary,
     borderWidth: 1,
+    backgroundColor: Colors.BackgroundPage,
   },
   dropdownError: {
     borderColor: Colors.ErrorAdvertisingColor,
@@ -196,7 +198,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     backgroundColor: Colors.LightGray,
-    
+    zIndex: 5000,
   },
   errorText: {
     ...TextStyles.PoppinsRegular13,
