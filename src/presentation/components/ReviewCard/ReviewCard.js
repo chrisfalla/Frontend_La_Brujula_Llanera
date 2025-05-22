@@ -12,7 +12,7 @@ const ReviewCard = ({ username, comment, date }) => {
                 <Image style={styles.avatarimg}
                     source={require('../../../shared/assets/AvatarHeader.png')}
                 />
-               
+
                 <View>
                     <Text style={styles.username} >{username} </Text>
                 </View>            
@@ -27,8 +27,9 @@ const ReviewCard = ({ username, comment, date }) => {
 const styles = StyleSheet.create({
     card:{
         ...GlobalStyles.CardBaseStyle,
-        padding: 5,
         marginVertical: 8,
+        width: '95%',
+        alignSelf: 'center',
     },
     header: {
         flexDirection: 'row',
