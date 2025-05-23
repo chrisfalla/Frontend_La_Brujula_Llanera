@@ -47,8 +47,9 @@ return (
         primaryIcon="chevron-back"
         onBackPress={() => navigation.goBack()}
         title="Magdalena - Comentarios"
-        removeBackground={true}
-    />
+        useBackground={false}
+        SecondIcon={false}    />
+
 <View style={styles.ratingcontainer}>
     <View style={styles.ratingcard}>
         <Text style={styles.text}>Calificación General</Text>
@@ -113,7 +114,7 @@ container: {
 },
 
 ratingcontainer: {
-    marginTop: 15,
+    marginTop: 30,
     marginHorizontal: -20,
     // permite que el wrapper sobresalga
     position: 'relative',
