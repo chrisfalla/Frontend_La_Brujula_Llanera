@@ -15,6 +15,16 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 import CustomInputText from "../../components/CustomInput/CustomInputText";
 import { Colors, TextStyles } from "../../styles/styles";
 
+//imports chris validate recovery password
+import { ActivityIndicator} from "react-native";
+import { usersRepository } from "../../../data/repositories/users/usersRepository";
+import {
+  requestPasswordRecoveryCodeUseCase,
+  verifyPasswordRecoveryCodeUseCase
+} from "../../../domain/usecases/passwordRecovery/getPasswordRecoveryUseCase";
+
+
+
 const PasswordRecoveryStepTwoScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -23,7 +33,7 @@ const PasswordRecoveryStepTwoScreen = () => {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState(null);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!code) {
       setCodeError("Por favor ingrese el código de validación");
       return;
@@ -35,16 +45,69 @@ const PasswordRecoveryStepTwoScreen = () => {
     }
 
     setCodeError(null);
-    navigation.navigate("RecoveryThree", { email, code });
+    setIsLoading(true);
+
+    try {
+      console.log("🔑 Intentando validar código:", code, "para email:", email);
+      
+      // Formatear y limpiar el código antes de enviarlo
+      const formattedCode = code.trim();
+      
+      const response = await verifyPasswordRecoveryCodeUseCase(usersRepository)(email, formattedCode);
+      console.log("✅ Validación exitosa, respuesta:", response);
+      
+      navigation.navigate("RecoveryThree", { email, code: formattedCode });
+    } catch (error) {
+      console.error("❌ Error detallado al validar código:", error);
+      
+      let errorMessage = "Código inválido o expirado";
+      
+      // Manejo de diferentes tipos de errores
+      if (error.response) {
+        console.error("📄 Respuesta de error del servidor:", {
+          status: error.response.status,
+          data: error.response.data
+        });
+        
+        if (error.response.status === 404) {
+          errorMessage = "Código no encontrado. Por favor solicite uno nuevo.";
+        } else if (error.response.status === 401) {
+          errorMessage = "Código incorrecto o expirado. Por favor verifique.";
+        } else if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+      }
+      
+      setCodeError(errorMessage);
+      Alert.alert("Error de validación", errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleResendCode = () => {
-    Alert.alert(
-      "Código reenviado",
-      `Hemos enviado un nuevo código a ${email}.`,
-      [{ text: "OK" }]
-    );
+  const handleResendCode = async () => {
+    setIsResending(true);
+    try {
+      await requestPasswordRecoveryCodeUseCase(usersRepository)(email);
+      Alert.alert(
+        "Código reenviado",
+        `Hemos enviado un nuevo código a ${email}.`,
+        [{ text: "OK" }]
+      );
+    } catch (error) {
+      let errorMessage = "No se pudo reenviar el código";
+      if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+      Alert.alert("Error", errorMessage);
+    } finally {
+      setIsResending(false);
+    }
   };
+
+  //add states load chris
+  const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   return (
     <KeyboardAvoidingView
@@ -88,19 +151,30 @@ const PasswordRecoveryStepTwoScreen = () => {
         </ScrollView>
 
         <View style={styles.footer}>
-          <CustomButton
-            titletext="Enviar código nuevamente"
-            onPress={handleResendCode}
-            type="Secondary"
-            size="Big"
-            style={{ marginBottom: 10 }}
-          />
-          <CustomButton
-            titletext="Validar Código"
-            onPress={handleContinue}
-            type="Primary"
-            size="Big"
-          />
+          {isResending ? (
+            <ActivityIndicator size="large" color={Colors.ColorSecondary} style={{ marginBottom: 10 }} />
+          ) : (
+            <CustomButton
+              titletext="Enviar código nuevamente"
+              onPress={handleResendCode}
+              type="Secondary"
+              size="Big"
+              style={{ marginBottom: 10 }}
+              disabled={isLoading}
+            />
+          )}
+
+          {isLoading ? (
+            <ActivityIndicator size="large" color={Colors.ColorPrimary} />
+          ) : (
+            <CustomButton
+              titletext="Validar Código"
+              onPress={handleContinue}
+              type="Primary"
+              size="Big"
+              disabled={isResending}
+            />
+          )}
         </View>
       </View>
     </KeyboardAvoidingView>

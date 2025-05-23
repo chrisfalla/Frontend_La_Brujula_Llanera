@@ -8,6 +8,7 @@ import {
   Platform,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import CustomStepper from "../../components/Steper/CustomSteper";
@@ -15,21 +16,31 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 import CustomInputText from "../../components/CustomInput/CustomInputText";
 import { Colors, TextStyles } from "../../styles/styles";
 
+// imports chris validate recovery password
+import { useDispatch } from "react-redux";
+import { usersRepository } from "../../../data/repositories/users/usersRepository";
+import { resetPasswordUseCase } from "../../../domain/usecases/passwordRecovery/getPasswordRecoveryUseCase";
+import { userStorage } from "../../../infrastructure/storage/userStorage";
+import { login } from "../../../shared/store/authSlice/authSlice";
+
 const PasswordRecoveryStepThreeScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const dispatch = useDispatch();//import chris recovery password
   const { email, code } = route.params || { email: "", code: "" };
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);//import chris recovery password
 
   const validatePassword = (pass) => {
     return pass.length >= 8; // Requisito mínimo
   };
 
-  const handleContinue = () => {
+  //modify chris recovery password
+  const handleContinue = async () => {
     let hasError = false;
 
     if (!password) {
@@ -54,13 +65,31 @@ const PasswordRecoveryStepThreeScreen = () => {
 
     if (hasError) return;
 
-    // Simulación de actualización de contraseña exitosa
-    Alert.alert("¡Éxito!", "Tu contraseña ha sido actualizada correctamente.", [
-      {
-        text: "OK",
-        onPress: () => navigation.navigate("Login"),
-      },
-    ]);
+    setIsLoading(true);
+
+    try {
+      const response = await resetPasswordUseCase(usersRepository)(email, code, password);
+
+      if (response && response.user) {
+        await userStorage.save(response.user);
+        dispatch(login(response.user));
+      }
+
+      Alert.alert("¡Éxito!", "Tu contraseña ha sido actualizada correctamente.", [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("Login"),
+        },
+      ]);
+    } catch (error) {
+      let errorMessage = "No se pudo actualizar la contraseña";
+      if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+      Alert.alert("Error", errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,7 +119,7 @@ const PasswordRecoveryStepThreeScreen = () => {
             <Text style={styles.subtitle}>Ingrese la nueva contraseña:</Text>
 
             <CustomInputText
-              style={{ marginBottom: 20}}
+              style={{ marginBottom: 20 }}
               LabelText="Ingrese su nueva contraseña"
               PlaceholderText="********"
               HasError={passwordError}
@@ -100,6 +129,7 @@ const PasswordRecoveryStepThreeScreen = () => {
               }}
               value={password}
               secureTextEntry={true}
+              editable={!isLoading}
             />
 
             <CustomInputText
@@ -112,17 +142,22 @@ const PasswordRecoveryStepThreeScreen = () => {
               }}
               value={confirmPassword}
               secureTextEntry={true}
+              editable={!isLoading}
             />
           </View>
         </ScrollView>
 
         <View style={styles.footer}>
-          <CustomButton
-            titletext="Finalizar"
-            onPress={handleContinue}
-            type="Primary"
-            size="Big"
-          />
+          {isLoading ? (
+            <ActivityIndicator size="large" color={Colors.ColorPrimary} />
+          ) : (
+            <CustomButton
+              titletext="Finalizar"
+              onPress={handleContinue}
+              type="Primary"
+              size="Big"
+            />
+          )}
         </View>
       </View>
     </KeyboardAvoidingView>
