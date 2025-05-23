@@ -5,11 +5,6 @@ import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { getTermsAndConditionsUrlUseCase } from '../../../domain/usecases/termsAndConditions/getTermsAndConditionsUrlUseCase';
-//imports logout 
-import { logout } from '../../../shared/store/authSlice/authSlice';
-import { useDispatch } from 'react-redux';
-import { userStorage } from "../../../infrastructure/storage/userStorage";
-import { resetRoot } from "../../../infrastructure/services/navigationService"; 
 
 // Helper para aplicar opacidad a un color hexadecimal
 function withOpacity(hexColor, opacity) {
@@ -27,7 +22,6 @@ function withOpacity(hexColor, opacity) {
 
 const ProfileScreen = () => {
     const navigation = useNavigation();
-    const dispatch = useDispatch();
     
     // Obtener el usuario del estado de Redux
     const user = useSelector(state => state.auth.user);
@@ -36,16 +30,7 @@ const ProfileScreen = () => {
     const handleLogin = () => {
         navigation.navigate('Login');
     };
-
-    const handleLogout = async () => {
-      try {
-        await userStorage.remove();
-        dispatch(logout());
-      } catch (error) {
-        console.error('Error al cerrar sesión:', error);
-      }
-    };
-
+    
     const handleNavigateToInformation = () => {
         navigation.navigate('ProfileInformation');
     };
@@ -105,7 +90,7 @@ const ProfileScreen = () => {
             <CustomButton 
                 style={{width: "75%"}}
                 titletext={'Cerrar sesión'}
-                onPress={handleLogout}
+                onPress={handleLogin}
                 type="Primary"
                 size='Small'
             />

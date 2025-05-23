@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   header: {
     width: "100%",
     position: "relative", // Necesario para posicionamiento absoluto del título
+    marginTop: 20,
   },
   container: {
     flexDirection: "row",

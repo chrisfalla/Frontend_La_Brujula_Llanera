@@ -17,7 +17,7 @@ export function goBack() {
 
 export function resetRoot(name, params) {
   if (navigationRef.current) {
-    navigationRef.current.reset({
+    navigationRef.current.resetRoot({
       index: 0,
       routes: [{ name, params }],
     });
