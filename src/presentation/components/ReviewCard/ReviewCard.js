@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
 import { GlobalStyles, TextStyles,Colors } from '../../styles/styles';
+import Rating from '../../components/Rating/Rating';
 
 
 const ReviewCard = ({ username, comment, date }) => {
@@ -21,6 +22,10 @@ const ReviewCard = ({ username, comment, date }) => {
         <View style={styles.footer} >
             <Text style={styles.date} > {date} </Text>
         </View>
+
+        <View style= {styles.rating}> 
+            <Rating average={4.1} useBackground={false} size={20} />
+        </View>
         </View>
     );
 };
@@ -36,13 +41,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 5,
     },
-      avatarimg:{
+    avatarimg:{
         width: 30,
         height: 30,
         alignItems: 'center',
         justifyContent: 'center',
-        
-       
     },
     username:{
         ...TextStyles.PoppinsSemiBold15,
@@ -56,9 +59,16 @@ const styles = StyleSheet.create({
     },
     footer:{
         marginLeft: 40,
-        marginTop:25,      
+        marginTop:30,   
+        marginBottom: 10,   
         textAlign: 'left'
     },
+    rating:{
+        marginLeft: 160,
+        marginTop: -38, 
+        textAlign: 'left'
+    },
+
     date:{
         ...TextStyles.PoppinsRegular15,
         color: Colors.DarkGray,
