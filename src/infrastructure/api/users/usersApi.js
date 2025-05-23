@@ -4,8 +4,3 @@ export const registerUserApi = async (userData) => {
   const response = await httpClient.post('/user/register', userData);
   return response; // El `httpClient` ya devuelve `response.data`
 };
-
-export const loginUserApi = async (credentials) => {
-  const response = await httpClient.post('/user/login', credentials);
-  return response;
-};

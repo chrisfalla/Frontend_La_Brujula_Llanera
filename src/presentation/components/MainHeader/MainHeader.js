@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors, TextStyles } from "../../../presentation/styles/styles";
 import { useSelector } from "react-redux";
 
-const MainHeader = ({ primarytIcon, SecondIcon = "settings", username }) => {  {/* propiedades para llamar los iconos */}
+const MainHeader = ({ primarytIcon = "notifications", SecondIcon = "settings", username }) => {  {/* propiedades para llamar los iconos */}
 
 const usernames = useSelector(state => state.auth.user?.name || "Invitado");
 return (
