@@ -6,7 +6,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -15,49 +14,82 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 import CustomInputText from "../../components/CustomInput/CustomInputText"; // Volvemos a usar CustomInputText
 import { Colors, TextStyles } from "../../styles/styles";
 
+//imports chris validate recovery password
+import { ActivityIndicator, Alert } from "react-native";
+import { usersRepository } from "../../../data/repositories/users/usersRepository";
+import { requestPasswordRecoveryCodeUseCase } from "../../../domain/usecases/passwordRecovery/getPasswordRecoveryUseCase";
+
 const PasswordRecoveryStepOneScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(null);
-  const [isFocused, setIsFocused] = useState(false); // Nuevo estado
 
   const validateEmail = (text) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(text);
   };
 
-  const handleContinue = () => {
+  //states initial chris 
+  const [isLoading, setIsLoading] = useState(false);
+
+  //function to handle email validation chris 
+  const handleContinue = async () => {
     if (!email) {
       setEmailError("El correo electrónico es obligatorio");
       return;
     }
-    
-    if (!validateEmail(email)) {
-      setEmailError("Por favor ingrese un correo válido");
-      return;
-    }
-    
-    setEmailError(null);
-    navigation.navigate("Recovery2", { email });
-  };
 
-  const handleResendCode = () => {
-    if (!email) {
-      setEmailError("Ingrese un correo para enviar el código");
-      return;
-    }
-    
     if (!validateEmail(email)) {
       setEmailError("Por favor ingrese un correo válido");
       return;
     }
-    
+
     setEmailError(null);
-    Alert.alert(
-      "Código reenviado",
-      `Hemos enviado un nuevo código a ${email}.`,
-      [{ text: "OK" }]
-    );
+    setIsLoading(true);
+
+    try {
+      console.log("📧 Intentando enviar código a:", email);
+      await requestPasswordRecoveryCodeUseCase(usersRepository)(email);
+      console.log("✅ Código enviado con éxito");
+      navigation.navigate("RecoveryTwo", { email });
+    } catch (error) {
+      console.error("❌ Error al enviar código:", error);
+      
+      let errorMessage = "Ocurrió un error al enviar el código de recuperación";
+      
+      // Usamos el mensaje específico si está disponible
+      if (error.userMessage) {
+        errorMessage = error.userMessage;
+      } 
+      // De lo contrario, intentamos determinar el error según la respuesta
+      else if (error.response) {
+        if (error.response.status === 503) {
+          errorMessage = "El sistema de recuperación está temporalmente no disponible. Por favor intenta más tarde.";
+        } else if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.status === 404) {
+          errorMessage = "El correo electrónico no está registrado en el sistema";
+        } else if (error.response.status === 429) {
+          errorMessage = "Demasiados intentos. Por favor espere unos minutos";
+        }
+      } else if (error.message && error.message.includes('Network Error')) {
+        errorMessage = "Error de conexión. Verifica tu conexión a internet e intenta nuevamente.";
+      }
+      
+      Alert.alert("Error", errorMessage, [
+        { 
+          text: "Reintentar", 
+          onPress: () => handleContinue() 
+        },
+        { 
+          text: "OK" 
+        }
+      ]);
+      
+      setEmailError("Error al enviar el código. Verifique su conexión e intente nuevamente");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -74,22 +106,22 @@ const PasswordRecoveryStepOneScreen = () => {
               style={styles.logo}
               resizeMode="contain"
             />
-            
+
             <View style={styles.recoveryTitleContainer}>
               <Text style={styles.recoveryText}>Recuperar </Text>
               <Text style={styles.recoveryTextHighlight}>contraseña</Text>
             </View>
-            
+
             <View style={styles.statusContainer}>
               <CustomStepper step={1} />
             </View>
-            
+
             <Text style={styles.subtitle}>
               A continuación se le guiará en el proceso de recuperación de su
               contraseña. Primero vamos a validar la existencia de su correo
               electrónico.
             </Text>
-            
+
             <CustomInputText
               LabelText="Ingresa correo electrónico registrado"
               PlaceholderText="ejemplo@email.com"
@@ -101,28 +133,22 @@ const PasswordRecoveryStepOneScreen = () => {
               value={email}
               keyboardType="email-address"
               autoCapitalize="none"
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
+              editable={!isLoading}
             />
           </View>
         </ScrollView>
-        
+
         <View style={styles.footer}>
-          {isFocused && (
+          {isLoading ? (
+            <ActivityIndicator size="large" color={Colors.ColorPrimary} />
+          ) : (
             <CustomButton
-              titletext="Enviar código nuevamente"
-              onPress={handleResendCode}
-              type="Secondary"
+              titletext="Continuar"
+              onPress={handleContinue}
+              type="Primary"
               size="Big"
-              style={{ marginBottom: 2 }}
             />
           )}
-          <CustomButton
-            titletext="Continuar"
-            onPress={handleContinue}
-            type="Primary"
-            size="Big"
-          />
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -136,14 +162,14 @@ const styles = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   scrollContainer: {
     padding: 20,
     paddingBottom: 0,
   },
   content: {
-    width: '100%',
+    width: "100%",
   },
   statusContainer: {
     width: "100%",
@@ -151,9 +177,9 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   subtitle: {
@@ -164,7 +190,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.BackgroundPage,
   },
   logo: {
     alignSelf: "center",
@@ -174,8 +200,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   recoveryTitleContainer: {
-    flexDirection: 'row',
-    alignSelf: 'center',
+    flexDirection: "row",
+    alignSelf: "center",
     // marginBottom: 20,
   },
   recoveryText: {
@@ -187,18 +213,18 @@ const styles = StyleSheet.create({
     color: Colors.ColorPrimary,
   },
   inputWrapper: {
-    width: '100%',
+    width: "100%",
     marginBottom: 15,
   },
   inputLabel: {
     ...TextStyles.PoppinsRegular15,
     color: Colors.Black,
     paddingLeft: 15,
-    textAlign: 'left',
+    textAlign: "left",
   },
   textInput: {
     color: Colors.Black,
-    width: '100%',
+    width: "100%",
     height: 48,
     borderWidth: 1,
     paddingLeft: 15,
@@ -208,7 +234,7 @@ const styles = StyleSheet.create({
   },
   textInputFocused: {
     backgroundColor: Colors.LightGray,
-    borderColor: Colors.DarkGray,  // Mantenemos el color del borde
+    borderColor: Colors.DarkGray, // Mantenemos el color del borde
   },
   textInputError: {
     borderColor: Colors.ErrorAdvertisingColor,
