@@ -156,17 +156,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.BackgroundPage,
-    
   },
   scrollContainer: {
-    flexGrow: 1,
     alignItems: "center",
+    
   },
   logoRight: {
     position: "absolute",
     right: 0,
     top: 0,
-    zIndex: 1,
   },
 
   logoLeft: {
@@ -179,8 +177,8 @@ const styles = StyleSheet.create({
   img: {
     width: 164,
     height: 151,
-    marginTop: 30,
-    marginBottom: 60,
+    marginTop: 20,
+    marginBottom: 20,
   },
   title: {
     color: Colors.Black,
@@ -209,32 +207,32 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   buttonOne: {
-    marginTop: 90,
-    marginBottom: 10,
+    marginTop: 35
   },
   buttonTwo: {
-    marginTop: 10,
-    marginBottom: -20,
+    bottom: 15,
   },
   separator: {
     color: Colors.DarkGray,
     fontFamily: "Poppins",
     fontSize: 14,
-    marginBottom: 5,
-    marginTop: 5,
+    marginBottom: 15,
+    marginTop: 0,
     textAlign: "center",
   },
   footerContainer: {
     width: "75%",
-    marginTop: 50,
-    marginBottom: 60,
+    position: "relative",
+    marginBottom: 25,
   },
   footer: {
     textAlign: "center",
     fontFamily: "Regular",
     fontSize: 12,
     color: Colors.Black,
+    margin: 30,
   },
+ 
 });
 
 export default LoginScreen;

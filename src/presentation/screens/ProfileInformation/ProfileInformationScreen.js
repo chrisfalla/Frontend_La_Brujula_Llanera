@@ -5,7 +5,7 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
 
-const InformationScreen = () => {
+const InformationScreen = ({ navigation }) => {
   const [isEditable, setIsEditable] = useState(false); // Estado para editar inputs
 
   const toggleEditMode = () => {
@@ -21,6 +21,8 @@ const InformationScreen = () => {
       <View style={styles.containerInformation}>
         <NavigationTopBar
           primaryIcon="chevron-back"
+          onBackPress={() => navigation.goBack()}
+          navigation={navigation}
           SecondIcon="pencil"
           useBackground={false}
           title={"Mí información"}
@@ -59,25 +61,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     paddingVertical: 10,
+    
+    
   },
   containerInformation: {
     marginTop: 10,
+    marginBottom: 50,
+    
   },
   image: {
     width: 100,
     height: 100,
     alignSelf: "center", // reemplaza marginHorizontal: 'auto'
     marginTop: 20,
+    top: 20,
   },
   information: {
     marginTop: 40,
     marginBottom: 40,
     padding: 10,
+    top: 30,
   },
   button: {
-    padding: 10,
-    ...TextStyles.PoppinsRegular15,
-    color: Colors.ColorPrimary,
+    marginTop: 50,
+       top: 50,
+    paddingHorizontal: 10,
   },
 });
 
