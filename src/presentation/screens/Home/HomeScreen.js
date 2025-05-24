@@ -18,6 +18,7 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
+  StatusBar
 } from "react-native";
 
 // Redux imports
@@ -54,7 +55,7 @@ const SNAP_INTERVAL = CARD_WIDTH; // Ajustado para mejorar el desplazamiento
 //==============================================================================
 // HOME SCREEN COMPONENT
 //==============================================================================
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   //============================================================================
   // HOOKS & STATE
   //============================================================================
@@ -239,6 +240,11 @@ const HomeScreen = () => {
   //============================================================================
   return (
     <View style={styles.outerContainer}>
+      <StatusBar
+                          barStyle="dark-content" // Para iconos oscuros en fondo claro
+                          backgroundColor="#ffffff" // Fondo blanco para Android
+                          translucent={false} // No translúcido para evitar superposiciones
+                        />
       {/* Header */}
       <View style={styles.headerContainer}>
         <MainHeader username={"Christofer"} />
@@ -268,6 +274,7 @@ const HomeScreen = () => {
                 <MostVisitedPlaces
                   place={item}
                   onPress={() => {
+                    navigation.navigate("DetailScreen", { placeId: item.idPlace });
                     /* TODO: Implementar navegación al detalle */
                   }}
                   cardWidth={CARD_WIDTH}
@@ -329,7 +336,8 @@ const HomeScreen = () => {
             </View>
           ))}
           <View style={styles.cardWrapper}>
-            <CategoryCardSmall isViewMore onPressCard={handleViewMore} />
+            <CategoryCardSmall isViewMore 
+            onPressCard={() => navigation.navigate("Categories")} />
           </View>
         </View>
 
@@ -358,6 +366,7 @@ const HomeScreen = () => {
                       ratingStars={item.ratingStars}
                       imageCategoryName={item.imageCategoryName}
                       onPress={() => {
+                        navigation.navigate("DetailScreen", { placeId: item.idPlace });
                         /* TODO: Implementar navegación al detalle */
                       }}
                       style={{width: '100%'}} // Forzar ancho al 100% del contenedor
@@ -431,6 +440,7 @@ const HomeScreen = () => {
                     address={item.placeAddress || "Dirección no disponible"}
                     image={item.imageUrl}
                     onMapPress={() => {
+                      navigation.navigate("DetailScreen", { placeId: item.idPlace });
                       /* TODO: Implementar navegación */
                     }}
                   />

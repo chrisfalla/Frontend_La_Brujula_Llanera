@@ -23,6 +23,7 @@ import PasswordRecoveryStepTwoScreen from "../screens/PasswordRecovery/PasswordR
 import PasswordRecoveryStepThreeScreen from "../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen";
 import ProfileInformationScreen from "../screens/ProfileInformation/ProfileInformationScreen";
 import FavoritesScreen from "../screens/Favorites/FavoritesScreen";
+import	DetailScreen from "../screens/Detail/DetailScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,6 +40,7 @@ const RootStack = ({ isLoggedIn }) => (
       component={ProfileInformationScreen}
     />
     <Stack.Screen name="Favorites" component={FavoritesScreen} />
+    <Stack.Screen name="DetailScreen" component={DetailScreen} />
   </Stack.Navigator>
 );
 
