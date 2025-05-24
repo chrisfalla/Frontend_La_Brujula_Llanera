@@ -64,10 +64,9 @@ export const usersDatasource = {
     }
   },
 
-  async resetPassword(email, code, password) {
+  async resetPassword(email, newPassword) {
     try {
-      // No hay necesidad de acceder a .data aquí
-      return await resetPasswordApi(email, code, password);
+      return await resetPasswordApi(email, newPassword);
     } catch (error) {
       console.error("Error al restablecer contraseña:", error);
       throw error;

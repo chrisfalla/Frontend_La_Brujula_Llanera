@@ -7,6 +7,6 @@ export const verifyPasswordRecoveryCodeUseCase =
     return repository.verifyPasswordRecoveryCode(email, code);
   };
 
-export const resetPasswordUseCase = (repository) => (email, code, password) => {
-  return repository.resetPassword(email, code, password);
+export const resetPasswordUseCase = (repository) => (email, newPassword) => {
+  return repository.resetPassword(email, newPassword);
 };
