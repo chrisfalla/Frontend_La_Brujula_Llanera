@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image,  StyleSheet, TouchableOpacity, Linking } from "react-native";
+import { View, Text, Image,  StyleSheet, TouchableOpacity, Linking, StatusBar } from "react-native";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { GlobalStyles, Colors,TextStyles } from "../../styles/styles";
 import { useNavigation } from '@react-navigation/native';
@@ -31,7 +31,11 @@ const AnonymousProfileScreen = () => {
 
     return (
         <View style={styles.container}>
-            {/* Avatar */}
+            <StatusBar
+                    barStyle="dark-content" // Para iconos oscuros en fondo claro
+                    backgroundColor="#ffffff" // Fondo blanco para Android
+                    translucent={false} // No translúcido para evitar superposiciones
+                  />            {/* Avatar */}
             <Image source={require('../../../shared/assets/AvatarHeader.png')} style={styles.avatar} />
 
             {/* Saludo */}

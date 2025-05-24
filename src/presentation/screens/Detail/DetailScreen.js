@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { StatusBar, StyleSheet, ScrollView } from 'react-native';
 import MainImage from '../../components/MainImage/MainImage';
 import GalleryImage from '../../components/GalleryImage/GalleryImage';
 import DetailInfo from '../../components/DetailInfo/DetailInfo';
@@ -37,6 +37,11 @@ const DetailScreen = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
+            <StatusBar
+                    barStyle="dark-content" // Para iconos oscuros en fondo claro
+                    backgroundColor="#ffffff" // Fondo blanco para Android
+                    translucent={false} // No translúcido para evitar superposiciones
+                  />
             <MainImage
                 mainImage={placeDetail.mainImage}
                 name={placeDetail.name}
