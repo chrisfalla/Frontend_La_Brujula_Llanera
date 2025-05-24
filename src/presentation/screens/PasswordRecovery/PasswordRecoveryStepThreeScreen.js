@@ -26,8 +26,8 @@ import { login } from "../../../shared/store/authSlice/authSlice";
 const PasswordRecoveryStepThreeScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const dispatch = useDispatch();//import chris recovery password
-  const { email, code } = route.params || { email: "", code: "" };
+  const dispatch = useDispatch();
+  const { email, code, userId } = route.params || { email: "", code: "", userId: 0 };
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -68,25 +68,83 @@ const PasswordRecoveryStepThreeScreen = () => {
     setIsLoading(true);
 
     try {
-      const response = await resetPasswordUseCase(usersRepository)(email, code, password);
+      // Registramos todos los parámetros para diagnóstico
+      console.log('📝 [RESET] Datos para reseteo de contraseña:');
+      console.log('- Email:', email);
+      console.log('- Código:', code);
+      console.log('- Password Length:', password ? password.length : 0);
 
-      if (response && response.user) {
-        await userStorage.save(response.user);
-        dispatch(login(response.user));
+      // Verificamos que todos los datos necesarios estén presentes
+      if (!email) {
+        throw new Error('El email es requerido para restablecer la contraseña');
+      }
+      if (!code) {
+        throw new Error('El código de verificación es requerido para restablecer la contraseña');
+      }
+      if (!password) {
+        throw new Error('Debe ingresar una nueva contraseña');
       }
 
-      Alert.alert("¡Éxito!", "Tu contraseña ha sido actualizada correctamente.", [
-        {
-          text: "OK",
-          onPress: () => navigation.navigate("Login"),
-        },
-      ]);
+      console.log('🚀 [RESET] Iniciando proceso de reseteo con datos verificados');
+
+      try {
+        const response = await resetPasswordUseCase(usersRepository)(
+          email,
+          password
+        );
+
+        console.log('✅ [RESET] Respuesta exitosa de reseteo:', response);
+
+        if (response && response.user) {
+          await userStorage.save(response.user);
+          dispatch(login(response.user));
+        }
+
+        Alert.alert("¡Éxito!", "Tu contraseña ha sido actualizada correctamente.", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Login"),
+          },
+        ]);
+      } catch (resetError) {
+        console.error('❌ [RESET] Error durante el reseteo:', resetError);
+        
+        // Extraer mensaje de error para mostrar al usuario
+        let errorMessage = "No se pudo actualizar la contraseña";
+        
+        if (resetError.response) {
+          console.error('📄 [RESET] Detalles del error de respuesta:', {
+            status: resetError.response.status,
+            data: JSON.stringify(resetError.response.data)
+          });
+          
+          if (resetError.response.data && resetError.response.data.message) {
+            errorMessage = resetError.response.data.message;
+          } else if (resetError.response.status === 500) {
+            errorMessage = "Error interno del servidor. Intente más tarde o con otro código.";
+          }
+        } else if (resetError.message) {
+          errorMessage = resetError.message;
+        }
+        
+        // Mostrar opciones al usuario
+        Alert.alert(
+          "Error al cambiar contraseña", 
+          errorMessage, 
+          [
+            {
+              text: "Solicitar nuevo código",
+              onPress: () => navigation.navigate("RecoveryOne")
+            },
+            {
+              text: "Intentar de nuevo"
+            }
+          ]
+        );
+      }
     } catch (error) {
-      let errorMessage = "No se pudo actualizar la contraseña";
-      if (error.response && error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-      Alert.alert("Error", errorMessage);
+      console.error("❌ [RESET] Error general:", error);
+      Alert.alert("Error", "Ha ocurrido un error inesperado. Por favor intente nuevamente.");
     } finally {
       setIsLoading(false);
     }

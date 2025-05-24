@@ -56,30 +56,59 @@ const PasswordRecoveryStepTwoScreen = () => {
       const response = await verifyPasswordRecoveryCodeUseCase(usersRepository)(email, formattedCode);
       console.log("✅ Validación exitosa, respuesta:", response);
       
-      navigation.navigate("RecoveryThree", { email, code: formattedCode });
+      // Extraer el ID de usuario de la respuesta (cuando esté disponible)
+      const userId = response.idUser || response.userId || 0;
+      
+      if (!userId) {
+        console.warn("⚠️ No se recibió ID de usuario en la respuesta");
+      }
+      
+      navigation.navigate("RecoveryThree", { email, code: formattedCode, userId });
     } catch (error) {
       console.error("❌ Error detallado al validar código:", error);
       
       let errorMessage = "Código inválido o expirado";
       
-      // Manejo de diferentes tipos de errores
-      if (error.response) {
+      // Usar el mensaje personalizado si está disponible
+      if (error.userMessage) {
+        errorMessage = error.userMessage;
+      } else if (error.response) {
         console.error("📄 Respuesta de error del servidor:", {
           status: error.response.status,
           data: error.response.data
         });
         
-        if (error.response.status === 404) {
-          errorMessage = "Código no encontrado. Por favor solicite uno nuevo.";
-        } else if (error.response.status === 401) {
-          errorMessage = "Código incorrecto o expirado. Por favor verifique.";
-        } else if (error.response.data && error.response.data.message) {
-          errorMessage = error.response.data.message;
+        if (error.response.status === 400) {
+          const apiMessage = error.response.data?.message;
+          if (apiMessage === "Invalid code") {
+            errorMessage = "El código ingresado es incorrecto. Por favor verifique e intente nuevamente.";
+          } else {
+            errorMessage = "Código inválido. Verifique que haya ingresado correctamente el código.";
+          }
+        } else if (error.response.status === 404) {
+          errorMessage = "No se encontró una solicitud de recuperación activa para este email.";
+        } else if (error.response.status === 401 || error.response.status === 410) {
+          errorMessage = "El código ha expirado. Por favor solicite un código nuevo.";
+        } else if (error.response.status === 429) {
+          errorMessage = "Demasiados intentos de validación. Por favor espere unos minutos.";
         }
+      } else if (error.message && error.message.includes('Network Error')) {
+        errorMessage = "Error de conexión. Verifique su conexión a internet.";
+      } else if (error.message) {
+        // Para errores de validación del lado del cliente
+        errorMessage = error.message;
       }
       
       setCodeError(errorMessage);
-      Alert.alert("Error de validación", errorMessage);
+      Alert.alert("Error de validación", errorMessage, [
+        {
+          text: "Solicitar nuevo código",
+          onPress: () => handleResendCode()
+        },
+        {
+          text: "Intentar de nuevo"
+        }
+      ]);
     } finally {
       setIsLoading(false);
     }
