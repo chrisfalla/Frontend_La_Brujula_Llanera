@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
@@ -76,6 +76,11 @@ const MapaScreen = () => {
 
     return (
         <View style={styles.container}>
+            <StatusBar
+                    barStyle="dark-content" // Para iconos oscuros en fondo claro
+                    backgroundColor="#ffffff" // Fondo blanco para Android
+                    translucent={false} // No translúcido para evitar superposiciones
+                  />
             
             <View style={styles.mapContainer}>
                 <MapView 

@@ -1,133 +1,178 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Text, KeyboardAvoidingView, Platform, Dimensions, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomInputText from '../../../components/CustomInput/CustomInputText';
-import CustomButton from '../../../components/CustomButton/CustomButton';
-import CustomDecoratione from '../../../components/CustomDecoration/CustomDecoration';
-import { GlobalStyles, TextStyles } from '../../../styles/styles';
-import CustomStepper from '../../../components/Steper/CustomSteper';
-import { navigate } from '../../../../infrastructure/services/navigationService';
+import React, { useState } from "react";
+import {  View,  StyleSheet,  ScrollView,  Text,  KeyboardAvoidingView,  Platform,  Dimensions,  Image, StatusBar} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import CustomInputText from "../../../components/CustomInput/CustomInputText";
+import CustomButton from "../../../components/CustomButton/CustomButton";
+import CustomDropdown from "../../../components/Dropdown/CustomDropdown";
+import CustomStepper from "../../../components/Steper/CustomSteper";
+import { GlobalStyles, Colors, TextStyles } from "../../../styles/styles";
+import CustomDecoration from "../../../components/CustomDecoration/CustomDecoration";
+
+import { navigate } from "../../../../infrastructure/services/navigationService";
+
 
 
 const RegisterStepOneScreen = () => {
-  
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: ''
-  });
+  const [form, setForm] = useState({ gender: null });
 
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    phone: ''
-  });
-
-  const [hasErrorName, setHasErrorName] = useState(false);
-  const [hasErrorEmail, setHasErrorEmail] = useState(false);
-  const [hasErrorPhone, setHasErrorPhone] = useState(false);
-
-  const handleChange = (key, value) => {
-    setForm(prev => ({ ...prev, [key]: value }));
+  const handleChange = (field, value) => {
+       setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const GENDER_OPTIONS = [
+    { label: "Masculino", value: 1 },
+    { label: "Femenino", value: 2 },
+    { label: "Otro", value: 3 },
+  ];
+  const [errors, setErrors] = useState({});
+  const [hasErrors, setHasErrors] = useState({});
+
+ 
+
   const validateForm = () => {
-    let hasErrors = false;
-  
-    if (form.name.trim() === '') {
-      setErrors(prev => ({ ...prev, name: 'El nombre es requerido' }));
-      setHasErrorName(true);
-      hasErrors = true;
-    } else {
-      setErrors(prev => ({ ...prev, name: '' }));
-      setHasErrorName(false);
+    let currentErrors = {};
+    let currentHasErrors = {};
+
+    console.log("Estado actual del formulario:", form);
+
+    if (form.name.trim() === "") {
+      currentErrors.name = "El nombre es requerido";
+      currentHasErrors.name = true;
     }
-  
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
-      setErrors(prev => ({ ...prev, email: 'Correo inválido' }));
-      setHasErrorEmail(true);
-      hasErrors = true;
-    } else {
-      setErrors(prev => ({ ...prev, email: '' }));
-      setHasErrorEmail(false);
+      currentErrors.email = "Correo inválido";
+      currentHasErrors.email = true;
     }
-  
+
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(form.phone)) {
-      setErrors(prev => ({ ...prev, phone: 'Teléfono inválido (10 dígitos)' }));
-      setHasErrorPhone(true);
-      hasErrors = true;
-    } else {
-      setErrors(prev => ({ ...prev, phone: '' }));
-      setHasErrorPhone(false);
+      currentErrors.phone = "Teléfono inválido (10 dígitos)";
+      currentHasErrors.phone = true;
     }
-  
-    if (!hasErrors) {
-      console.log("✅ Puedo avanzar");
-      navigate('RegisterStepTwo', {
+
+    if (!form.birthdate) {
+      currentErrors.birthdate = "Fecha requerida";
+      currentHasErrors.birthdate = true;
+    }
+
+    if (!form.gender) {
+      currentErrors.gender = "Seleccione una opción";
+      currentHasErrors.gender = true;
+    }
+
+    setErrors(currentErrors);
+    setHasErrors(currentHasErrors);
+
+    if (Object.keys(currentErrors).length === 0) {
+      const userData = {
         name: form.name,
         email: form.email,
         phone: form.phone,
-      });
+        birthdate: form.birthdate,
+        gender: form.gender,
+      };
+      console.log("Datos enviados a Step 2:", userData);
+      navigate("RegisterStepTwo", userData);
     } else {
-      console.log("❌ No puedo avanzar");
+      console.log("❌ No puedo avanzar. Errores:", currentErrors);
     }
   };
-  
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+      style={{ flex: 1, }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+    >
+      <StatusBar
+              barStyle="dark-content" // Para iconos oscuros en fondo claro
+              backgroundColor="#ffffff" // Fondo blanco para Android
+              translucent={false} // No translúcido para evitar superposiciones
+            />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.content}>
-          <Image source={require('../../../../shared/assets/MainLogo.png')} />
+          <Image source={require("../../../../shared/assets/MainLogo.png")} />
 
           <Text style={styles.title}>
             Registrar <Text style={styles.highlight}>nuevo usuario</Text>
           </Text>
 
-          <CustomStepper step={1} />
+          <CustomStepper step={1} totalSteps={2} />
 
-          <View style={{ marginTop: 16, flexDirection: 'column', gap: 10, width: '100%' }}>
+          <View
+            style={{
+              marginTop: 16,
+              marginBottom: 6,
+              flexDirection: "column",
+              gap: 10,
+              width: "100%",
+            }}
+          >
             <CustomInputText
               LabelText="Ingrese su nombre"
               PlaceholderText="Nombres y apellidos"
-              SupportingText={hasErrorName ? errors.name : ''}
-              HasError={hasErrorName}
+              SupportingText={hasErrors.name ? errors.name : ""}
+              HasError={hasErrors.name}
               value={form.name}
-              onChangeText={(value) => handleChange('name', value)}
+              onChangeText={(value) => handleChange("name", value)}
+             
             />
+
             <CustomInputText
               LabelText="Ingrese su email"
               PlaceholderText="ejemplo@email.com"
-              SupportingText={hasErrorEmail ? errors.email : ''}
-              HasError={hasErrorEmail}
+              SupportingText={hasErrors.email ? errors.email : ""}
+              HasError={hasErrors.email}
               value={form.email}
-              onChangeText={(value) => handleChange('email', value)}
+              onChangeText={(value) => handleChange("email", value)}
             />
+
             <CustomInputText
               LabelText="Ingrese su teléfono"
               PlaceholderText="Escriba el teléfono"
-              SupportingText={hasErrorPhone ? errors.phone : ''}
-              HasError={hasErrorPhone}
+              SupportingText={hasErrors.phone ? errors.phone : ""}
+              HasError={hasErrors.phone}
               value={form.phone}
-              onChangeText={(value) => handleChange('phone', value)}
+              onChangeText={(value) => handleChange("phone", value)}
+            />
+
+            <CustomDropdown
+              LabelText="Seleccione su género"
+              items={GENDER_OPTIONS}
+              value={form.gender}
+              setValue={(value) => handleChange("gender", value)}
+              placeholder="Seleccione una opción"
+              HasError={hasErrors.gender && errors.gender}
+              SupportingText={hasErrors.gender ? errors.gender : ""}
+              zIndex={3000} // Más alto que el de la fecha
+              zIndexInverse={1000}
+            />
+
+            <CustomDropdown
+              LabelText="Seleccione su fecha de nacimiento"
+              value={form.birthdate}
+              setValue={(value) => handleChange("birthdate", value)}
+              placeholder="dd/mm/aaaa"
+              isDatePicker={true}
+              HasError={hasErrors.birthdate && errors.birthdate}
+              SupportingText={hasErrors.birthdate ? errors.birthdate : ""}
+              zIndex={2000}
+              zIndexInverse={500}
+              
             />
           </View>
-
           <CustomButton
-            style={{ marginTop: 40 }}
+            style={{ marginTop: 40 , marginBottom: 40}}
             titletext="Continuar"
-            type="Secondary"
+            type="Primary"
             size="Big"
             onPress={validateForm}
           />
         </View>
 
-        <CustomDecoratione type="Rigth" />
+        <CustomDecoration type="Rigth" />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -135,30 +180,23 @@ const RegisterStepOneScreen = () => {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flexGrow: 1,
-    minHeight: Dimensions.get('window').height,
-    justifyContent: 'center',
-    ...GlobalStyles.ScreenBaseStyle
+   
+    paddingTop: 20,
+    justifyContent: "center",
+    ...GlobalStyles.ScreenBaseStyle,
   },
   content: {
-    width: '100%',
-    alignItems: 'center'
+    width: "100%",
+    alignItems: "center",
   },
   title: {
     ...TextStyles.PoppinsSemibold20,
-    marginVertical: 16
+    marginVertical: 16,
   },
   highlight: {
-    color: '#236A34',
-    marginBottom: 16
+    color: "#236A34",
+    marginBottom: 16,
   },
-  divider: {
-    width: '100%',
-    height: 1,
-    backgroundColor: '#CFCFCF',
-    marginVertical: 25,
-    borderRadius: 1
-  }
 });
 
 export default RegisterStepOneScreen;

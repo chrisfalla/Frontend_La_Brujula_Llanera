@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "La Brujula Llanera",
+    "name": "Brujula Llanera",
     "slug": "la-brujula-llanera",
     "version": "1.0.0",
     "orientation": "portrait",
     "sdkVersion": "53.0.0",
     "scheme": "labrujullallanera",
+    "icon": "./assets/icon.png",
     "assetBundlePatterns": [
       "**/*"
     ],

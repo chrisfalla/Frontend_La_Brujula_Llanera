@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, KeyboardAvoidingView, Platform, Dimensions, Image, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, KeyboardAvoidingView, Platform, Dimensions, Image, Alert, StatusBar } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { login } from '../../../../shared/store/authSlice/authSlice';
@@ -18,7 +18,8 @@ const RegisterStepTwoScreen = () => {
   const route = useRoute();
   const dispatch = useDispatch();
 
-  const { name, email, phone } = route.params || {};
+  const { name, email, phone, birthdate, gender } = route.params || {};
+  console.log('Datos recibidos en Step 2:', { name, email, phone, birthdate, gender }); // ← Agrega esto
   const [form, setForm] = useState({ password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({ password: '', confirmPassword: '' });
   const [hasErrorPassword, setHasErrorPassword] = useState(false);
@@ -63,8 +64,8 @@ const RegisterStepTwoScreen = () => {
           email: email,
           phone: phone,
           password: form.password,
-          birthday: '2025-05-09', // ← Puedes recibirlo desde el paso 1 más adelante
-          idGender: 1,
+          birthday: birthdate, // ← Puedes recibirlo desde el paso 1 más adelante
+          idGender: gender,
           avatar: 1
         });
 
@@ -94,6 +95,11 @@ const RegisterStepTwoScreen = () => {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+      <StatusBar
+              barStyle="dark-content" // Para iconos oscuros en fondo claro
+              backgroundColor="#ffffff" // Fondo blanco para Android
+              translucent={false} // No translúcido para evitar superposiciones
+            />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.content}>
           <Image source={require('../../../../shared/assets/MainLogo.png')} />
@@ -101,9 +107,9 @@ const RegisterStepTwoScreen = () => {
             Registrar <Text style={styles.highlight}>nuevo usuario</Text>
           </Text>
 
-          <CustomStepper step={2} />
+          <CustomStepper step={2} totalSteps={2} />
 
-          <View style={{ marginTop: 16, flexDirection: 'column', gap: 10, width: '100%' }}>
+          <View style={{ marginTop: 25, marginBottom: 25, flexDirection: 'column', gap: 10, width: '100%' }}>
             <CustomInputText
               LabelText="Ingrese su contraseña"
               PlaceholderText="******"
@@ -123,9 +129,9 @@ const RegisterStepTwoScreen = () => {
           </View>
 
           <CustomButton
-            style={{ marginTop: 40 }}
+            style={{ marginTop: 150 }}
             titletext="Registrarse"
-            type="Secondary"
+            type="Primary"
             size="Big"
             onPress={validateForm}
           />
@@ -142,11 +148,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     minHeight: Dimensions.get('window').height,
     justifyContent: 'center',
-    ...GlobalStyles.ScreenBaseStyle
+    ...GlobalStyles.ScreenBaseStyle,
+   
   },
   content: {
     width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+   
   },
   title: {
     ...TextStyles.PoppinsSemibold20,

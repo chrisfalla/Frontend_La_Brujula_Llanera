@@ -18,10 +18,18 @@ const CustomInputText = ({
   customInputStyle, // Nuevo prop para estilos específicos del input
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const showCustomPlaceholder = !value && !isFocused;
 
   return (
     <View style={[styles.container, style]}>
       <Text style={[styles.label, HasError && styles.labelError]}>{LabelText}</Text>
+
+
+      {/* envoltura del input para que el placeholder  muestre la fuente correctamente */}
+        <View style={styles.inputWrapper}>
+          {showCustomPlaceholder && (
+            <Text style={styles.customPlaceholder}>{PlaceholderText}</Text>
+          )}
 
       <TextInput
         value={value}
@@ -38,10 +46,12 @@ const CustomInputText = ({
           HasError && styles.inputError,
           customInputStyle, // Aplicamos estilos personalizados si existen
         ]}
-        placeholder={PlaceholderText}
+         //PlaceholderText lo eliminamos para que acepte la fuente correctamente 
+        placeholder='' 
         secureTextEntry={IsPassword}
         editable={IsDisabled !== true}
         placeholderTextColor={Colors.DarkGray}
+        
         onFocus={(e) => {
           setIsFocused(true);
           if (typeof onFocus === 'function') {
@@ -55,7 +65,7 @@ const CustomInputText = ({
           }
         }}
       />
-
+       </View> 
       {HasError ? (
         <Text style={styles.errorText}>
           {typeof HasError === 'string' ? HasError : 'Error de validación'}
@@ -77,6 +87,20 @@ const styles = StyleSheet.create({
   },
   labelError: {
     color: Colors.ErrorAdvertisingColor,
+  },
+   inputWrapper: {
+    position: 'relative',
+    width: '100%',
+    justifyContent: 'center',
+  },
+  
+   customPlaceholder: {
+    position: 'absolute',
+    left: 15,
+    top: 14, // Ajusta según tu padding
+    color: Colors.DarkGray,
+    ...TextStyles.PoppinsRegular15,
+    zIndex: 1,
   },
   input: {
     color: Colors.Black,
@@ -108,6 +132,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     paddingLeft: 15,
   },
+
 });
 
 export default CustomInputText;
