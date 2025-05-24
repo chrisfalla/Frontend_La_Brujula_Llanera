@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {  View,  StyleSheet,  ScrollView,  Text,  KeyboardAvoidingView,  Platform,  Dimensions,  Image,} from "react-native";
+import {  View,  StyleSheet,  ScrollView,  Text,  KeyboardAvoidingView,  Platform,  Dimensions,  Image, StatusBar} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInputText from "../../../components/CustomInput/CustomInputText";
 import CustomButton from "../../../components/CustomButton/CustomButton";
@@ -86,6 +86,11 @@ const RegisterStepOneScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
+      <StatusBar
+              barStyle="dark-content" // Para iconos oscuros en fondo claro
+              backgroundColor="#ffffff" // Fondo blanco para Android
+              translucent={false} // No translúcido para evitar superposiciones
+            />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.content}>
           <Image source={require("../../../../shared/assets/MainLogo.png")} />

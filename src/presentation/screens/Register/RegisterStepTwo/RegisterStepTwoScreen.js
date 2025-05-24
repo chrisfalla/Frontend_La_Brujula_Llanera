@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, KeyboardAvoidingView, Platform, Dimensions, Image, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, KeyboardAvoidingView, Platform, Dimensions, Image, Alert, StatusBar } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { login } from '../../../../shared/store/authSlice/authSlice';
@@ -95,6 +95,11 @@ const RegisterStepTwoScreen = () => {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+      <StatusBar
+              barStyle="dark-content" // Para iconos oscuros en fondo claro
+              backgroundColor="#ffffff" // Fondo blanco para Android
+              translucent={false} // No translúcido para evitar superposiciones
+            />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.content}>
           <Image source={require('../../../../shared/assets/MainLogo.png')} />

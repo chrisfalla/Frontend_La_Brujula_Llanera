@@ -125,6 +125,7 @@ useEffect(() => {
   if (error) {
     return (
       <View style={styles.container}>
+                 
         <NavigationTopBar
           title="Mis favoritos"
           SecondIcon={null}
@@ -142,6 +143,7 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.favoritesContainer}>
       <NavigationTopBar
         title="Mis favoritos"
         SecondIcon={null}
@@ -170,6 +172,7 @@ useEffect(() => {
         />
       )}
     </View>
+    </View>
   );
 };
 
@@ -179,9 +182,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingVertical: 10,
   },
-  scrollView: {
-    paddingVertical: 10,
-    paddingHorizontal: 10, // Padding uniforme
+  favoritesContainer: {
+    marginTop: 12,
+    marginBottom: 50,
+    position: 'static'
   },
   columnWrapper: {
     justifyContent: 'space-between', // Distribuye el espacio entre las columnas
