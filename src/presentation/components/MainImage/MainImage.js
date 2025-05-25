@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import NavigationTopBar from '../NavigationTopBar/NavigationTopBar';
 import { TextStyles } from '../../styles/styles';
 
-const MainImage = ({ mainImage, name, category, onBackPress }) => {
+const MainImage = ({ mainImage, name, category, onBackPress, placeId }) => {
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
@@ -18,6 +18,7 @@ const MainImage = ({ mainImage, name, category, onBackPress }) => {
                             onBackPress={onBackPress}
                             useBackground={true}
                             useHeart={true}
+                            placeId={placeId} // Añadir esta prop
                         />
                         <View style={styles.infoContainer}>
                             <Text style={styles.name}>{name}</Text>

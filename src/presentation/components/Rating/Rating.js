@@ -1,49 +1,80 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GlobalStyles } from '../../styles/styles';
+import { Colors, GlobalStyles } from '../../styles/styles';
 
-
-const Rating = ({ average = 0, useBackground = true, size = 28 }) => {
-    // Añadimos la prop size para controlar el tamaño de las estrellas
-    const stars = [];
-    // Usamos un color más amarillo/dorado que coincide mejor con la imagen de referencia
-    const starColor = "gold"; 
-    
-    for (let i = 1; i <= 5; i++) {
-        if (average >= i) {
-            stars.push(<Ionicons key={i} name="star" size={size} color={starColor} />);
-        } else if (average >= i - 0.5) {
-            stars.push(<Ionicons key={i} name="star-half" size={size} color={starColor} />);
-        } else {
-            stars.push(<Ionicons key={i} name="star-outline" size={size} color={starColor} />);
-        }
+const Rating = ({ average = 0, size = 14, color = Colors.ColorPrimary, useBackground = true, style }) => {
+  // Asegurar que el rating esté entre 0 y 5
+  const safeRating = Math.min(Math.max(0, average || 0), 5);
+  
+  // Redondear a 0.5 más cercano
+  const roundedRating = Math.round(safeRating * 2) / 2;
+  
+  // Generar el array de estrellas
+  const stars = [];
+  
+  for (let i = 1; i <= 5; i++) {
+    if (i <= roundedRating) {
+      // Estrella completa
+      stars.push(
+        <Ionicons 
+          key={`star-${i}`} 
+          name="star" 
+          size={size} 
+          color={color} 
+          style={styles.star}
+        />
+      );
+    } else if (i - 0.5 === roundedRating) {
+      // Media estrella
+      stars.push(
+        <Ionicons 
+          key={`star-half-${i}`} 
+          name="star-half" 
+          size={size} 
+          color={color} 
+          style={styles.star}
+        />
+      );
+    } else {
+      // Estrella vacía
+      stars.push(
+        <Ionicons 
+          key={`star-outline-${i}`} 
+          name="star-outline" 
+          size={size} 
+          color={color} 
+          style={styles.star}
+        />
+      );
     }
-    return (
-        <View style={[styles.container, useBackground && styles.showcolor]}>
-            {stars}
-        </View>
-    );
+  }
+  
+  return (
+    <View style={[
+      styles.container, 
+      useBackground && styles.backgroundContainer,
+      style
+    ]}>
+      {stars}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-       flexDirection:'row',
-       alignItems:'center',
-       alignSelf: 'center',
-       marginBottom: 0, // Eliminamos el margen inferior para mayor control en contenedores
-    },
-    showcolor: {
-        backgroundColor: '#F9FAFE',
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.15,
-        shadowRadius: 3,
-        elevation: GlobalStyles.elevation,
-      },
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backgroundContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  star: {
+    marginRight: 2,
+  },
 });
 
 export default Rating;

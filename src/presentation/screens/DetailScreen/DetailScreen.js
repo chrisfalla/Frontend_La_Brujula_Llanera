@@ -42,6 +42,7 @@ import CategoryCardSmall from "../../components/CategoryCardSmall/CategoryCardSm
 import VerticalPlaceCard from "../../components/VerticalPlaceCard/VerticalPlaceCard";
 import CustomCheap from "../../components/CustomCheap/CustomCheap";
 import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace"; // Importamos el componente
+import MainImage from "../../components/MainImage/MainImage";
 
 //==============================================================================
 // CONSTANTS
@@ -600,16 +601,16 @@ const styles = StyleSheet.create({
     overflow: "visible",
   },
   leftCardContainer: {
-    width: "48.5%", // Añadir coma aquí
-    alignItems: 'center', // Añadir coma aquí
-    paddingHorizontal: 0, // Añadir coma aquí
-    marginHorizontal: 0 // Esta es la última propiedad, no necesita coma
+    width: "48.5%" // Ancho exacto
+    alignItems: 'center' // Centrar contenido
+    paddingHorizontal: 0 // Sin padding horizontal
+    marginHorizontal: 0 // Sin margen horizontal
   },
   rightCardContainer: {
-    width: "48.5%", // Añadir coma aquí
-    alignItems: 'center', // Añadir coma aquí
-    paddingHorizontal: 0, // Añadir coma aquí
-    marginHorizontal: 0 // Esta es la última propiedad, no necesita coma
+    width: "48.5%" // Exactamente el mismo ancho
+    alignItems: 'center' // Centrar contenido
+    paddingHorizontal: 0 // Sin padding horizontal
+    marginHorizontal: 0 // Sin margen horizontal
   },
 
   // Sección tags

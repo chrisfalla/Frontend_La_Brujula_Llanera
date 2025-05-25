@@ -6,20 +6,36 @@ const mapToFavorite = dto => {
   
   try {
     // Extraemos la URL de la imagen correctamente desde la estructura anidada
-    const imageUrl = dto.image?.url || // Si existe image.url
-                   dto.image?.imageUrl || // O si existe image.imageUrl
-                   dto.imageUrl || // O directamente imageUrl
-                   ''; // Como último recurso, string vacío
-                   
-    console.log(`🖼️ Mapeando imagen para ${dto.name}:`, dto.image);
+    let imageUrl = '';
+    
+    if (dto.image) {
+      if (typeof dto.image === 'string') {
+        imageUrl = dto.image;
+      } else if (dto.image.url) {
+        imageUrl = dto.image.url;
+      } else if (dto.image.imageUrl) {
+        imageUrl = dto.image.imageUrl;
+      }
+    } else if (dto.imageUrl) {
+      imageUrl = dto.imageUrl;
+    }
+    
+    // Limpiar URL si tiene errores tipográficos
+    imageUrl = imageUrl
+      .replace('httpps://', 'https://')
+      .replace('https:///', 'https://');
+    
+    console.log(`🖼️ Mapeando imagen para ${dto.name || dto.placeName}:`, imageUrl);
     
     return new Favorite({
       idPlace: dto.idPlace || dto.id || 0,
+      idPlaceFk: dto.idPlace || dto.id || 0, // Agregar para compatibilidad
       name: dto.name || dto.placeName || '',
       rating: dto.rating || dto.ratingStars || 0,
       imageUrl: imageUrl,
       categoryName: dto.categoryName || dto.category || '',
-      userId: dto.userId || dto.idUser || 0
+      userId: dto.userId || dto.idUser || 0,
+      idUserFk: dto.userId || dto.idUser || 0 // Agregar para compatibilidad
     });
   } catch (error) {
     console.error('Error mapping favorite:', error);

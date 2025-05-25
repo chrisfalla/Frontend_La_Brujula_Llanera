@@ -1,11 +1,14 @@
 import httpClientService from "../../services/httpClientService";
 import { store } from 'react-redux'; 
 
+// Endpoints para favoritos
 const FAVORITES_ENDPOINTS = {
-  GET_ALL_FAVORITES: '/favorites',
-  GET_USER_FAVORITES: '/favorites/{idUserFk}',  
+  GET_USER_FAVORITES: '/favorites/{userId}',
+  ADD_FAVORITE: '/favorites',
+  DELETE_FAVORITE: '/favorites/{userId}/{placeId}'
 };
 
+// Obtener favoritos de un usuario
 export const getFavorites = async (userId) => {
   try {
     // Si no se proporciona userId como parámetro, intentamos obtenerlo del store
@@ -21,31 +24,65 @@ export const getFavorites = async (userId) => {
       }
     }
 
-    // Construir el endpoint reemplazando el placeholder
-    const endpoint = `/favorites/${userId}`; // Forma directa
-    
-    console.log('📡 [API] Getting favorites for user:', userId);
+    const endpoint = `/favorites/${userId}`;
+    console.log('📡 [API] Obteniendo favoritos para usuario:', userId);
     console.log('📡 [API] Request URL:', endpoint);
 
     const response = await httpClientService.get(endpoint);
-    console.log('✅ [API] Get favorites response:', response);
+    console.log('✅ [API] Respuesta favoritos:', response);
     
-    // Asegurarnos de que siempre devolvemos un array
-    if (!response) return [];
-    return Array.isArray(response) ? response : (Array.isArray(response.places) ? response.places : []);
+    // Manejar diferentes formatos de respuesta
+    if (response && response.places) {
+      return response.places;
+    }
+    
+    return Array.isArray(response) ? response : [];
   } catch (error) {
-    console.error("❌ [API] Error fetching favorites:", error);
+    console.error("❌ [API] Error obteniendo favoritos:", error);
     return [];
   }
 };
 
-// Mantenemos las exportaciones existentes para compatibilidad con el resto del código
-export const getDefaultFavorites = async () => {
-  // Por defecto, usa ID 44 como fallback
-  return getFavorites(44);
+// Agregar favorito
+export const addFavorite = async (idUserFk, idPlaceFk) => {
+  try {
+    if (!idUserFk || !idPlaceFk) {
+      throw new Error('Se requieren los IDs de usuario y lugar');
+    }
+    
+    console.log(`📡 [API] Añadiendo favorito - Usuario: ${idUserFk}, Lugar: ${idPlaceFk}`);
+    
+    const body = { idUserFk, idPlaceFk };
+    const response = await httpClientService.post('/favorites', body);
+    
+    console.log('✅ [API] Favorito añadido:', response);
+    return { status: 200, data: response };
+  } catch (error) {
+    console.error('❌ [API] Error añadiendo favorito:', error);
+    throw error;
+  }
 };
 
+// Eliminar favorito
+export const deleteFavorite = async (idUserFk, idPlaceFk) => {
+  try {
+    if (!idUserFk || !idPlaceFk) {
+      throw new Error('Se requieren los IDs de usuario y lugar');
+    }
+    
+    console.log(`📡 [API] Eliminando favorito - Usuario: ${idUserFk}, Lugar: ${idPlaceFk}`);
+    
+    const endpoint = `/favorites/${idUserFk}/${idPlaceFk}`;
+    const response = await httpClientService.delete(endpoint);
+    
+    console.log('✅ [API] Favorito eliminado:', response);
+    return { status: 200, data: response };
+  } catch (error) {
+    console.error('❌ [API] Error eliminando favorito:', error);
+    throw error;
+  }
+};
+
+// Exportaciones para compatibilidad
 export const fetchFavorites = getFavorites;
-export const fetchDefaultFavorites = getDefaultFavorites;
-export const fetchFavoritesUseCase = getFavorites;
-export const fetchFavoritesDefaultUseCase = getDefaultFavorites;
+export const getDefaultFavorites = () => getFavorites(44);

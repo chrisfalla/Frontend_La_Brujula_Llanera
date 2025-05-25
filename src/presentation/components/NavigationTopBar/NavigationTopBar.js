@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFavorites, addFavorite, deleteFavorite } from "../../../shared/store/favoritesSlice/favoritesSlice";
 
 const NavigationTopBar = ({
   primaryIcon = "chevron-back",
@@ -11,11 +13,80 @@ const NavigationTopBar = ({
   useBackground = true,
   useHeart = true,
   title,
+  placeId,
 }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const favorites = useSelector((state) => state.favorites.favorites);
   const [isHeartActive, setIsHeartActive] = useState(false);
 
-  const handleHeartPress = () => {
-    setIsHeartActive(!isHeartActive);
+  // Verificar si este lugar está en favoritos
+  useEffect(() => {
+    if (placeId && favorites && user?.id) {
+      // Verificar usando los campos correctos para el objeto de favorito
+      const isFavorite = favorites.some(
+        (fav) =>
+          (fav.idPlaceFk === placeId && fav.idUserFk === user.id) ||
+          (fav.idPlace === placeId && fav.userId === user.id)
+      );
+      setIsHeartActive(isFavorite);
+      console.log(
+        `🔍 [NavigationTopBar] Verificando favorito - Place: ${placeId}, Es favorito: ${isFavorite}`
+      );
+    }
+  }, [placeId, favorites, user]);
+
+  // Cargar favoritos cuando el componente se monta
+  useEffect(() => {
+    if (user?.id) {
+      console.log(
+        "🔄 [NavigationTopBar] Cargando favoritos para usuario:",
+        user.id
+      );
+      dispatch(fetchFavorites(user.id));
+    }
+  }, [dispatch, user]);
+
+  const handleHeartPress = async () => {
+    if (!user?.id || !placeId) {
+      console.log(
+        "⚠️ [NavigationTopBar] No se puede gestionar favorito: usuario o placeId no disponible"
+      );
+      return;
+    }
+
+    try {
+      console.log(
+        `🔄 [NavigationTopBar] ${
+          isHeartActive ? "Eliminando" : "Añadiendo"
+        } favorito - User: ${user.id}, Place: ${placeId}`
+      );
+
+      if (isHeartActive) {
+        // Si ya es favorito, lo eliminamos
+        await dispatch(
+          deleteFavorite({
+            idUserFk: user.id,
+            idPlaceFk: placeId,
+          })
+        ).unwrap();
+        console.log("✅ [NavigationTopBar] Favorito eliminado correctamente");
+      } else {
+        // Si no es favorito, lo añadimos
+        await dispatch(
+          addFavorite({
+            idUserFk: user.id,
+            idPlaceFk: placeId,
+          })
+        ).unwrap();
+        console.log("✅ [NavigationTopBar] Favorito añadido correctamente");
+      }
+
+      // No necesitamos actualizar el estado local manualmente
+      // El efecto se encargará de actualizar basado en los cambios en favorites
+    } catch (error) {
+      console.error("❌ [NavigationTopBar] Error al gestionar favorito:", error);
+    }
   };
 
   // Cambia el ícono si el corazón está activo

@@ -1,13 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Colors,
-  TextStyles,
-  GlobalStyles,
-} from "../../../presentation/styles/styles";
+import { Colors, TextStyles, GlobalStyles } from "../../../presentation/styles/styles";
 import Rating from "../Rating/Rating";
-// No importamos todo NavigationTopBar porque solo necesitamos la funcionalidad del corazón
+import { useSelector, useDispatch } from "react-redux";
+import { addFavorite, deleteFavorite } from "../../../shared/store/favoritesSlice/favoritesSlice";
 
 const VerticalPlaceCard = ({
   NameCard,
@@ -15,36 +12,88 @@ const VerticalPlaceCard = ({
   ratingStars,
   imageCategoryName,
   onPress,
+  idPlace, // Esta prop es crítica para la funcionalidad de favoritos
 }) => {
-  // Estado para controlar si el lugar está marcado como favorito
-  const [isFavorite, setIsFavorite] = React.useState(false);
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user);
+  const favorites = useSelector(state => state.favorites.favorites);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Obtener el ID del lugar directamente de la prop o del atributo
+  const placeId = idPlace;
+
+  // Log para depuración
+  useEffect(() => {
+    console.log(`🔄 [VerticalPlaceCard] Inicializando tarjeta para lugar: ${NameCard}, ID: ${placeId}`);
+  }, [NameCard, placeId]);
+
+  // Verificar si este lugar está en favoritos
+  useEffect(() => {
+    if (user?.id && placeId && Array.isArray(favorites)) {
+      const favorite = favorites.some(fav => 
+        (fav.idPlaceFk === placeId && fav.idUserFk === user.id) || 
+        (fav.idPlace === placeId && fav.userId === user.id)
+      );
+      setIsFavorite(favorite);
+      console.log(`🔍 [VerticalPlaceCard] Verificando favorito - Place: ${placeId}, Es favorito: ${favorite}`);
+    }
+  }, [favorites, user, placeId]);
+
+  const handleFavoritePress = async (e) => {
+    if (e) e.stopPropagation(); // Evitar que se active onPress del card
+    
+    // Depuración para ver qué valores están llegando
+    console.log(`📝 Debug VerticalPlaceCard - idPlace: ${placeId}, User ID: ${user?.id}`);
+    
+    if (!user?.id || !placeId) {
+      console.log(`⚠️ [VerticalPlaceCard] No se puede gestionar favorito: usuario=${user?.id} o placeId=${placeId} no disponible`);
+      return;
+    }
+
+    try {
+      console.log(`🔄 [VerticalPlaceCard] ${isFavorite ? 'Eliminando' : 'Añadiendo'} favorito - User: ${user.id}, Place: ${placeId}`);
+      
+      if (isFavorite) {
+        await dispatch(deleteFavorite({ 
+          idUserFk: user.id, 
+          idPlaceFk: placeId 
+        })).unwrap();
+        console.log('✅ [VerticalPlaceCard] Favorito eliminado correctamente');
+      } else {
+        await dispatch(addFavorite({ 
+          idUserFk: user.id, 
+          idPlaceFk: placeId 
+        })).unwrap();
+        console.log('✅ [VerticalPlaceCard] Favorito añadido correctamente');
+      }
+    } catch (error) {
+      console.error('❌ [VerticalPlaceCard] Error al gestionar favorito:', error);
+    }
+  };
 
   // Si recibimos placeName y imageUrl en lugar de NameCard y ImagenPlaceCard
-  // esto permite compatibilidad con los datos que vienen del modelo Place
   const name = NameCard || "";
   const imageUrl = ImagenPlaceCard || "";
-  const rating = ratingStars || ""; // Valor por defecto de 5 estrellas si no se proporciona
+  const rating = ratingStars || 0; 
 
-  const handleFavoritePress = () => {
-    setIsFavorite(!isFavorite);
-    // Aquí podrías agregar lógica adicional para guardar el favorito en Redux o API
-  };
+  // Limpiar URL de imagen si tiene errores tipográficos
+  const cleanImageUrl = imageUrl
+    .replace('httpps://', 'https://')
+    .replace('https:///', 'https://');
+
   return (
     <TouchableOpacity 
       style={styles.mainContainer}
-      onPress={onPress} // Aquí añadimos el evento onPress al componente completo
+      onPress={onPress}
       activeOpacity={0.9}
     >
       {/* Contenedor relativo para imagen y rating */}
       <View style={styles.imageWrapper}>
-        <Image source={{ uri: imageUrl }} style={styles.imageContainer} />
+        <Image source={{ uri: cleanImageUrl }} style={styles.imageContainer} />
         {/* Botón de favorito (corazón) */}
         <TouchableOpacity
           style={styles.favoriteButton}
-          onPress={(e) => {
-            e.stopPropagation(); // Evitar que el evento se propague al padre
-            handleFavoritePress();
-          }}
+          onPress={handleFavoritePress}
         >
           <Ionicons
             name={isFavorite ? "heart" : "heart-outline"}
