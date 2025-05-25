@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors, TextStyles, GlobalStyles } from "../../../presentation/styles/styles";
 import Rating from "../Rating/Rating";
 import { useSelector, useDispatch } from "react-redux";
-import { addFavorite, deleteFavorite } from "../../../shared/store/favoritesSlice/favoritesSlice";
+import { fetchFavorites, addFavorite, deleteFavorite } from "../../../shared/store/favoritesSlice/favoritesSlice";
 
 const VerticalPlaceCard = ({
   NameCard,
@@ -29,23 +29,19 @@ const VerticalPlaceCard = ({
 
   // Verificar si este lugar está en favoritos cuando el componente se monta o cuando cambian los favoritos
   useEffect(() => {
-    if (placeId && Array.isArray(favorites)) {
-      // Imprimir todos los IDs de favoritos para depuración
-      console.log(`🔍 [VerticalPlaceCard] Favoritos actuales:`, 
-        favorites.map(f => `${f.idPlaceFk || f.idPlace}`).join(', '));
-      
-      // Búsqueda más flexible de favoritos
-      const isFav = favorites.some(fav => {
-        const favPlaceId = fav.idPlaceFk || fav.idPlace;
-        const favUserId = fav.idUserFk || fav.userId;
-        
-        // Convertir a strings para comparación más segura
-        const placeIdStr = String(placeId);
-        const favPlaceIdStr = String(favPlaceId);
-        
-        return placeIdStr === favPlaceIdStr;
-      });
-      
+    if (!placeId || !Array.isArray(favorites)) return;
+    
+    // Convertir placeId a string para comparaciones más seguras
+    const placeIdStr = String(placeId);
+    
+    // Búsqueda más eficiente de favoritos
+    const isFav = favorites.some(fav => {
+      const favPlaceId = fav.idPlaceFk || fav.idPlace;
+      return String(favPlaceId) === placeIdStr;
+    });
+    
+    // Solo actualizar estado si hay un cambio real
+    if (isFavorite !== isFav) {
       console.log(`🔍 [VerticalPlaceCard] ID: ${placeId} - Es favorito: ${isFav}`);
       setIsFavorite(isFav);
     }
@@ -85,12 +81,12 @@ const VerticalPlaceCard = ({
         setIsFavorite(true);
       }
       
-      // Recargamos todos los favoritos para sincronizar el estado global
-      dispatch(fetchFavorites(user.id));
+      // IMPORTANTE: ELIMINAR ESTA LÍNEA PARA EVITAR EL BUCLE INFINITO
+      // dispatch(fetchFavorites(user.id));
     } catch (error) {
       console.error("❌ [VerticalPlaceCard] Error al gestionar favorito:", error);
     }
-  };
+  }; // Corregido: eliminado los paréntesis y punto y coma extra
 
   // Si recibimos placeName y imageUrl en lugar de NameCard y ImagenPlaceCard
   const name = NameCard || "";

@@ -20,10 +20,15 @@ const mapToFavorite = dto => {
       imageUrl = dto.imageUrl;
     }
     
-    // Limpiar URL si tiene errores tipográficos
-    imageUrl = imageUrl
+    // Limpiar URL si tiene errores tipográficos comunes
+    imageUrl = (imageUrl || '')
       .replace('httpps://', 'https://')
-      .replace('https:///', 'https://');
+      .replace('https:///', 'https://')
+      .replace('storagge', 'storage')
+      .replace('objject', 'object')
+      .replace('storage/v11/', 'storage/v1/')
+      .replace('supabase.cco', 'supabase.co')
+      .replace('signn', 'sign');
     
     console.log(`🖼️ Mapeando imagen para ${dto.name || dto.placeName}:`, imageUrl);
     

@@ -1,113 +1,82 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
-  FlatList,
-  Button,
-  ScrollView
+  FlatList
 } from 'react-native';
 import NavigationTopBar from '../../components/NavigationTopBar/NavigationTopBar';
 import VerticalPlaceCard from '../../components/VerticalPlaceCard/VerticalPlaceCard';
 import { GlobalStyles, TextStyles, Colors } from '../../styles/styles';
-import { getFavoritesUseCase } from '../../../domain/usecases/favorites/getFavoritesUseCase';
-import { useSelector } from 'react-redux'; // Cambiado de "@/redux/store" a "react-redux"
-
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchFavorites } from '../../../shared/store/favoritesSlice/favoritesSlice';
 
 const FavoritesScreen = ({ navigation }) => {
   const [favoritePlaces, setFavoritePlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Usar una variable de referencia para evitar cargas repetidas
+  const initialLoadRef = useRef(false);
 
+  const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.user?.id);
+  const favoritesState = useSelector(state => state.favorites);
 
-
+  // Efecto para cargar los favoritos solo una vez al inicio
   useEffect(() => {
-    const fetchFavorites = async () => {
+    if (!userId || initialLoadRef.current) return;
+    
+    const loadFavorites = async () => {
       try {
-        console.log('🔍 Fetching favorite places...');
+        console.log('🔍 [FavoritesScreen] Cargando favoritos iniciales para usuario:', userId);
         setLoading(true);
-        const favorites = await getFavoritesUseCase(userId);
-
-        console.log('✅ Favorites received:', favorites);
-        setFavoritePlaces(favorites);
+        
+        // Marcar como ya cargado para evitar bucles
+        initialLoadRef.current = true;
+        
+        // Cargar favoritos una sola vez
+        await dispatch(fetchFavorites(userId));
       } catch (err) {
-        console.error('❌ Error fetching favorites:', err);
+        console.error('❌ [FavoritesScreen] Error al cargar favoritos:', err);
         setError('No se pudieron cargar los favoritos');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFavorites();
-  }, []);
-  
-  const user = useSelector(state => state.auth.user);
-useEffect(() => {
-  console.log("👤 Usuario actual desde Redux:", user);
-}, [user]);
+    loadFavorites();
+  }, [dispatch, userId]);
 
-  // Test API connection directly
+  // Actualizar el estado local cuando cambia el estado global de favoritos
   useEffect(() => {
-    const testAPI = async () => {
-      try {
-        console.log('🧪 Testing API connection directly...');
-        const userId = user?.id || 44;
-        
-        // Usando fetch nativo para evitar cualquier problema con httpClient
-        const response = await fetch(`https://backend-la-brujula-llanera.onrender.com/favorites/${userId}`);
-        const data = await response.json();
-        
-        console.log('🧪 Direct API response:', data);
-        
-        if (data && data.places && data.places.length > 0) {
-          console.log('✅ La API devuelve datos correctamente.');
-          
-          // Extraer y mostrar URLs de imágenes para diagnóstico
-          data.places.forEach(place => {
-            console.log(`📸 Imagen para ${place.name}:`, 
-              place.image?.url || 
-              place.image?.imageUrl || 
-              JSON.stringify(place.image)
-            );
-          });
-        } else {
-          console.log('⚠️ La API devuelve un array vacío o no tiene estructura places.');
-        }
-      } catch (error) {
-        console.error('❌ Error en prueba directa API:', error);
-      }
-    };
-    
-    testAPI();
-  }, [user]);
-
-  // Agregamos un efecto para recargar favoritos cuando cambia el estado de Redux
-const favoritesState = useSelector(state => state.favorites);
-
-// Monitorear cambios en el estado de favoritos en Redux
-useEffect(() => {
-  if (favoritesState.status === 'succeeded') {
-    console.log('♻️ [FavoritesScreen] Estado de favoritos actualizado, recargando...');
-    setFavoritePlaces(favoritesState.favorites);
-  }
-}, [favoritesState]);
+    // Solo actualizamos si ya se completó una carga
+    if (favoritesState.status === 'succeeded') {
+      console.log(`♻️ [FavoritesScreen] Estado de favoritos actualizado: ${favoritesState.favorites.length}`);
+      setFavoritePlaces(favoritesState.favorites);
+      setLoading(false);
+    } else if (favoritesState.status === 'failed') {
+      setError(favoritesState.error || 'Error al cargar favoritos');
+      setLoading(false);
+    }
+  }, [favoritesState.status, favoritesState.favorites.length]);
 
   // Función para renderizar cada favorito
   const renderItem = ({ item }) => {
-    // Añadimos log para verificar las imágenes
-    console.log(`🖼️ Renderizando item ${item.name} con imagen: ${item.imageUrl}`);
+    console.log(`🖼️ [FavoritesScreen] Renderizando favorito: ${item.name}, ID: ${item.idPlace || item.idPlaceFk}`);
     
     return (
       <View style={styles.card}>
         <VerticalPlaceCard
           NameCard={item.name}
-          ImagenPlaceCard={item.imageUrl || 'https://via.placeholder.com/150'} // Imagen de respaldo
+          ImagenPlaceCard={item.imageUrl || 'https://via.placeholder.com/150'}
           ratingStars={item.rating}
           imageCategoryName={item.categoryName || "Lugar"}
+          idPlace={item.idPlace || item.idPlaceFk} // Asegurarnos de pasar el ID correctamente
           onPress={() => {
             console.log('Pressed favorite:', item.name);
+            navigation.navigate("DetailScreen", { placeId: item.idPlace || item.idPlaceFk });
           }}
         />
       </View>
@@ -123,7 +92,6 @@ useEffect(() => {
           primaryIcon="chevron-back"
           useBackground={false}
           onBackPress={() => navigation.goBack()}
-          navigation={navigation}
         />
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={Colors.ColorPrimary} />
@@ -136,14 +104,12 @@ useEffect(() => {
   if (error) {
     return (
       <View style={styles.container}>
-                 
         <NavigationTopBar
           title="Mis favoritos"
           SecondIcon={null}
           primaryIcon="chevron-back"
           useBackground={false}
           onBackPress={() => navigation.goBack()}
-          navigation={navigation}
         />
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
@@ -155,34 +121,33 @@ useEffect(() => {
   return (
     <View style={styles.container}>
       <View style={styles.favoritesContainer}>
-      <NavigationTopBar
-        title="Mis favoritos"
-        SecondIcon={null}
-        primaryIcon="chevron-back"
-        useBackground={false}
-        onBackPress={() => navigation.goBack()}
-        navigation={navigation}
-      />
-
-      {favoritePlaces.length === 0 ? (
-        <View style={styles.centerContainer}>
-          <Text style={styles.emptyText}>
-            No tienes lugares favoritos guardados
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={favoritePlaces}
-          keyExtractor={(item) =>
-            item.idPlace?.toString() || Math.random().toString()
-          }
-          numColumns={2}
-          renderItem={renderItem}
-          contentContainerStyle={styles.scrollView}
-          columnWrapperStyle={styles.columnWrapper} // Añadimos este estilo
+        <NavigationTopBar
+          title="Mis favoritos"
+          SecondIcon={null}
+          primaryIcon="chevron-back"
+          useBackground={false}
+          onBackPress={() => navigation.goBack()}
         />
-      )}
-    </View>
+
+        {favoritePlaces.length === 0 ? (
+          <View style={styles.centerContainer}>
+            <Text style={styles.emptyText}>
+              No tienes lugares favoritos guardados
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={favoritePlaces}
+            keyExtractor={(item) =>
+              (item.idPlace || item.idPlaceFk)?.toString() || Math.random().toString()
+            }
+            numColumns={2}
+            renderItem={renderItem}
+            contentContainerStyle={styles.scrollView}
+            columnWrapperStyle={styles.columnWrapper}
+          />
+        )}
+      </View>
     </View>
   );
 };
@@ -199,8 +164,8 @@ const styles = StyleSheet.create({
     position: 'static'
   },
   columnWrapper: {
-    justifyContent: 'space-between', // Distribuye el espacio entre las columnas
-    marginHorizontal: 5, // Margen horizontal uniforme
+    justifyContent: 'space-between',
+    marginHorizontal: 5,
   },
   centerContainer: {
     flex: 1,
@@ -225,9 +190,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   card: {
-    width: '49%', // Ligeramente menos para dejar espacio entre cards
-    marginVertical: 5, // Margen vertical uniforme
+    width: '49%',
+    marginVertical: 5,
   },
+  scrollView: {
+    paddingHorizontal: 10,
+    paddingBottom: 20,
+  }
 });
 
 export default FavoritesScreen;

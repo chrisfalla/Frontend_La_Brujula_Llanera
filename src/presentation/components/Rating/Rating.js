@@ -1,60 +1,64 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, GlobalStyles } from '../../styles/styles';
+import { Colors } from '../../styles/styles';
 
-const Rating = ({ average = 0, size = 14, color = Colors.ColorPrimary, useBackground = true, style }) => {
-  // Asegurar que el rating esté entre 0 y 5
-  const safeRating = Math.min(Math.max(0, average || 0), 5);
+const Rating = ({ average = 0, useBackground = true, size = 14 }) => {
+  // Asegurar que average sea un número y esté en el rango adecuado
+  const safeAverage = typeof average === 'number' ? Math.min(Math.max(0, average), 5) : 0;
   
-  // Redondear a 0.5 más cercano
-  const roundedRating = Math.round(safeRating * 2) / 2;
+  // Redondear a 0.5 más cercano para las medias estrellas
+  const roundedAverage = Math.round(safeAverage * 2) / 2;
   
-  // Generar el array de estrellas
+  const fullStars = Math.floor(roundedAverage);
+  const halfStar = roundedAverage % 1 !== 0;
+  const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+  
   const stars = [];
   
-  for (let i = 1; i <= 5; i++) {
-    if (i <= roundedRating) {
-      // Estrella completa
-      stars.push(
-        <Ionicons 
-          key={`star-${i}`} 
-          name="star" 
-          size={size} 
-          color={color} 
-          style={styles.star}
-        />
-      );
-    } else if (i - 0.5 === roundedRating) {
-      // Media estrella
-      stars.push(
-        <Ionicons 
-          key={`star-half-${i}`} 
-          name="star-half" 
-          size={size} 
-          color={color} 
-          style={styles.star}
-        />
-      );
-    } else {
-      // Estrella vacía
-      stars.push(
-        <Ionicons 
-          key={`star-outline-${i}`} 
-          name="star-outline" 
-          size={size} 
-          color={color} 
-          style={styles.star}
-        />
-      );
-    }
+  // Estrellas completas
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(
+      <Ionicons 
+        key={`full-${i}`} 
+        name="star" 
+        size={size} 
+        color={Colors.ColorPrimary} 
+        style={styles.star}
+      />
+    );
+  }
+  
+  // Media estrella (si corresponde)
+  if (halfStar) {
+    stars.push(
+      <Ionicons 
+        key="half" 
+        name="star-half" 
+        size={size} 
+        color={Colors.ColorPrimary} 
+        style={styles.star}
+      />
+    );
+  }
+  
+  // Estrellas vacías
+  for (let i = 0; i < emptyStars; i++) {
+    stars.push(
+      <Ionicons 
+        key={`empty-${i}`} 
+        name="star-outline" 
+        size={size} 
+        color={Colors.ColorPrimary} 
+        style={styles.star}
+      />
+    );
   }
   
   return (
     <View style={[
       styles.container, 
-      useBackground && styles.backgroundContainer,
-      style
+      useBackground ? styles.withBackground : null
     ]}>
       {stars}
     </View>
@@ -65,16 +69,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  backgroundContainer: {
+  withBackground: {
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    paddingHorizontal: 5,
+    borderRadius: 4,
+    paddingHorizontal: 4,
     paddingVertical: 2,
-    borderRadius: 10,
   },
   star: {
-    marginRight: 2,
-  },
+    marginHorizontal: 1,
+  }
 });
 
 export default Rating;

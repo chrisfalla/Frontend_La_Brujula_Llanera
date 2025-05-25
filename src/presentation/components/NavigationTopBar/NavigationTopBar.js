@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
@@ -19,41 +19,32 @@ const NavigationTopBar = ({
   const user = useSelector((state) => state.auth.user);
   const favorites = useSelector((state) => state.favorites.favorites);
   const [isHeartActive, setIsHeartActive] = useState(false);
+  const loadedRef = useRef(false);
+  // Necesitamos una variable de referencia para controlar si ya se cargaron los favoritos
+  const initialLoadRef = useRef(false);
 
-  // Verificar si este lugar está en favoritos
+  // Fetch favorites only once when component mounts
   useEffect(() => {
-    if (placeId && favorites && user?.id) {
-      // Imprimir favoritos para depuración
-      console.log(`🔍 [NavigationTopBar] Verificando favoritos para lugar ${placeId}:`);
-      console.log(favorites.map(f => `ID: ${f.idPlaceFk || f.idPlace}`).join(', '));
-      
+    // Solo cargar si hay un usuario, hay un ID de lugar, y no se ha hecho la carga inicial
+    if (user?.id && !initialLoadRef.current) {
+      console.log('🔄 [NavigationTopBar] Cargando favoritos iniciales para usuario:', user.id);
+      initialLoadRef.current = true; // Marcar como ya cargado
+      dispatch(fetchFavorites(user.id));
+    }
+  }, [dispatch, user]); // Quitar placeId y favorites de las dependencias
+
+  // Check if the current place is a favorite
+  useEffect(() => {
+    if (placeId && favorites && favorites.length > 0) {
       // Verificación más robusta de favoritos
       const isFavorite = favorites.some(fav => {
-        // Obtener el ID del lugar favorito (puede estar en diferentes propiedades)
         const favPlaceId = fav.idPlaceFk || fav.idPlace;
-        
-        // Convertir a strings para comparación más segura
-        const placeIdStr = String(placeId);
-        const favPlaceIdStr = String(favPlaceId);
-        
-        return favPlaceIdStr === placeIdStr;
+        return String(favPlaceId) === String(placeId);
       });
       
       setIsHeartActive(isFavorite);
-      console.log(`🔍 [NavigationTopBar] Lugar ${placeId} es favorito: ${isFavorite}`);
     }
-  }, [placeId, favorites, user]);
-
-  // Cargar favoritos cuando el componente se monta
-  useEffect(() => {
-    if (user?.id) {
-      console.log(
-        "🔄 [NavigationTopBar] Cargando favoritos para usuario:",
-        user.id
-      );
-      dispatch(fetchFavorites(user.id));
-    }
-  }, [dispatch, user]);
+  }, [placeId, favorites]); // Mantener estas dependencias
 
   const handleHeartPress = async () => {
     if (!user?.id || !placeId) {
