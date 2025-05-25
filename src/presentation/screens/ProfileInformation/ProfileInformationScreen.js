@@ -1,19 +1,57 @@
 import React, { useState } from "react";
-import { View, Image, StyleSheet } from "react-native";
+import { View, Image, StyleSheet, Alert } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import CustomInputText from "../../components/CustomInput/CustomInputText";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
+import { usersRepository } from "../../../data/repositories/users/usersRepository";
+import { updateUserInfo } from "../../../shared/store/authSlice/authSlice";
 
 const InformationScreen = ({ navigation }) => {
-  const [isEditable, setIsEditable] = useState(false); // Estado para editar inputs
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  
+  const [isEditable, setIsEditable] = useState(false);
+  const [editName, setEditName] = useState(user?.name || "");
+  const [editEmail, setEditEmail] = useState(user?.email || "");
+  const [editPhone, setEditPhone] = useState(user?.phone || "");
 
   const toggleEditMode = () => {
-    setIsEditable((prev) => !prev); // alternar entre true/false
+    if (!isEditable) {
+      setEditName(user?.name || "");
+      setEditEmail(user?.email || "");
+      setEditPhone(user?.phone || "");
+    }
+    setIsEditable((prev) => !prev);
   };
 
-  const handleSave = () => {
-      setIsEditable(false); // volver a bloquear los inputs
+  const handleSave = async () => {
+    if (!editName || !editEmail || !editPhone) {
+      Alert.alert("Error", "Todos los campos son obligatorios");
+      return;
+    }
+    
+    try {
+      const updatedUser = await usersRepository.updateUser({
+        id: user.id,
+        name: editName,
+        email: editEmail,
+        phone: editPhone
+      });
+      
+      dispatch(updateUserInfo({
+        name: editName,
+        email: editEmail,
+        phone: editPhone
+      }));
+      
+      setIsEditable(false);
+      Alert.alert("Éxito", "Información actualizada correctamente");
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      Alert.alert("Error", "No se pudo actualizar la información");
+    }
   };
 
   return (
@@ -35,9 +73,24 @@ const InformationScreen = ({ navigation }) => {
         />
 
         <View style={styles.information}>
-          <CustomInputText LabelText={"Nombre"} IsDisabled={!isEditable} />
-          <CustomInputText LabelText={"Email"} IsDisabled={!isEditable} />
-          <CustomInputText LabelText={"Teléfono"} IsDisabled={!isEditable} />
+          <CustomInputText 
+            LabelText={"Nombre"} 
+            IsDisabled={!isEditable}
+            value={editName}
+            onChangeText={setEditName}
+          />
+          <CustomInputText 
+            LabelText={"Email"} 
+            IsDisabled={!isEditable}
+            value={editEmail}
+            onChangeText={setEditEmail}
+          />
+          <CustomInputText 
+            LabelText={"Teléfono"} 
+            IsDisabled={!isEditable}
+            value={editPhone}
+            onChangeText={setEditPhone}
+          />
         </View>
       </View>
 
