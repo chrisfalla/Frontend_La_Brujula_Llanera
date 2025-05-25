@@ -23,16 +23,24 @@ const NavigationTopBar = ({
   // Verificar si este lugar está en favoritos
   useEffect(() => {
     if (placeId && favorites && user?.id) {
-      // Verificar usando los campos correctos para el objeto de favorito
-      const isFavorite = favorites.some(
-        (fav) =>
-          (fav.idPlaceFk === placeId && fav.idUserFk === user.id) ||
-          (fav.idPlace === placeId && fav.userId === user.id)
-      );
+      // Imprimir favoritos para depuración
+      console.log(`🔍 [NavigationTopBar] Verificando favoritos para lugar ${placeId}:`);
+      console.log(favorites.map(f => `ID: ${f.idPlaceFk || f.idPlace}`).join(', '));
+      
+      // Verificación más robusta de favoritos
+      const isFavorite = favorites.some(fav => {
+        // Obtener el ID del lugar favorito (puede estar en diferentes propiedades)
+        const favPlaceId = fav.idPlaceFk || fav.idPlace;
+        
+        // Convertir a strings para comparación más segura
+        const placeIdStr = String(placeId);
+        const favPlaceIdStr = String(favPlaceId);
+        
+        return favPlaceIdStr === placeIdStr;
+      });
+      
       setIsHeartActive(isFavorite);
-      console.log(
-        `🔍 [NavigationTopBar] Verificando favorito - Place: ${placeId}, Es favorito: ${isFavorite}`
-      );
+      console.log(`🔍 [NavigationTopBar] Lugar ${placeId} es favorito: ${isFavorite}`);
     }
   }, [placeId, favorites, user]);
 

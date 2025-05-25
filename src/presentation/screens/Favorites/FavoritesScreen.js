@@ -83,6 +83,17 @@ useEffect(() => {
     testAPI();
   }, [user]);
 
+  // Agregamos un efecto para recargar favoritos cuando cambia el estado de Redux
+const favoritesState = useSelector(state => state.favorites);
+
+// Monitorear cambios en el estado de favoritos en Redux
+useEffect(() => {
+  if (favoritesState.status === 'succeeded') {
+    console.log('♻️ [FavoritesScreen] Estado de favoritos actualizado, recargando...');
+    setFavoritePlaces(favoritesState.favorites);
+  }
+}, [favoritesState]);
+
   // Función para renderizar cada favorito
   const renderItem = ({ item }) => {
     // Añadimos log para verificar las imágenes

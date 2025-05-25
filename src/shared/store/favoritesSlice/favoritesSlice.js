@@ -46,20 +46,19 @@ export const deleteFavorite = createAsyncThunk(
   'favorites/deleteFavorite',
   async ({ idUserFk, idPlaceFk }, { rejectWithValue }) => {
     try {
-      console.log(`🔍 [REDUX] Eliminando favorito - Usuario: ${idUserFk}, Lugar: ${idPlaceFk}`);
+      console.log(`🔍 Deleting favorite - User: ${idUserFk}, Place: ${idPlaceFk}`);
       const response = await deleteFavoriteUseCase(idUserFk, idPlaceFk);
-      console.log('✅ [REDUX] Favorito eliminado correctamente');
+      console.log('✅ Favorite deleted successfully:', response);
       
-      // Devolver un objeto con la estructura que el reducer necesita
+      // Devolver toda la información necesaria para identificar el favorito
       return { 
         idUserFk, 
         idPlaceFk,
-        // Incluimos también estos campos para compatibilidad
-        idPlace: idPlaceFk,
-        userId: idUserFk
+        idPlace: idPlaceFk, // Para compatibilidad
+        userId: idUserFk     // Para compatibilidad
       };
     } catch (error) {
-      console.error('❌ [REDUX] Error al eliminar favorito:', error);
+      console.error('❌ Error deleting favorite:', error);
       return rejectWithValue(error.message || 'Error al eliminar favorito');
     }
   }
@@ -129,12 +128,23 @@ const favoritesSlice = createSlice({
       .addCase(deleteFavorite.fulfilled, (state, action) => {
         state.status = 'succeeded';
         
-        // Filtrar para eliminar el favorito
-        state.favorites = state.favorites.filter(
-          fav => !((fav.idPlaceFk === action.payload.idPlaceFk && fav.idUserFk === action.payload.idUserFk) ||
-                  (fav.idPlace === action.payload.idPlaceFk && fav.userId === action.payload.idUserFk))
-        );
+        // Filtrar el favorito eliminado con una comparación más flexible
+        const { idUserFk, idPlaceFk } = action.payload;
         
+        // Convertir los IDs a strings para comparación más segura
+        const userIdStr = String(idUserFk);
+        const placeIdStr = String(idPlaceFk);
+        
+        state.favorites = state.favorites.filter(fav => {
+          // Obtener IDs del favorito con varias opciones de nombre de propiedad
+          const favUserId = String(fav.idUserFk || fav.userId || '');
+          const favPlaceId = String(fav.idPlaceFk || fav.idPlace || '');
+          
+          // Mantener todos los favoritos excepto el que estamos eliminando
+          return !(favPlaceId === placeIdStr && favUserId === userIdStr);
+        });
+        
+        console.log(`✅ [REDUX] Favorito eliminado: Place=${placeIdStr}`);
         state.error = null;
       })
       .addCase(deleteFavorite.rejected, (state, action) => {

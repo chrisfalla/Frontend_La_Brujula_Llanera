@@ -27,47 +27,68 @@ const VerticalPlaceCard = ({
     console.log(`🔄 [VerticalPlaceCard] Inicializando tarjeta para lugar: ${NameCard}, ID: ${placeId}`);
   }, [NameCard, placeId]);
 
-  // Verificar si este lugar está en favoritos
+  // Verificar si este lugar está en favoritos cuando el componente se monta o cuando cambian los favoritos
   useEffect(() => {
-    if (user?.id && placeId && Array.isArray(favorites)) {
-      const favorite = favorites.some(fav => 
-        (fav.idPlaceFk === placeId && fav.idUserFk === user.id) || 
-        (fav.idPlace === placeId && fav.userId === user.id)
-      );
-      setIsFavorite(favorite);
-      console.log(`🔍 [VerticalPlaceCard] Verificando favorito - Place: ${placeId}, Es favorito: ${favorite}`);
+    if (placeId && Array.isArray(favorites)) {
+      // Imprimir todos los IDs de favoritos para depuración
+      console.log(`🔍 [VerticalPlaceCard] Favoritos actuales:`, 
+        favorites.map(f => `${f.idPlaceFk || f.idPlace}`).join(', '));
+      
+      // Búsqueda más flexible de favoritos
+      const isFav = favorites.some(fav => {
+        const favPlaceId = fav.idPlaceFk || fav.idPlace;
+        const favUserId = fav.idUserFk || fav.userId;
+        
+        // Convertir a strings para comparación más segura
+        const placeIdStr = String(placeId);
+        const favPlaceIdStr = String(favPlaceId);
+        
+        return placeIdStr === favPlaceIdStr;
+      });
+      
+      console.log(`🔍 [VerticalPlaceCard] ID: ${placeId} - Es favorito: ${isFav}`);
+      setIsFavorite(isFav);
     }
-  }, [favorites, user, placeId]);
+  }, [favorites, placeId]);
 
-  const handleFavoritePress = async (e) => {
-    if (e) e.stopPropagation(); // Evitar que se active onPress del card
+  const handleFavoritePress = async () => {
+    if (!user?.id) {
+      console.log('⚠️ [VerticalPlaceCard] No se puede gestionar favorito: usuario no autenticado');
+      return;
+    }
     
-    // Depuración para ver qué valores están llegando
-    console.log(`📝 Debug VerticalPlaceCard - idPlace: ${placeId}, User ID: ${user?.id}`);
-    
-    if (!user?.id || !placeId) {
-      console.log(`⚠️ [VerticalPlaceCard] No se puede gestionar favorito: usuario=${user?.id} o placeId=${placeId} no disponible`);
+    if (!placeId) {
+      console.log(`⚠️ [VerticalPlaceCard] No se puede gestionar favorito: placeId (${placeId}) no disponible`);
       return;
     }
 
     try {
-      console.log(`🔄 [VerticalPlaceCard] ${isFavorite ? 'Eliminando' : 'Añadiendo'} favorito - User: ${user.id}, Place: ${placeId}`);
-      
+      console.log(`🔄 [VerticalPlaceCard] ${isFavorite ? "Eliminando" : "Añadiendo"} favorito - User: ${user.id}, Place: ${placeId}`);
+
       if (isFavorite) {
+        // Si ya es favorito, lo eliminamos
         await dispatch(deleteFavorite({ 
           idUserFk: user.id, 
           idPlaceFk: placeId 
         })).unwrap();
-        console.log('✅ [VerticalPlaceCard] Favorito eliminado correctamente');
+        console.log("✅ [VerticalPlaceCard] Favorito eliminado correctamente");
+        // Actualizamos el estado local inmediatamente para mejor feedback al usuario
+        setIsFavorite(false);
       } else {
+        // Si no es favorito, lo añadimos
         await dispatch(addFavorite({ 
           idUserFk: user.id, 
           idPlaceFk: placeId 
         })).unwrap();
-        console.log('✅ [VerticalPlaceCard] Favorito añadido correctamente');
+        console.log("✅ [VerticalPlaceCard] Favorito añadido correctamente");
+        // Actualizamos el estado local inmediatamente para mejor feedback al usuario
+        setIsFavorite(true);
       }
+      
+      // Recargamos todos los favoritos para sincronizar el estado global
+      dispatch(fetchFavorites(user.id));
     } catch (error) {
-      console.error('❌ [VerticalPlaceCard] Error al gestionar favorito:', error);
+      console.error("❌ [VerticalPlaceCard] Error al gestionar favorito:", error);
     }
   };
 

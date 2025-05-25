@@ -63,22 +63,41 @@ export const addFavorite = async (idUserFk, idPlaceFk) => {
   }
 };
 
-// Eliminar favorito
+// Eliminar favorito - DELETE /favorites/{userId}/{placeId}
 export const deleteFavorite = async (idUserFk, idPlaceFk) => {
   try {
+    console.log(`📡 [API] Deleting favorite - User: ${idUserFk}, Place: ${idPlaceFk}`);
+    
     if (!idUserFk || !idPlaceFk) {
       throw new Error('Se requieren los IDs de usuario y lugar');
     }
     
-    console.log(`📡 [API] Eliminando favorito - Usuario: ${idUserFk}, Lugar: ${idPlaceFk}`);
+    // Asegurar que los IDs son strings o números válidos
+    const userIdClean = String(idUserFk).trim();
+    const placeIdClean = String(idPlaceFk).trim();
     
-    const endpoint = `/favorites/${idUserFk}/${idPlaceFk}`;
+    if (!userIdClean || !placeIdClean) {
+      throw new Error('IDs de usuario o lugar inválidos');
+    }
+    
+    // Endpoint para eliminar favorito
+    const endpoint = `/favorites/${userIdClean}/${placeIdClean}`;
+    
+    console.log('📡 [API] Delete favorite URL:', endpoint);
     const response = await httpClientService.delete(endpoint);
+    console.log('✅ [API] Delete favorite response:', response);
     
-    console.log('✅ [API] Favorito eliminado:', response);
-    return { status: 200, data: response };
+    // Devolver una respuesta consistente
+    return { 
+      status: 200, 
+      data: { 
+        userId: userIdClean,
+        placeId: placeIdClean,
+        message: 'Favorito eliminado correctamente'
+      } 
+    };
   } catch (error) {
-    console.error('❌ [API] Error eliminando favorito:', error);
+    console.error('❌ [API] Error deleting favorite:', error);
     throw error;
   }
 };
