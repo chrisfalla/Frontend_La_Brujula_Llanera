@@ -5,11 +5,15 @@ import {
   verifyPasswordRecoveryCodeApi, 
   resetPasswordApi 
 } from "../../../infrastructure/api/users/usersApi";
-import { usersDatasource } from '../../datasources/users/usersDataSource';
-
+import {usersDataSource}   from '../../datasources/users/usersDataSource';
+console.log("🛠️ usersDataSource importado:", usersDataSource);
 export const usersRepository = {
-  registerUser: async (userData) => await usersDatasource.registerUser(userData),
-  loginUser: async (credentials) => await usersDatasource.loginUser(credentials),
+  updateUser: async (userPayload) => {
+    // aquí ya recibes el objeto mapeado de usersDataSource
+    return usersDataSource.updateUser(userPayload);
+  },
+  registerUser: async (userData) => await usersDataSource.registerUser(userData),
+  loginUser: async (credentials) => await usersDataSource.loginUser(credentials),
   requestPasswordRecoveryCode: async (email) => {
     try {
       const response = await requestPasswordRecoveryCodeApi(email);
@@ -34,4 +38,6 @@ export const usersRepository = {
       throw error;
     }
   }
+  
+  
 };

@@ -143,3 +143,12 @@ export const resetPasswordApi = async (email, newPassword) => {
     throw error;
   }
 };
+export const usersApi = {
+  updateUser: async ({ id, name, email, phone }) => {
+    const path = "/user/update";
+    console.log("🚀 [API] POST a:", httpClient.defaults.baseURL + path);
+    console.log("📤 [API] Payload:", { id, name, email, phone });
+    const response = await httpClient.post(path, { id, name, email, phone });
+    return response.data;
+  },
+};

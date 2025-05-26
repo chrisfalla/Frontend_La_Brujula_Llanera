@@ -7,6 +7,7 @@ import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar
 import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
 import { usersRepository } from "../../../data/repositories/users/usersRepository";
 import { updateUserInfo } from "../../../shared/store/authSlice/authSlice";
+import { updateUserUseCase } from "../../../domain/usecases/user/updateUserUseCase";
 
 const InformationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const InformationScreen = ({ navigation }) => {
   const [editName, setEditName] = useState(user?.name || "");
   const [editEmail, setEditEmail] = useState(user?.email || "");
   const [editPhone, setEditPhone] = useState(user?.phone || "");
+  
 
   const toggleEditMode = () => {
     if (!isEditable) {
@@ -25,34 +27,35 @@ const InformationScreen = ({ navigation }) => {
     }
     setIsEditable((prev) => !prev);
   };
+  
+const handleSave = async () => {
+  if (!editName || !editEmail || !editPhone) {
+    Alert.alert("Error", "Todos los campos son obligatorios");
+    return;
+  }
 
-  const handleSave = async () => {
-    if (!editName || !editEmail || !editPhone) {
-      Alert.alert("Error", "Todos los campos son obligatorios");
-      return;
-    }
-    
-    try {
-      const updatedUser = await usersRepository.updateUser({
-        id: user.id,
-        name: editName,
-        email: editEmail,
-        phone: editPhone
-      });
-      
-      dispatch(updateUserInfo({
-        name: editName,
-        email: editEmail,
-        phone: editPhone
-      }));
-      
-      setIsEditable(false);
-      Alert.alert("Éxito", "Información actualizada correctamente");
-    } catch (error) {
-      console.error("Error al actualizar:", error);
-      Alert.alert("Error", "No se pudo actualizar la información");
-    }
-  };
+  try {
+    const updatedUser = await updateUserUseCase({
+      id: user.id,
+      name: editName,
+      email: editEmail,
+      phone: editPhone
+    });
+
+    dispatch(updateUserInfo({
+      name: updatedUser.name,
+      email: updatedUser.email,
+      phone: updatedUser.phone
+    }));
+
+    setIsEditable(false);
+    Alert.alert("Éxito", updatedUser.message || "Información actualizada correctamente");
+  } catch (error) {
+    console.error("Error al actualizar:", error);
+    Alert.alert("Error", "No se pudo actualizar la información");
+  }
+};
+  
 
   return (
     <View style={styles.container}>
