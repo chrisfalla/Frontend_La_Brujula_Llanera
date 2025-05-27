@@ -40,19 +40,20 @@ const CategoriesScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-
-      <View style={styles.headerContainer}> 
-      <MainHeader title="Categorías" />
-      </View>
-      
       {/* Barra de estado para iOS y Android */}
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#ffffff"
         translucent={false}
       />
+
+      <View style={styles.headerContainer}> 
+      <MainHeader title="Categorías" />
+      </View>
       
-      <CustomSearch
+
+
+      <CustomSearch 
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder="Buscar categorías..."
@@ -90,7 +91,6 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 8,
     backgroundColor: Colors.BackgroundPage,
   },
   loadingContainer: {
