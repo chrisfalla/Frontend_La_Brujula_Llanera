@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { View, StyleSheet, StatusBar, ScrollView, ActivityIndicator, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../../../shared/store/categoriesSlice/categoriesSlice";
@@ -7,7 +8,8 @@ import { GlobalStyles, Colors } from "../../styles/styles";
 import MainHeader from "../../components/MainHeader/MainHeader";
 import CategorieCardBig from "../../components/CategorieCardBig/CategorieCardBig";
 
-const CategoriesScreen = ({ navigation }) => {
+const CategoriesScreen = () => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const { all, status, error } = useSelector((state) => state.categories);
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,7 +37,7 @@ const CategoriesScreen = ({ navigation }) => {
   // Función para manejar la selección de una categoría
   const handleCategoryPress = (categoryId) => {
     // Navegar a una pantalla de detalles de categoría o filtrar lugares por categoría
-    navigation.navigate("PlacesByCategory", { categoryId });
+    navigation.navigate("SearchScreen", { categoryId });
   };
 
   return (

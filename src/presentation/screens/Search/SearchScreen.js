@@ -30,8 +30,8 @@ const SearchScreen = () => {
         backgroundColor="#ffffff" // Fondo blanco para Android
         translucent={false}
       />
-      <View>
-        <NavigationTopBar
+      <View style={styles.containerSearch}>
+        <NavigationTopBar 
           primaryIcon="chevron-back"
           onBackPress={handleBackPress}
           navigation={navigation}
@@ -62,6 +62,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.BackgroundPage,
     paddingVertical: 10,
+    
+  },
+  containerSearch: {
+    marginTop: 12,
+    marginBottom: 50,
+    position: 'static'
   },
   resultsContainer: {
     flex: 1,

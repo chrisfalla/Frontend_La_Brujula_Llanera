@@ -40,6 +40,7 @@ const RootStack = ({ isLoggedIn }) => (
       name="ProfileInformation"
       component={ProfileInformationScreen}
     />
+    <Stack.Screen name="SearchScreen" component={SearchScreen} />
     <Stack.Screen name="Favorites" component={FavoritesScreen} />
     <Stack.Screen name="DetailScreen" component={DetailScreen} />
   </Stack.Navigator>
@@ -113,7 +114,7 @@ const TabNavigator = ({ isLoggedIn }) => (
     />
     <Tab.Screen
       name="Categories"
-      component={SearchScreen}
+      component={CategoriesScreen}
       options={{ headerShown: false }}
     />
     <Tab.Screen
