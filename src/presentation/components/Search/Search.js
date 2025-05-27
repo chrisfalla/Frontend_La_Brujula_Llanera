@@ -29,7 +29,8 @@ const CustomSearch = ({ placeholder, value, onChangeText, onSearch }) => {
                     returnKeyType="search"
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    autoFocus={true}
+                    autoFocus={false} // se deja en false para evitar que al cambiar la pantalla se enfoque automáticamente
+                    // y mantenga oculto el teclado y se active solo al tocar el campo de búsqueda
                 />
                 <View style={styles.iconsContainer}>
                     {value?.length > 0 && (

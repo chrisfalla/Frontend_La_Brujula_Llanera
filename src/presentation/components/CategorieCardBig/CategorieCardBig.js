@@ -1,21 +1,29 @@
 import React from "react";
+import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import {Ionicons } from '@expo/vector-icons';
 import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 
 const CategorieCardBig = ({ nameCategory, iconCategory, onPress }) => {
-  return (
-    // creacion del componente basico sin logica backend
-    <View style={styles.container}>
-      <TouchableOpacity onPress={onPress} style={styles.card}>
-        <View style={styles.iconContainer}>
-          <Ionicons name={iconCategory} size={24} color={Colors.ColorPrimary} />
+    const [isSelected, setIsSelected] = useState(false);
+
+    const handlePress = () => {
+        setIsSelected(!isSelected);
+        onPress();
+    };
+
+    return (
+        // creacion del componente basico sin logica backend
+        <View style={styles.container}>
+            <TouchableOpacity onPress={handlePress} style={styles.card}>
+                <View style={styles.iconContainer}>
+                    <Ionicons name={iconCategory} size={24} color={Colors.ColorPrimary} />
+                </View>
+                <Text style={styles.title}>{nameCategory}</Text>
+                <Ionicons name="caret-forward" size={24} color={Colors.ColorPrimary} />
+            </TouchableOpacity>
         </View>
-        <Text style={styles.title}>{nameCategory}</Text>
-        <Ionicons name="caret-forward" size={24} color={Colors.ColorPrimary} />
-      </TouchableOpacity>
-    </View>
-  );
+    );
 };
 
 const styles = StyleSheet.create({
