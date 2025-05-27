@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
 import { GlobalStyles, TextStyles } from "../../styles/styles";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import { useNavigation } from "@react-navigation/native";
-import CustomInputText from "../../components/CustomInput/CustomInputText";
+import CustomSearch from "../../components/Search/Search";
+import HorizontalCardPlace from "../../components/HorizontalCardPLace/HorizontalCardPlace";
+import { Colors  } from "../../styles/styles";
 
 const SearchScreen = () => {
   const navigation = useNavigation();
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
 
   const handleBackPress = () => {
     if (navigation.canGoBack()) {
@@ -23,22 +25,32 @@ const SearchScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topBarContainer}>
+      <StatusBar
+        barStyle="dark-content" // Para iconos oscuros en fondo claro
+        backgroundColor="#ffffff" // Fondo blanco para Android
+        translucent={false}
+      />
+      <View>
         <NavigationTopBar
-          title="Busqueda"
+          primaryIcon="chevron-back"
           onBackPress={handleBackPress}
-          showSecondIcon={false}
-          removeBackground={true}
+          navigation={navigation}
+          useBackground={false}
+          SecondIcon={false}
+          title={"Búsqueda"}
         />
-      </View>
-      
-      {/* Campo de búsqueda */}
-      <View style={styles.searchInputContainer}>
-        <CustomInputText
-          LabelText="Escriba la categoría, servicio, tipo de  servicio."
-          PlaceholderText="Buscar..."
+        <CustomSearch
           value={searchValue}
           onChangeText={handleSearch}
+          placeholder="Buscar..."
+        />
+      </View>
+      <View style={styles.resultsContainer}>
+        <HorizontalCardPlace
+          title="Resultado de búsqueda"
+          description="Descripción del lugar"
+          imageUrl="https://via.placeholder.com/150"
+          onPress={() => console.log("Card pressed")}
         />
       </View>
     </View>
@@ -48,15 +60,13 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    ...GlobalStyles.ScreenBaseStyle,
+    backgroundColor: Colors.BackgroundPage,
+    paddingVertical: 10,
   },
-  topBarContainer: {
-    marginTop: "10%",
-    paddingHorizontal: 0,
-    marginBottom: "6%",
-  },
-  searchInputContainer: {
-    ...TextStyles.PoppinsRegular15,
+  resultsContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    
   },
 });
 
