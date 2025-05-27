@@ -41,7 +41,7 @@ import MostVisitedPlaces from "../../components/MostVisitedPlaces/MostVisitedPla
 import CategoryCardSmall from "../../components/CategoryCardSmall/CategoryCardSmall"; // Corregido cierre de comillas
 import VerticalPlaceCard from "../../components/VerticalPlaceCard/VerticalPlaceCard";
 import CustomCheap from "../../components/CustomCheap/CustomCheap";
-import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace"; // Importamos el componente
+import HorizontalCardPlace from "../../components/HorizontalCardPLace/HorizontalCardPlace"; // Importamos el componente
 
 //==============================================================================
 // CONSTANTS
