@@ -18,19 +18,17 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignora estos paths específicos donde hay valores no serializables
+        // Ignoramos estas acciones específicas donde hay valores no serializables
         ignoredActions: [
           'topRatedPlaces/fetchByCategory/fulfilled',
           'placesByTags/fetchByTags/fulfilled',
-         ,
-          
-
         ],
         ignoredPaths: [
           'topRatedPlaces.items',
           'placesByTags.items',
-          
         ],
       },
     }),
 });
+
+export default store;

@@ -1,25 +1,55 @@
 import { fetchFavorites } from '../../../infrastructure/api/favorites/favoritesApi';
-import { Favorite } from '../../../domain/models/favorites/favorite';
+import { createFavorite } from '../../../domain/models/favorites/favorite';
+
+// Función para sanitizar URLs
+const sanitizeImageUrl = (url) => {
+  if (!url || typeof url !== 'string') return '';
+  
+  return url
+    .replace('httpps://', 'https://')
+    .replace('https:///', 'https://')
+    .replace('storagge', 'storage')
+    .replace('objject', 'object')
+    .replace('storage/v11/', 'storage/v1/')
+    .replace('supabase.cco', 'supabase.co')
+    .replace('signn', 'sign')
+    .replace('object//', 'object/')
+    .replace(/\/+/g, '/') // Eliminar barras repetidas
+    .replace(':/', '://'); // Restaurar protocolo con barras dobles
+};
 
 const mapToFavorite = dto => {
   if (!dto) return null;
   
   try {
-    // Extraemos la URL de la imagen correctamente desde la estructura anidada
-    const imageUrl = dto.image?.url || // Si existe image.url
-                   dto.image?.imageUrl || // O si existe image.imageUrl
-                   dto.imageUrl || // O directamente imageUrl
-                   ''; // Como último recurso, string vacío
-                   
-    console.log(`🖼️ Mapeando imagen para ${dto.name}:`, dto.image);
+    // Extraer URL de imagen de forma segura
+    let imageUrl = '';
     
-    return new Favorite({
+    if (dto.image) {
+      if (typeof dto.image === 'string') {
+        imageUrl = dto.image;
+      } else if (dto.image.url) {
+        imageUrl = dto.image.url;
+      } else if (dto.image.imageUrl) {
+        imageUrl = dto.image.imageUrl;
+      }
+    } else if (dto.imageUrl) {
+      imageUrl = dto.imageUrl;
+    }
+    
+    // Limpiar URL para evitar problemas
+    imageUrl = sanitizeImageUrl(imageUrl);
+    
+    console.log(`🖼️ Mapeando imagen para ${dto.name || dto.placeName}:`, imageUrl);
+    
+    // Usar la función en lugar de la clase para crear un objeto plano
+    return createFavorite({
       idPlace: dto.idPlace || dto.id || 0,
       name: dto.name || dto.placeName || '',
       rating: dto.rating || dto.ratingStars || 0,
       imageUrl: imageUrl,
       categoryName: dto.categoryName || dto.category || '',
-      userId: dto.userId || dto.idUser || 0
+      userId: dto.userId || dto.idUser || 0,
     });
   } catch (error) {
     console.error('Error mapping favorite:', error);
@@ -27,7 +57,6 @@ const mapToFavorite = dto => {
   }
 };
 
-// Export with lowercase name to match import in use case
 export const favoritesRepository = {
   getFavorites: async (userId) => {
     try {
@@ -56,5 +85,4 @@ export const favoritesRepository = {
   }
 };
 
-// Also export with capital letter for backward compatibility
 export const FavoritesRepository = favoritesRepository;

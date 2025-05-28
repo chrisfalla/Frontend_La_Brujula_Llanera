@@ -1,26 +1,176 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getFavoritesUseCase } from '../../../domain/usecases/favorites/getFavoritesUseCase';
+import { addFavoriteUseCase } from '../../../domain/usecases/favorites/addFavoriteUseCase';
+import { deleteFavoriteUseCase } from '../../../domain/usecases/favorites/deleteFavoriteUseCase';
 
+// Función para asegurar que un objeto es serializable
+const toSerializable = (obj) => {
+  if (!obj) return null;
+  
+  // Crear un objeto plano serializable
+  return {
+    idPlace: obj.idPlace || obj.id || 0,
+    idPlaceFk: obj.idPlaceFk || obj.idPlace || obj.id || 0,
+    name: obj.name || obj.placeName || '',
+    rating: typeof obj.rating === 'number' ? obj.rating : 0,
+    imageUrl: typeof obj.imageUrl === 'string' ? obj.imageUrl : '',
+    categoryName: obj.categoryName || obj.category || '',
+    userId: obj.userId || obj.idUser || obj.idUserFk || 0,
+    idUserFk: obj.idUserFk || obj.userId || obj.idUser || 0,
+    timestamp: Date.now() // Añadir timestamp para asegurar que es un objeto nuevo
+  };
+};
 
+// Thunks para operaciones asíncronas
+export const fetchFavorites = createAsyncThunk(
+  'favorites/fetchFavorites',
+  async (userId, { rejectWithValue }) => {
+    try {
+      console.log('🔍 [REDUX] Obteniendo favoritos para el usuario:', userId);
+      const favorites = await getFavoritesUseCase(userId);
+      
+      // Convertir todos los objetos a formato serializable
+      const serializableFavorites = Array.isArray(favorites) 
+        ? favorites.map(toSerializable).filter(Boolean)
+        : [];
+        
+      console.log('✅ [REDUX] Favoritos obtenidos:', serializableFavorites.length);
+      return serializableFavorites;
+    } catch (error) {
+      console.error('❌ [REDUX] Error al obtener favoritos:', error);
+      return rejectWithValue(error.message || 'Error al obtener favoritos');
+    }
+  }
+);
+
+export const addFavorite = createAsyncThunk(
+  'favorites/addFavorite',
+  async ({ idUserFk, idPlaceFk }, { rejectWithValue }) => {
+    try {
+      console.log(`🔍 [REDUX] Agregando favorito - Usuario: ${idUserFk}, Lugar: ${idPlaceFk}`);
+      const response = await addFavoriteUseCase(idUserFk, idPlaceFk);
+      console.log('✅ [REDUX] Favorito agregado correctamente');
+      
+      // Devolver un objeto plano serializable
+      return toSerializable({ 
+        idUserFk, 
+        idPlaceFk,
+        idPlace: idPlaceFk,
+        userId: idUserFk
+      });
+    } catch (error) {
+      console.error('❌ [REDUX] Error al agregar favorito:', error);
+      return rejectWithValue(error.message || 'Error al agregar favorito');
+    }
+  }
+);
+
+export const deleteFavorite = createAsyncThunk(
+  'favorites/deleteFavorite',
+  async ({ idUserFk, idPlaceFk }, { rejectWithValue }) => {
+    try {
+      console.log(`🔍 [REDUX] Eliminando favorito - User: ${idUserFk}, Place: ${idPlaceFk}`);
+      const response = await deleteFavoriteUseCase(idUserFk, idPlaceFk);
+      console.log('✅ [REDUX] Favorito eliminado correctamente:', response);
+      
+      // Devolver objeto plano serializable
+      return { 
+        idUserFk, 
+        idPlaceFk,
+        idPlace: idPlaceFk,
+        userId: idUserFk
+      };
+    } catch (error) {
+      console.error('❌ [REDUX] Error al eliminar favorito:', error);
+      return rejectWithValue(error.message || 'Error al eliminar favorito');
+    }
+  }
+);
+
+// Configuración del slice
 const favoritesSlice = createSlice({
   name: 'favorites',
   initialState: {
     favorites: [],
-    loading: false,
+    status: 'idle',
     error: null,
   },
   reducers: {
-    setFavorites(state, action) {
-      state.favorites = action.payload;
-      state.error = null;
-    },
-    setLoading(state, action) {
-      state.loading = action.payload;
-    },
-    setError(state, action) {
-      state.error = action.payload;
+    clearFavorites(state) {
+      state.favorites = [];
     },
   },
+  extraReducers: (builder) => {
+    builder
+      // Fetch favorites
+      .addCase(fetchFavorites.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchFavorites.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // Asegurarnos de que todos son objetos planos
+        state.favorites = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchFavorites.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      
+      // Add favorite
+      .addCase(addFavorite.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(addFavorite.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const exists = state.favorites.some(
+          fav => (String(fav.idPlaceFk || fav.idPlace) === String(action.payload.idPlaceFk))
+        );
+        
+        if (!exists) {
+          state.favorites.push(action.payload);
+        }
+        
+        state.error = null;
+      })
+      .addCase(addFavorite.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      
+      // Delete favorite
+      .addCase(deleteFavorite.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteFavorite.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        
+        const placeIdStr = String(action.payload.idPlaceFk || action.payload.idPlace);
+        
+        state.favorites = state.favorites.filter(fav => {
+          const favPlaceId = String(fav.idPlaceFk || fav.idPlace);
+          return favPlaceId !== placeIdStr;
+        });
+        
+        state.error = null;
+      })
+      .addCase(deleteFavorite.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      });
+  }
 });
 
-export const { setFavorites, setLoading, setError } = favoritesSlice.actions;
+export const { clearFavorites } = favoritesSlice.actions;
 export default favoritesSlice.reducer;
+
+// Función auxiliar para verificar si un lugar es favorito
+export const isFavorite = (favorites, placeId) => {
+  if (!placeId || !Array.isArray(favorites)) return false;
+  
+  const placeIdStr = String(placeId);
+  return favorites.some(fav => {
+    const favPlaceId = fav.idPlaceFk || fav.idPlace;
+    return String(favPlaceId) === placeIdStr;
+  });
+};

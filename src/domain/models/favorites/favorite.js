@@ -1,10 +1,27 @@
+/**
+ * Modelo simple para favoritos - usando objetos planos en lugar de clases
+ */
+export const createFavorite = (props = {}) => {
+  // Sanear las propiedades para asegurar que son serializables
+  return {
+    idPlace: props.idPlace || props.id || 0,
+    idPlaceFk: props.idPlaceFk || props.idPlace || props.id || 0,
+    name: props.name || props.placeName || '',
+    rating: typeof props.rating === 'number' ? props.rating : 0,
+    imageUrl: typeof props.imageUrl === 'string' ? props.imageUrl : '',
+    categoryName: props.categoryName || props.category || '',
+    userId: props.userId || props.idUser || props.idUserFk || 0,
+    idUserFk: props.idUserFk || props.userId || props.idUser || 0
+  };
+};
+
+// Mantenemos la clase para compatibilidad hacia atrás, pero garantizamos serialización
 export class Favorite {
-  constructor({ idPlace, name, rating, imageUrl, categoryName, userId }) {
-    this.idPlace = idPlace;               // ID del lugar
-    this.name = name;                     // Nombre del lugar
-    this.rating = rating;                 // Valoración del lugar
-    this.imageUrl = imageUrl;             // URL de la imagen
-    this.categoryName = categoryName;     // Nombre de la categoría de la imagen
-    this.userId = userId;                 // ID del usuario que marcó como favorito
+  constructor(props = {}) {
+    Object.assign(this, createFavorite(props));
+  }
+
+  toJSON() {
+    return createFavorite(this);
   }
 }
