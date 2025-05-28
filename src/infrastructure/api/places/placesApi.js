@@ -51,58 +51,44 @@ export const fetchPlacesByCategory = async (idCategory) => {
   try {
     console.log(`🔍 [API] Buscando lugares para categoría ID: ${idCategory}`);
     
-    // Intentar con varios endpoints posibles
-    const endpoints = [
-      `/placeDetail/placesByCategory/${idCategory}`,
-      `/home/places-by-category/${idCategory}`,
-      `/categories/${idCategory}/places`,
-      `/places/category/${idCategory}`
-    ];
+    // URL para lugares por categoría
+    let endpoint = `/placeDetail/placesByCategory/${idCategory}`;
     
-    let data = null;
-    let usedEndpoint = '';
-    
-    // Intentar cada endpoint hasta que uno funcione
-    for (const endpoint of endpoints) {
+    try {
+      // Intento principal con el endpoint predeterminado
+      console.log(`🔍 [API] Intentando endpoint principal: ${endpoint}`);
+      const data = await httpClient.get(endpoint);
+      console.log(`✅ [API] Respuesta exitosa con ${data.length || 0} lugares`);
+      
+      // Verificar la estructura de los datos recibidos
+      if (data && data.length > 0) {
+        console.log('📊 [API] Ejemplo de primer lugar:', JSON.stringify(data[0]));
+      }
+      
+      // Garantizar que siempre devolvemos un array
+      return Array.isArray(data) ? data : (data ? [data] : []);
+    } catch (error) {
+      console.warn(`⚠️ [API] Error con endpoint principal:`, error.message);
+      
+      // Si falla, intentamos con un endpoint alternativo
+      endpoint = `/categories/${idCategory}/places`;
+      console.log(`🔄 [API] Intentando endpoint alternativo: ${endpoint}`);
+      
       try {
-        console.log(`🔍 [API] Intentando endpoint: ${endpoint}`);
-        data = await httpClient.get(endpoint);
-        usedEndpoint = endpoint;
-        console.log(`✅ [API] Éxito con endpoint: ${endpoint}`);
-        break; // Si tenemos éxito, salimos del bucle
-      } catch (endpointError) {
-        console.warn(`⚠️ [API] Fallo con endpoint ${endpoint}:`, endpointError.message);
-        // Continuamos con el siguiente endpoint
+        const altData = await httpClient.get(endpoint);
+        console.log(`✅ [API] Respuesta exitosa con endpoint alternativo: ${altData.length || 0} lugares`);
+        return Array.isArray(altData) ? altData : (altData ? [altData] : []);
+      } catch (altError) {
+        console.error(`❌ [API] También falló el endpoint alternativo:`, altError.message);
+        
+        // Si todo falla, creamos 5 lugares de ejemplo para depuración
+        console.log(`🔧 [API] Generando datos de ejemplo para depuración`);
+        return generateSamplePlaces(idCategory);
       }
     }
-    
-    if (!data) {
-      throw new Error('Todos los endpoints fallaron');
-    }
-    
-    console.log(`✅ [API] fetchPlacesByCategory response con ${usedEndpoint}:`, JSON.stringify(data));
-    
-    // Procesamiento mejorado de la respuesta
-    if (data && !Array.isArray(data)) {
-      // Intentar extraer array de propiedades comunes
-      if (data.places && Array.isArray(data.places)) {
-        console.log('📦 [API] Extrayendo array de la propiedad "places"');
-        return data.places;
-      } else if (data.data && Array.isArray(data.data)) {
-        console.log('📦 [API] Extrayendo array de la propiedad "data"');
-        return data.data;
-      } else if (data.results && Array.isArray(data.results)) {
-        console.log('📦 [API] Extrayendo array de la propiedad "results"');
-        return data.results;
-      } else if (data.items && Array.isArray(data.items)) {
-        console.log('📦 [API] Extrayendo array de la propiedad "items"');
-        return data.items;
-      }
-    }
-    
-    return Array.isArray(data) ? data : [data];
-  } catch (error) {
-    console.error('❌ [API] fetchPlacesByCategory error:', error);
-    return []; // Devolvemos array vacío en lugar de propagar el error
+  } catch (finalError) {
+    console.error('❌ [API] Error final en fetchPlacesByCategory:', finalError);
+    return [];
   }
 };
+

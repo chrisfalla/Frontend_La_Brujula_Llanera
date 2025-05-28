@@ -153,25 +153,35 @@ const SearchScreen = () => {
           <FlatList
   data={filteredPlaces}
   renderItem={({ item, index }) => {
-    console.log(`📝 [SearchScreen] Renderizando lugar ${index}:`, JSON.stringify(item));
+    // Normalizar el objeto item para la vista
+    const normalizedItem = {
+      idPlace: item.idPlace || item.id || `place-${index}`,
+      name: item.placeName || item.namePlace || `Lugar ${index + 1}`,
+      address: item.placeAddress || item.addressPlace || "Sin dirección",
+      image: item.imageUrl || "https://via.placeholder.com/150",
+      category: item.categoryInfo?.category || categoryName || "Categoría"
+    };
     
-    // Extraer valores con fallbacks para cada propiedad
-    const name = item.placeName || item.name || item.nombreLugar || `Lugar ${index + 1}`;
-    const category = item.categoryInfo?.category || item.category || "Categoría desconocida";
-    const address = item.placeAddress || item.address || "Dirección no disponible";
-    const image = item.imageUrl || item.image || "https://via.placeholder.com/150";
-    const id = item.idPlace || item.id || `place-${index}`;
+    // Log para depuración
+    console.log(`📝 [SearchScreen] Lugar completo ${index}:`, JSON.stringify(item));
+    console.log(`📝 [SearchScreen] Lugar normalizado ${index}:`, JSON.stringify(normalizedItem));
     
+    // Pasar el objeto normalizado con los nombres de prop correctos
     return (
       <HorizontalCardPlace
-        key={`place-${index}`}
-        name={name}
-        category={category}
-        address={address}
-        image={image}
+        name={normalizedItem.name}
+        address={normalizedItem.address}
+        image={normalizedItem.image}
+        category={normalizedItem.category}
+        onPress={() => {
+          navigation.navigate("DetailScreen", { 
+            placeId: normalizedItem.idPlace 
+          });
+        }}
         onMapPress={() => {
-          console.log(`🔍 [SearchScreen] Navegando a detalle del lugar ${name} con ID: ${id}`);
-          navigation.navigate("DetailScreen", { placeId: id });
+          navigation.navigate("DetailScreen", { 
+            placeId: normalizedItem.idPlace 
+          });
         }}
       />
     );
