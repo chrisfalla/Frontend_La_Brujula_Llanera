@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 11,
-    width: "40%",
+    width: "37%",
     paddingHorizontal: 5,
   },
   locationTextContainer: {

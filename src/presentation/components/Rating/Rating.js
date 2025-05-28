@@ -23,7 +23,7 @@ const Rating = ({ average = 0, useBackground = true, size = 14 }) => {
         key={`full-${i}`} 
         name="star" 
         size={size} 
-        color={Colors.ColorPrimary} 
+        color={"gold"} 
         style={styles.star}
       />
     );
@@ -36,7 +36,7 @@ const Rating = ({ average = 0, useBackground = true, size = 14 }) => {
         key="half" 
         name="star-half" 
         size={size} 
-        color={Colors.ColorPrimary} 
+        color={"gold"} 
         style={styles.star}
       />
     );
@@ -49,7 +49,7 @@ const Rating = ({ average = 0, useBackground = true, size = 14 }) => {
         key={`empty-${i}`} 
         name="star-outline" 
         size={size} 
-        color={Colors.ColorPrimary} 
+        color={"gold"} 
         style={styles.star}
       />
     );

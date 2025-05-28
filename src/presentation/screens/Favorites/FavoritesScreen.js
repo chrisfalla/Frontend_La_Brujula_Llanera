@@ -163,8 +163,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   favoritesContainer: {
-    marginTop: 12,
-    marginBottom: 50,
+    marginTop: 20, // Aumentado de 12 a 20
+    marginBottom: 10,
     position: 'static'
   },
   columnWrapper: {
@@ -181,10 +181,10 @@ const styles = StyleSheet.create({
     color: Colors.TextSecondary || Colors.DarkGray,
     textAlign: 'center',
     width: '100%',
-    padding: 20,
+    padding: 10,
   },
   loadingText: {
-    ...TextStyles.PoppinsRegular14,
+    ...TextStyles.PoppinsRegular15,
     color: Colors.TextSecondary || Colors.DarkGray,
     marginTop: 8,
   },
@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingHorizontal: 10,
     paddingBottom: 20,
+    paddingTop: 15, // Añadido padding superior para crear más espacio
   }
 });
 
