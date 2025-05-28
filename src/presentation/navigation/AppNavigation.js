@@ -116,26 +116,12 @@ const TabNavigator = ({ isLoggedIn }) => (
 
 // Navegador de autenticación (registro y recuperación)
 const AuthStack = () => (
-  <Stack.Navigator
-    screenOptions={{ headerShown: false }}
-    initialRouteName="Login"
-  >
-    {/* Pantallas de registro */}
+  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login" >
     <Stack.Screen name="RegisterStepOne" component={RegisterStepOneScreen} />
     <Stack.Screen name="RegisterStepTwo" component={RegisterStepTwoScreen} />
-    <Stack.Screen
-      name="RecoveryOne"
-      component={PasswordRecoveryStepOneScreen}
-    />
-    <Stack.Screen
-      name="RecoveryTwo"
-      component={PasswordRecoveryStepTwoScreen}
-    />
-    <Stack.Screen
-      name="RecoveryThree"
-      component={PasswordRecoveryStepThreeScreen}
-    />
-    {/* Aquí también podemos incluir Login si queremos un flujo completo de autenticación */}
+    <Stack.Screen name="RecoveryOne" component={PasswordRecoveryStepOneScreen} />
+    <Stack.Screen name="RecoveryTwo" component={PasswordRecoveryStepTwoScreen} />
+    <Stack.Screen name="RecoveryThree" component={PasswordRecoveryStepThreeScreen} />
     <Stack.Screen name="Login" component={LoginScreen} />
   </Stack.Navigator>
 );

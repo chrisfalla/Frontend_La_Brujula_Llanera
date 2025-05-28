@@ -1,4 +1,10 @@
-import { registerUserApi, loginUserApi } from '../../../infrastructure/api/users/usersApi';
+import {
+  registerUserApi,
+  loginUserApi,
+  requestPasswordRecoveryCodeApi,
+  verifyPasswordRecoveryCodeApi,
+  resetPasswordApi
+} from "../../../infrastructure/api/users/usersApi";
 
 export const usersDatasource = {
   registerUser: async (userData) => {
@@ -36,5 +42,34 @@ export const usersDatasource = {
         genderId: response.user.idGender,
       },
     };
+  },
+
+  async requestPasswordRecoveryCode(email) {
+    try {
+      // Usar la función de API importada en lugar de httpClient directamente
+      return await requestPasswordRecoveryCodeApi(email);
+    } catch (error) {
+      console.error("Error al solicitar código de recuperación:", error);
+      throw error;
+    }
+  },
+
+  async verifyPasswordRecoveryCode(email, code) {
+    try {
+      // No hay necesidad de acceder a .data aquí
+      return await verifyPasswordRecoveryCodeApi(email, code);
+    } catch (error) {
+      console.error("Error al verificar código de recuperación:", error);
+      throw error;
+    }
+  },
+
+  async resetPassword(email, newPassword) {
+    try {
+      return await resetPasswordApi(email, newPassword);
+    } catch (error) {
+      console.error("Error al restablecer contraseña:", error);
+      throw error;
+    }
   },
 };
