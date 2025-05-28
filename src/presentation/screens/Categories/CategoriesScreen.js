@@ -36,14 +36,33 @@ const CategoriesScreen = () => {
 
   // Función para manejar la selección de una categoría
   const handleCategoryPress = (categoryId) => {
-    // Buscar la categoría seleccionada para obtener su nombre
-    const selectedCategory = all.find(category => category.id === categoryId);
-    
-    // Navegar a la pantalla de búsqueda con los parámetros de categoría
-    navigation.navigate("SearchScreen", {
-      categoryId: categoryId,
-      categoryName: selectedCategory ? selectedCategory.name : "Categoría"
-    });
+    try {
+      // Buscar la categoría seleccionada para obtener su nombre
+      const selectedCategory = all.find(category => category.id === categoryId);
+      
+      if (!categoryId) {
+        console.error('⚠️ [CategoriesScreen] ID de categoría no válido:', categoryId);
+        return;
+      }
+      
+      // Log más detallado para verificar el ID exacto
+      console.log(`🔍 [CategoriesScreen] Navegando a SearchScreen con categoría:`, {
+        nombre: selectedCategory?.name,
+        id: categoryId,
+        tipoId: typeof categoryId
+      });
+      
+      // Asegurarse de que el ID sea un número si se espera así
+      const idToSend = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+      
+      // Navegar a la pantalla de búsqueda con los parámetros de categoría
+      navigation.navigate("SearchScreen", {
+        categoryId: idToSend,
+        categoryName: selectedCategory ? selectedCategory.name : "Categoría"
+      });
+    } catch (error) {
+      console.error('❌ [CategoriesScreen] Error al navegar:', error);
+    }
   };
 
   return (
