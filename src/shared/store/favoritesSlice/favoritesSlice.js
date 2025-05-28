@@ -3,6 +3,24 @@ import { getFavoritesUseCase } from '../../../domain/usecases/favorites/getFavor
 import { addFavoriteUseCase } from '../../../domain/usecases/favorites/addFavoriteUseCase';
 import { deleteFavoriteUseCase } from '../../../domain/usecases/favorites/deleteFavoriteUseCase';
 
+// Función para asegurar que un objeto es serializable
+const toSerializable = (obj) => {
+  if (!obj) return null;
+  
+  // Crear un objeto plano serializable
+  return {
+    idPlace: obj.idPlace || obj.id || 0,
+    idPlaceFk: obj.idPlaceFk || obj.idPlace || obj.id || 0,
+    name: obj.name || obj.placeName || '',
+    rating: typeof obj.rating === 'number' ? obj.rating : 0,
+    imageUrl: typeof obj.imageUrl === 'string' ? obj.imageUrl : '',
+    categoryName: obj.categoryName || obj.category || '',
+    userId: obj.userId || obj.idUser || obj.idUserFk || 0,
+    idUserFk: obj.idUserFk || obj.userId || obj.idUser || 0,
+    timestamp: Date.now() // Añadir timestamp para asegurar que es un objeto nuevo
+  };
+};
+
 // Thunks para operaciones asíncronas
 export const fetchFavorites = createAsyncThunk(
   'favorites/fetchFavorites',
@@ -10,8 +28,14 @@ export const fetchFavorites = createAsyncThunk(
     try {
       console.log('🔍 [REDUX] Obteniendo favoritos para el usuario:', userId);
       const favorites = await getFavoritesUseCase(userId);
-      console.log('✅ [REDUX] Favoritos obtenidos:', favorites.length);
-      return favorites;
+      
+      // Convertir todos los objetos a formato serializable
+      const serializableFavorites = Array.isArray(favorites) 
+        ? favorites.map(toSerializable).filter(Boolean)
+        : [];
+        
+      console.log('✅ [REDUX] Favoritos obtenidos:', serializableFavorites.length);
+      return serializableFavorites;
     } catch (error) {
       console.error('❌ [REDUX] Error al obtener favoritos:', error);
       return rejectWithValue(error.message || 'Error al obtener favoritos');
@@ -27,14 +51,13 @@ export const addFavorite = createAsyncThunk(
       const response = await addFavoriteUseCase(idUserFk, idPlaceFk);
       console.log('✅ [REDUX] Favorito agregado correctamente');
       
-      // Devolver un objeto con la estructura que el reducer necesita
-      return { 
+      // Devolver un objeto plano serializable
+      return toSerializable({ 
         idUserFk, 
         idPlaceFk,
-        // Incluimos también estos campos para compatibilidad
         idPlace: idPlaceFk,
         userId: idUserFk
-      };
+      });
     } catch (error) {
       console.error('❌ [REDUX] Error al agregar favorito:', error);
       return rejectWithValue(error.message || 'Error al agregar favorito');
@@ -46,49 +69,46 @@ export const deleteFavorite = createAsyncThunk(
   'favorites/deleteFavorite',
   async ({ idUserFk, idPlaceFk }, { rejectWithValue }) => {
     try {
-      console.log(`🔍 Deleting favorite - User: ${idUserFk}, Place: ${idPlaceFk}`);
+      console.log(`🔍 [REDUX] Eliminando favorito - User: ${idUserFk}, Place: ${idPlaceFk}`);
       const response = await deleteFavoriteUseCase(idUserFk, idPlaceFk);
-      console.log('✅ Favorite deleted successfully:', response);
+      console.log('✅ [REDUX] Favorito eliminado correctamente:', response);
       
-      // Devolver toda la información necesaria para identificar el favorito
+      // Devolver objeto plano serializable
       return { 
         idUserFk, 
         idPlaceFk,
-        idPlace: idPlaceFk, // Para compatibilidad
-        userId: idUserFk     // Para compatibilidad
+        idPlace: idPlaceFk,
+        userId: idUserFk
       };
     } catch (error) {
-      console.error('❌ Error deleting favorite:', error);
+      console.error('❌ [REDUX] Error al eliminar favorito:', error);
       return rejectWithValue(error.message || 'Error al eliminar favorito');
     }
   }
 );
 
+// Configuración del slice
 const favoritesSlice = createSlice({
   name: 'favorites',
   initialState: {
     favorites: [],
-    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    status: 'idle',
     error: null,
   },
   reducers: {
-    // Mantenemos los reducers simples para compatibilidad
-    setFavorites(state, action) {
-      state.favorites = action.payload;
-      state.error = null;
-    },
     clearFavorites(state) {
       state.favorites = [];
     },
   },
   extraReducers: (builder) => {
     builder
-      // Manejo del estado para fetchFavorites
+      // Fetch favorites
       .addCase(fetchFavorites.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(fetchFavorites.fulfilled, (state, action) => {
         state.status = 'succeeded';
+        // Asegurarnos de que todos son objetos planos
         state.favorites = action.payload;
         state.error = null;
       })
@@ -97,17 +117,14 @@ const favoritesSlice = createSlice({
         state.error = action.payload || action.error.message;
       })
       
-      // Manejo del estado para addFavorite
+      // Add favorite
       .addCase(addFavorite.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(addFavorite.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        
-        // Verificar si el favorito ya existe (para evitar duplicados)
         const exists = state.favorites.some(
-          fav => (fav.idPlaceFk === action.payload.idPlaceFk && fav.idUserFk === action.payload.idUserFk) ||
-                 (fav.idPlace === action.payload.idPlaceFk && fav.userId === action.payload.idUserFk)
+          fav => (String(fav.idPlaceFk || fav.idPlace) === String(action.payload.idPlaceFk))
         );
         
         if (!exists) {
@@ -121,30 +138,20 @@ const favoritesSlice = createSlice({
         state.error = action.payload || action.error.message;
       })
       
-      // Manejo del estado para deleteFavorite
+      // Delete favorite
       .addCase(deleteFavorite.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(deleteFavorite.fulfilled, (state, action) => {
         state.status = 'succeeded';
         
-        // Filtrar el favorito eliminado con una comparación más flexible
-        const { idUserFk, idPlaceFk } = action.payload;
-        
-        // Convertir los IDs a strings para comparación más segura
-        const userIdStr = String(idUserFk);
-        const placeIdStr = String(idPlaceFk);
+        const placeIdStr = String(action.payload.idPlaceFk || action.payload.idPlace);
         
         state.favorites = state.favorites.filter(fav => {
-          // Obtener IDs del favorito con varias opciones de nombre de propiedad
-          const favUserId = String(fav.idUserFk || fav.userId || '');
-          const favPlaceId = String(fav.idPlaceFk || fav.idPlace || '');
-          
-          // Mantener todos los favoritos excepto el que estamos eliminando
-          return !(favPlaceId === placeIdStr && favUserId === userIdStr);
+          const favPlaceId = String(fav.idPlaceFk || fav.idPlace);
+          return favPlaceId !== placeIdStr;
         });
         
-        console.log(`✅ [REDUX] Favorito eliminado: Place=${placeIdStr}`);
         state.error = null;
       })
       .addCase(deleteFavorite.rejected, (state, action) => {
@@ -154,6 +161,16 @@ const favoritesSlice = createSlice({
   }
 });
 
-// Exportar acciones y reducer
-export const { setFavorites, clearFavorites } = favoritesSlice.actions;
+export const { clearFavorites } = favoritesSlice.actions;
 export default favoritesSlice.reducer;
+
+// Función auxiliar para verificar si un lugar es favorito
+export const isFavorite = (favorites, placeId) => {
+  if (!placeId || !Array.isArray(favorites)) return false;
+  
+  const placeIdStr = String(placeId);
+  return favorites.some(fav => {
+    const favPlaceId = fav.idPlaceFk || fav.idPlace;
+    return String(favPlaceId) === placeIdStr;
+  });
+};

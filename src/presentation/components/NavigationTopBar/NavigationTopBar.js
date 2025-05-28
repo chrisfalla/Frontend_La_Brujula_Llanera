@@ -16,52 +16,58 @@ const NavigationTopBar = ({
   placeId,
 }) => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
-  const favorites = useSelector((state) => state.favorites.favorites);
+  const user = useSelector((state) => state.auth?.user);
+  const favorites = useSelector((state) => state.favorites?.favorites || []);
   const [isHeartActive, setIsHeartActive] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const loadedRef = useRef(false);
-  // Necesitamos una variable de referencia para controlar si ya se cargaron los favoritos
-  const initialLoadRef = useRef(false);
 
-  // Fetch favorites only once when component mounts
+  // Verificar si este lugar está en favoritos
   useEffect(() => {
-    // Solo cargar si hay un usuario, hay un ID de lugar, y no se ha hecho la carga inicial
-    if (user?.id && !initialLoadRef.current) {
-      console.log('🔄 [NavigationTopBar] Cargando favoritos iniciales para usuario:', user.id);
-      initialLoadRef.current = true; // Marcar como ya cargado
-      dispatch(fetchFavorites(user.id));
-    }
-  }, [dispatch, user]); // Quitar placeId y favorites de las dependencias
-
-  // Check if the current place is a favorite
-  useEffect(() => {
-    if (placeId && favorites && favorites.length > 0) {
-      // Verificación más robusta de favoritos
-      const isFavorite = favorites.some(fav => {
-        const favPlaceId = fav.idPlaceFk || fav.idPlace;
-        return String(favPlaceId) === String(placeId);
-      });
-      
+    if (!placeId || !Array.isArray(favorites)) return;
+    
+    // Si está actualizando, no cambiar el estado para evitar parpadeo
+    if (isUpdating) return;
+    
+    // Buscar si este lugar es favorito
+    const placeIdStr = String(placeId);
+    const isFavorite = favorites.some(fav => {
+      const favPlaceId = fav.idPlaceFk || fav.idPlace;
+      return favPlaceId && String(favPlaceId) === placeIdStr;
+    });
+    
+    // Actualizar estado solo si hay un cambio
+    if (isHeartActive !== isFavorite) {
       setIsHeartActive(isFavorite);
     }
-  }, [placeId, favorites]); // Mantener estas dependencias
+  }, [placeId, favorites, isUpdating, isHeartActive]);
+
+  // Cargar favoritos solo una vez
+  useEffect(() => {
+    if (user?.id && !loadedRef.current) {
+      console.log('🔄 [NavigationTopBar] Cargando favoritos iniciales para usuario:', user.id);
+      loadedRef.current = true;
+      dispatch(fetchFavorites(user.id));
+    }
+  }, [dispatch, user]);
 
   const handleHeartPress = async () => {
     if (!user?.id || !placeId) {
-      console.log(
-        "⚠️ [NavigationTopBar] No se puede gestionar favorito: usuario o placeId no disponible"
-      );
+      console.log("⚠️ [NavigationTopBar] No se puede gestionar favorito: usuario o placeId no disponible");
       return;
     }
 
-    try {
-      console.log(
-        `🔄 [NavigationTopBar] ${
-          isHeartActive ? "Eliminando" : "Añadiendo"
-        } favorito - User: ${user.id}, Place: ${placeId}`
-      );
+    // Prevenir múltiples clics
+    if (isUpdating) return;
 
-      if (isHeartActive) {
+    try {
+      setIsUpdating(true);
+      
+      // Actualización optimista
+      const previousState = isHeartActive;
+      setIsHeartActive(!previousState);
+
+      if (previousState) {
         // Si ya es favorito, lo eliminamos
         await dispatch(
           deleteFavorite({
@@ -80,11 +86,12 @@ const NavigationTopBar = ({
         ).unwrap();
         console.log("✅ [NavigationTopBar] Favorito añadido correctamente");
       }
-
-      // No necesitamos actualizar el estado local manualmente
-      // El efecto se encargará de actualizar basado en los cambios en favorites
     } catch (error) {
       console.error("❌ [NavigationTopBar] Error al gestionar favorito:", error);
+      // Revertir el cambio optimista en caso de error
+      setIsHeartActive(isHeartActive);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -123,7 +130,7 @@ const NavigationTopBar = ({
                 ? handleHeartPress
                 : null
             }
-            disabled={!useHeart && SecondIcon === "heart-outline"}
+            disabled={isUpdating || (!useHeart && SecondIcon === "heart-outline")}
           >
             <Ionicons style={styles.icon} name={secondaryIconName} />
           </TouchableOpacity>

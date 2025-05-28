@@ -16,28 +16,23 @@ const FavoritesScreen = ({ navigation }) => {
   const [favoritePlaces, setFavoritePlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Usar una variable de referencia para evitar cargas repetidas
   const initialLoadRef = useRef(false);
 
   const dispatch = useDispatch();
-  const userId = useSelector((state) => state.auth.user?.id);
-  const favoritesState = useSelector(state => state.favorites);
+  const user = useSelector((state) => state.auth?.user);
+  const favoritesState = useSelector(state => state.favorites || {});
+  const favorites = favoritesState.favorites || [];
 
   // Efecto para cargar los favoritos solo una vez al inicio
   useEffect(() => {
-    if (!userId || initialLoadRef.current) return;
+    if (!user?.id || initialLoadRef.current) return;
     
     const loadFavorites = async () => {
       try {
-        console.log('🔍 [FavoritesScreen] Cargando favoritos iniciales para usuario:', userId);
+        console.log('🔍 [FavoritesScreen] Cargando favoritos iniciales para usuario:', user.id);
         setLoading(true);
-        
-        // Marcar como ya cargado para evitar bucles
         initialLoadRef.current = true;
-        
-        // Cargar favoritos una sola vez
-        await dispatch(fetchFavorites(userId));
+        await dispatch(fetchFavorites(user.id));
       } catch (err) {
         console.error('❌ [FavoritesScreen] Error al cargar favoritos:', err);
         setError('No se pudieron cargar los favoritos');
@@ -47,24 +42,35 @@ const FavoritesScreen = ({ navigation }) => {
     };
 
     loadFavorites();
-  }, [dispatch, userId]);
+  }, [dispatch, user]);
 
   // Actualizar el estado local cuando cambia el estado global de favoritos
   useEffect(() => {
-    // Solo actualizamos si ya se completó una carga
-    if (favoritesState.status === 'succeeded') {
-      console.log(`♻️ [FavoritesScreen] Estado de favoritos actualizado: ${favoritesState.favorites.length}`);
-      setFavoritePlaces(favoritesState.favorites);
+    if (favoritesState.status === 'succeeded' || favoritesState.status === 'idle') {
+      setFavoritePlaces(favorites);
       setLoading(false);
     } else if (favoritesState.status === 'failed') {
       setError(favoritesState.error || 'Error al cargar favoritos');
       setLoading(false);
     }
-  }, [favoritesState.status, favoritesState.favorites.length]);
+  }, [favoritesState.status, favorites]);
+
+  // Optimización: Función para eliminar localmente un favorito inmediatamente
+  const handleLocalRemove = (placeId) => {
+    if (!placeId) return;
+    
+    // Actualización optimista: remover de la UI inmediatamente
+    setFavoritePlaces(currentPlaces => 
+      currentPlaces.filter(place => {
+        const currentPlaceId = place.idPlace || place.idPlaceFk;
+        return String(currentPlaceId) !== String(placeId);
+      })
+    );
+  };
 
   // Función para renderizar cada favorito
   const renderItem = ({ item }) => {
-    console.log(`🖼️ [FavoritesScreen] Renderizando favorito: ${item.name}, ID: ${item.idPlace || item.idPlaceFk}`);
+    const placeId = item.idPlace || item.idPlaceFk;
     
     return (
       <View style={styles.card}>
@@ -73,11 +79,9 @@ const FavoritesScreen = ({ navigation }) => {
           ImagenPlaceCard={item.imageUrl || 'https://via.placeholder.com/150'}
           ratingStars={item.rating}
           imageCategoryName={item.categoryName || "Lugar"}
-          idPlace={item.idPlace || item.idPlaceFk} // Asegurarnos de pasar el ID correctamente
-          onPress={() => {
-            console.log('Pressed favorite:', item.name);
-            navigation.navigate("DetailScreen", { placeId: item.idPlace || item.idPlaceFk });
-          }}
+          idPlace={placeId} 
+          onPress={() => navigation.navigate("DetailScreen", { placeId })}
+          onRemoveFavorite={handleLocalRemove}
         />
       </View>
     );
@@ -129,7 +133,7 @@ const FavoritesScreen = ({ navigation }) => {
           onBackPress={() => navigation.goBack()}
         />
 
-        {favoritePlaces.length === 0 ? (
+        {!favoritePlaces || favoritePlaces.length === 0 ? (
           <View style={styles.centerContainer}>
             <Text style={styles.emptyText}>
               No tienes lugares favoritos guardados

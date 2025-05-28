@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors, TextStyles, GlobalStyles } from "../../../presentation/styles/styles";
 import Rating from "../Rating/Rating";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchFavorites, addFavorite, deleteFavorite } from "../../../shared/store/favoritesSlice/favoritesSlice";
+import { addFavorite, deleteFavorite, fetchFavorites } from "../../../shared/store/favoritesSlice/favoritesSlice";
 
 const VerticalPlaceCard = ({
   NameCard,
@@ -12,20 +12,17 @@ const VerticalPlaceCard = ({
   ratingStars,
   imageCategoryName,
   onPress,
-  idPlace, // Esta prop es crítica para la funcionalidad de favoritos
+  idPlace,
+  onRemoveFavorite,
 }) => {
   const dispatch = useDispatch();
-  const user = useSelector(state => state.auth.user);
-  const favorites = useSelector(state => state.favorites.favorites);
+  const user = useSelector(state => state.auth?.user);
+  const favorites = useSelector(state => state.favorites?.favorites || []);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  // Obtener el ID del lugar directamente de la prop o del atributo
+  // Obtener el ID del lugar directamente de la prop
   const placeId = idPlace;
-
-  // Log para depuración
-  useEffect(() => {
-    console.log(`🔄 [VerticalPlaceCard] Inicializando tarjeta para lugar: ${NameCard}, ID: ${placeId}`);
-  }, [NameCard, placeId]);
 
   // Verificar si este lugar está en favoritos cuando el componente se monta o cuando cambian los favoritos
   useEffect(() => {
@@ -37,15 +34,14 @@ const VerticalPlaceCard = ({
     // Búsqueda más eficiente de favoritos
     const isFav = favorites.some(fav => {
       const favPlaceId = fav.idPlaceFk || fav.idPlace;
-      return String(favPlaceId) === placeIdStr;
+      return favPlaceId && String(favPlaceId) === placeIdStr;
     });
     
     // Solo actualizar estado si hay un cambio real
-    if (isFavorite !== isFav) {
-      console.log(`🔍 [VerticalPlaceCard] ID: ${placeId} - Es favorito: ${isFav}`);
+    if (isFavorite !== isFav && !isUpdating) {
       setIsFavorite(isFav);
     }
-  }, [favorites, placeId]);
+  }, [favorites, placeId, isFavorite, isUpdating]);
 
   const handleFavoritePress = async () => {
     if (!user?.id) {
@@ -58,18 +54,29 @@ const VerticalPlaceCard = ({
       return;
     }
 
+    // Evitar múltiples pulsaciones mientras se procesa
+    if (isUpdating) return;
+
     try {
+      setIsUpdating(true);
       console.log(`🔄 [VerticalPlaceCard] ${isFavorite ? "Eliminando" : "Añadiendo"} favorito - User: ${user.id}, Place: ${placeId}`);
 
-      if (isFavorite) {
+      // Actualización optimista de UI
+      const previousState = isFavorite;
+      setIsFavorite(!previousState);
+      
+      // Si es una eliminación y tenemos la función de callback, la llamamos
+      if (previousState && onRemoveFavorite) {
+        onRemoveFavorite(placeId);
+      }
+
+      if (previousState) {
         // Si ya es favorito, lo eliminamos
         await dispatch(deleteFavorite({ 
           idUserFk: user.id, 
           idPlaceFk: placeId 
         })).unwrap();
         console.log("✅ [VerticalPlaceCard] Favorito eliminado correctamente");
-        // Actualizamos el estado local inmediatamente para mejor feedback al usuario
-        setIsFavorite(false);
       } else {
         // Si no es favorito, lo añadimos
         await dispatch(addFavorite({ 
@@ -77,16 +84,15 @@ const VerticalPlaceCard = ({
           idPlaceFk: placeId 
         })).unwrap();
         console.log("✅ [VerticalPlaceCard] Favorito añadido correctamente");
-        // Actualizamos el estado local inmediatamente para mejor feedback al usuario
-        setIsFavorite(true);
       }
-      
-      // IMPORTANTE: ELIMINAR ESTA LÍNEA PARA EVITAR EL BUCLE INFINITO
-      // dispatch(fetchFavorites(user.id));
     } catch (error) {
       console.error("❌ [VerticalPlaceCard] Error al gestionar favorito:", error);
+      // Revertir el cambio optimista en caso de error
+      setIsFavorite(isFavorite);
+    } finally {
+      setIsUpdating(false);
     }
-  }; // Corregido: eliminado los paréntesis y punto y coma extra
+  };
 
   // Si recibimos placeName y imageUrl en lugar de NameCard y ImagenPlaceCard
   const name = NameCard || "";
@@ -94,9 +100,18 @@ const VerticalPlaceCard = ({
   const rating = ratingStars || 0; 
 
   // Limpiar URL de imagen si tiene errores tipográficos
-  const cleanImageUrl = imageUrl
-    .replace('httpps://', 'https://')
-    .replace('https:///', 'https://');
+  const sanitizeUrl = (url) => {
+    if (!url || typeof url !== 'string') return 'https://via.placeholder.com/150';
+    
+    return url
+      .replace('httpps://', 'https://')
+      .replace('https:///', 'https://')
+      .replace('object//', 'object/')
+      .replace(/\/+/g, '/') // Eliminar barras repetidas
+      .replace(':/', '://'); // Restaurar protocolo con barras dobles
+  };
+
+  const cleanImageUrl = sanitizeUrl(imageUrl);
 
   return (
     <TouchableOpacity 
@@ -109,13 +124,14 @@ const VerticalPlaceCard = ({
         <Image source={{ uri: cleanImageUrl }} style={styles.imageContainer} />
         {/* Botón de favorito (corazón) */}
         <TouchableOpacity
-          style={styles.favoriteButton}
+          style={[styles.favoriteButton, isUpdating && styles.disabledButton]}
           onPress={handleFavoritePress}
+          disabled={isUpdating}
         >
           <Ionicons
             name={isFavorite ? "heart" : "heart-outline"}
             size={22}
-            color={Colors.ColorPrimary}
+            color={isUpdating ? Colors.DarkGray : Colors.ColorPrimary}
           />
         </TouchableOpacity>
         {/* Rating sobre la imagen */}
@@ -231,6 +247,9 @@ const styles = StyleSheet.create({
     ...TextStyles.PoppinsRegular14,
     color: Colors.DarkGray,
     textAlign: "center",
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
 });
 
