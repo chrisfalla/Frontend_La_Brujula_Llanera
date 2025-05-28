@@ -47,3 +47,14 @@ export const fetchTopRatedPlacesByTags = async (tagIds) => {
         return [];
     }
 };
+export const fetchPlacesByCategory = async (idCategory) => {
+  try {
+    console.log(`🔍 [API] Buscando lugares para categoría ID: ${idCategory}`);
+    const data = await httpClient.get(`/placeDetail/placesByCategory/${idCategory}`);
+    console.log('✅ [API] fetchPlacesByCategory response:', data);
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('❌ [API] fetchPlacesByCategory error:', error);
+    throw error; // Propagar el error para manejo adecuado
+  }
+};

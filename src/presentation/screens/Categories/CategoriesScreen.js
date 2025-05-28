@@ -36,8 +36,14 @@ const CategoriesScreen = () => {
 
   // Función para manejar la selección de una categoría
   const handleCategoryPress = (categoryId) => {
-    // Navegar a una pantalla de detalles de categoría o filtrar lugares por categoría
-    navigation.navigate("SearchScreen", { categoryId });
+    // Buscar la categoría seleccionada para obtener su nombre
+    const selectedCategory = all.find(category => category.id === categoryId);
+    
+    // Navegar a la pantalla de búsqueda con los parámetros de categoría
+    navigation.navigate("SearchScreen", {
+      categoryId: categoryId,
+      categoryName: selectedCategory ? selectedCategory.name : "Categoría"
+    });
   };
 
   return (
