@@ -29,6 +29,8 @@ const styles = StyleSheet.create({
         ...GlobalStyles.CardBaseStyle,
         padding: 5,
         marginVertical: 8,
+        width: '98%',
+        alignSelf: 'center',
     },
     header: {
         flexDirection: 'row',

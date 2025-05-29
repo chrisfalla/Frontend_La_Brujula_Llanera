@@ -1,85 +1,73 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native'; // Importamos TouchableOpacity para hacer las estrellas tocables
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../styles/styles';
 
-const Rating = ({ average = 0, useBackground = true, size = 14 }) => {
-  // Asegurar que average sea un número y esté en el rango adecuado
-  const safeAverage = typeof average === 'number' ? Math.min(Math.max(0, average), 5) : 0;
-  
-  // Redondear a 0.5 más cercano para las medias estrellas
-  const roundedAverage = Math.round(safeAverage * 2) / 2;
-  
-  const fullStars = Math.floor(roundedAverage);
-  const halfStar = roundedAverage % 1 !== 0;
-  const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-  
+const Rating = ({ average = 0, onChange = null, useBackground = true, size = 28 }) => {
   const stars = [];
-  
-  // Estrellas completas
-  for (let i = 0; i < fullStars; i++) {
+  const starColor = "gold";
+
+  // Función para manejar el toque en una estrella
+  const handlePress = (i) => {
+    if (onChange) {            // Solo llama onChange si se ha pasado como prop
+      onChange(i);             // Envía la estrella tocada al componente padre
+    }
+  };
+
+  for (let i = 1; i <= 5; i++) {
+    let iconName;
+
+    // Lógica igual que antes para decidir qué tipo de estrella mostrar
+    if (average >= i) {
+      iconName = "star";
+    } else if (average >= i - 0.5) {
+      iconName = "star-half";
+    } else {
+      iconName = "star-outline";
+    }
+
+    // Aquí está el cambio clave: 
+    // Si hay onChange, la estrella se envuelve en TouchableOpacity para hacerla interactiva
     stars.push(
-      <Ionicons 
-        key={`full-${i}`} 
-        name="star" 
-        size={size} 
-        color={"gold"} 
-        style={styles.star}
-      />
+      onChange ? (
+        <TouchableOpacity 
+          key={i} 
+          onPress={() => handlePress(i)}  // Al presionar, se ejecuta handlePress
+          activeOpacity={0.7}             // Efecto visual al presionar
+        >
+          <Ionicons name={iconName} size={size} color={starColor} />
+        </TouchableOpacity>
+      ) : (
+        // Si no hay onChange, solo muestra el icono sin interacción
+        <Ionicons key={i} name={iconName} size={size} color={starColor} />
+      )
     );
   }
-  
-  // Media estrella (si corresponde)
-  if (halfStar) {
-    stars.push(
-      <Ionicons 
-        key="half" 
-        name="star-half" 
-        size={size} 
-        color={"gold"} 
-        style={styles.star}
-      />
-    );
-  }
-  
-  // Estrellas vacías
-  for (let i = 0; i < emptyStars; i++) {
-    stars.push(
-      <Ionicons 
-        key={`empty-${i}`} 
-        name="star-outline" 
-        size={size} 
-        color={"gold"} 
-        style={styles.star}
-      />
-    );
-  }
-  
+
   return (
-    <View style={[
-      styles.container, 
-      useBackground ? styles.withBackground : null
-    ]}>
-      {stars}
+    <View style={[styles.container, useBackground && styles.showcolor]}>
+      {stars}  {/* Renderiza todas las estrellas (interactivas o no) */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection:'row',
+    alignItems:'center',
+    alignSelf: 'center',
+    marginBottom: 0,
   },
-  withBackground: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 4,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
+  showcolor: {
+    backgroundColor: '#F9FAFE',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3,  // Elevación para sombra en Android
   },
-  star: {
-    marginHorizontal: 1,
-  }
 });
 
 export default Rating;
