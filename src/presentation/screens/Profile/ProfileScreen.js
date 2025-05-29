@@ -31,7 +31,7 @@ const ProfileScreen = () => {
     
     // Obtener el usuario del estado de Redux
     const user = useSelector(state => state.auth.user);
-    const userName = user?.name || 'Usuario';
+    const userName = user?.name || user?.names || 'Usuario';
 
     const handleLogin = () => {
         navigation.navigate('Login');

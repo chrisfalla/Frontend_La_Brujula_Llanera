@@ -28,16 +28,20 @@ const authSlice = createSlice({
       state.isGuest = false;
       state.user = null;
     },
-    updateUserInfo: (state, action) => {
+    update: (state, action) => {
       if (state.user) {
+        const { name, names, ...rest } = action.payload;
+        // Siempre actualiza ambos campos para evitar inconsistencias
         state.user = {
           ...state.user,
-          ...action.payload,
+          ...rest,
+          name: name || names || state.user.name || state.user.names || "Usuario",
+          names: names || name || state.user.names || state.user.name || "Usuario"
         };
       }
     }
   }
 });
 
-export const { login, loginAsGuest, logout, updateUserInfo } = authSlice.actions;
+export const { login, loginAsGuest, logout, update } = authSlice.actions;
 export default authSlice.reducer;

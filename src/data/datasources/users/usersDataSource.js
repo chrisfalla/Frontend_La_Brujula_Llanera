@@ -7,13 +7,17 @@ import {
 } from "../../../infrastructure/api/users/usersApi";
 
 export const usersDataSource = {
-  uupdateUser: async ({ id, name, email, phone }) => {
+  updateUser: async ({ id, name, email, phone }) => {
       const raw = await usersApi.updateUser({
       idUser: id,
       names: name,
       email,
-      phone,
+      phone
     });
+
+    if (!raw) {
+      throw new Error("La respuesta de la API al actualizar usuario es indefinida");
+    }
 
     // 2) Mapea a tu propio modelo:
     return {

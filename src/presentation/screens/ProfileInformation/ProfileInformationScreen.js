@@ -6,18 +6,18 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
 import { usersRepository } from "../../../data/repositories/users/usersRepository";
-import { updateUserInfo } from "../../../shared/store/authSlice/authSlice";
+import { update } from "../../../shared/store/authSlice/authSlice";
 import { updateUserUseCase } from "../../../domain/usecases/user/updateUserUseCase";
+import { userStorage } from "../../../infrastructure/storage/userStorage";
 
 const InformationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  
+
   const [isEditable, setIsEditable] = useState(false);
   const [editName, setEditName] = useState(user?.name || "");
   const [editEmail, setEditEmail] = useState(user?.email || "");
   const [editPhone, setEditPhone] = useState(user?.phone || "");
-  
 
   const toggleEditMode = () => {
     if (!isEditable) {
@@ -27,35 +27,57 @@ const InformationScreen = ({ navigation }) => {
     }
     setIsEditable((prev) => !prev);
   };
-  
-const handleSave = async () => {
-  if (!editName || !editEmail || !editPhone) {
-    Alert.alert("Error", "Todos los campos son obligatorios");
-    return;
-  }
 
-  try {
-    const updatedUser = await updateUserUseCase({
-      id: user.id,
-      name: editName,
-      email: editEmail,
-      phone: editPhone
-    });
+  const handleSave = async () => {
+    if (!editName || !editEmail || !editPhone) {
+      Alert.alert("Error", "Todos los campos son obligatorios");
+      return;
+    }
 
-    dispatch(updateUserInfo({
-      name: updatedUser.name,
-      email: updatedUser.email,
-      phone: updatedUser.phone
-    }));
+    try {
+      const updatedUser = await updateUserUseCase({
+        id: user.id,
+        name: editName,
+        email: editEmail,
+        phone: editPhone,
+      });
 
-    setIsEditable(false);
-    Alert.alert("Éxito", updatedUser.message || "Información actualizada correctamente");
-  } catch (error) {
-    console.error("Error al actualizar:", error);
-    Alert.alert("Error", "No se pudo actualizar la información");
-  }
-};
-  
+      // Construir el usuario completo con todos los campos esperados
+      const userToSave = {
+        ...user,
+        id: updatedUser.id || user.id,
+        idUser: updatedUser.id || user.idUser || user.id,
+        name: updatedUser.name || updatedUser.names || editName,
+        names: updatedUser.name || updatedUser.names || editName,
+        email: updatedUser.email || updatedUser.email || editEmail,
+        phone: updatedUser.phone || updatedUser.phone || editPhone,
+        birthDate: user.birthDate,
+        roleId: user.roleId,
+        genderId: user.genderId,
+      };
+
+      dispatch(
+        update({
+          name: updatedUser.name || updatedUser.names || editName,
+          names: updatedUser.names || updatedUser.name || editName,
+          email: updatedUser.email || updatedUser.email || editEmail,
+          phone: updatedUser.phone || updatedUser.phone || editPhone,
+        })
+      );
+
+      // Guardar el usuario actualizado en el almacenamiento local
+      await userStorage.save(userToSave);
+
+      setIsEditable(false);
+      Alert.alert(
+        "Éxito",
+        updatedUser.message || "Información actualizada correctamente"
+      );
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      Alert.alert("Error", "No se pudo actualizar la información");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -69,27 +91,27 @@ const handleSave = async () => {
           title={"Mí información"}
           onSecondIconPress={toggleEditMode} // Al presionar el lápiz
         />
-       
+
         <Image
           style={styles.image}
           source={require("../../../shared/assets/Avatar.png")}
         />
 
         <View style={styles.information}>
-          <CustomInputText 
-            LabelText={"Nombre"} 
+          <CustomInputText
+            LabelText={"Nombre"}
             IsDisabled={!isEditable}
             value={editName}
             onChangeText={setEditName}
           />
-          <CustomInputText 
-            LabelText={"Email"} 
+          <CustomInputText
+            LabelText={"Email"}
             IsDisabled={!isEditable}
             value={editEmail}
             onChangeText={setEditEmail}
           />
-          <CustomInputText 
-            LabelText={"Teléfono"} 
+          <CustomInputText
+            LabelText={"Teléfono"}
             IsDisabled={!isEditable}
             value={editPhone}
             onChangeText={setEditPhone}
@@ -117,13 +139,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     paddingVertical: 10,
-    
-    
   },
   containerInformation: {
     marginTop: 10,
     marginBottom: 50,
-    
   },
   image: {
     width: 100,
@@ -140,7 +159,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 50,
-       top: 50,
+    top: 50,
     paddingHorizontal: 10,
   },
 });
