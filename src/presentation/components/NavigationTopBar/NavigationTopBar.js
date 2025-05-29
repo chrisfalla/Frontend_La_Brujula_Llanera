@@ -144,6 +144,7 @@ const NavigationTopBar = ({
 
 const styles = StyleSheet.create({
   header: {
+    marginTop: 25,
     width: "100%",
     position: "relative", // Necesario para posicionamiento absoluto del título
   },
