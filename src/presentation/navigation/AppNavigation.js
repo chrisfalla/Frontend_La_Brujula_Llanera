@@ -24,6 +24,7 @@ import PasswordRecoveryStepThreeScreen from "../screens/PasswordRecovery/Passwor
 import ProfileInformationScreen from "../screens/ProfileInformation/ProfileInformationScreen";
 import FavoritesScreen from "../screens/Favorites/FavoritesScreen";
 import	DetailScreen from "../screens/Detail/DetailScreen";
+import SearchScreen from "../screens/Search/SearchScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,6 +40,7 @@ const RootStack = ({ isLoggedIn }) => (
       name="ProfileInformation"
       component={ProfileInformationScreen}
     />
+    <Stack.Screen name="SearchScreen" component={SearchScreen} />
     <Stack.Screen name="Favorites" component={FavoritesScreen} />
     <Stack.Screen name="DetailScreen" component={DetailScreen} />
   </Stack.Navigator>
@@ -71,9 +73,30 @@ const TabNavigator = ({ isLoggedIn }) => (
         }
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      tabBarLabel: ({ color }) => (
-        <Text style={{ color, fontSize: 12 }}>{route.name}</Text>
-      ),
+      tabBarLabel: ({ color }) => {
+        // realiza el mapeo para el cambio de nombres de inglés a español
+        let label;
+        switch (route.name) {
+          case "Home":
+            label = "Inicio";
+            break;
+          case "Categories":
+            label = "Categorías";
+            break;
+          case "Map":
+            label = "Mapa";
+            break;
+          case "Profile":
+            label = "Perfil";
+            break;
+          case "Login":
+            label = "Ingresar";
+            break;
+          default:
+            label = route.name;
+        }
+        return <Text style={{ color, fontSize: 12 }}>{label}</Text>;
+      },
       tabBarActiveTintColor: "#236A34",
       tabBarInactiveTintColor: "black",
       tabBarStyle: {
