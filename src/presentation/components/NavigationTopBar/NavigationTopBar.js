@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFavorites, addFavorite, deleteFavorite } from "../../../shared/store/favoritesSlice/favoritesSlice";
 
 const NavigationTopBar = ({
   primaryIcon = "chevron-back",
@@ -11,11 +13,86 @@ const NavigationTopBar = ({
   useBackground = true,
   useHeart = true,
   title,
+  placeId,
 }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth?.user);
+  const favorites = useSelector((state) => state.favorites?.favorites || []);
   const [isHeartActive, setIsHeartActive] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const loadedRef = useRef(false);
 
-  const handleHeartPress = () => {
-    setIsHeartActive(!isHeartActive);
+  // Verificar si este lugar está en favoritos
+  useEffect(() => {
+    if (!placeId || !Array.isArray(favorites)) return;
+    
+    // Si está actualizando, no cambiar el estado para evitar parpadeo
+    if (isUpdating) return;
+    
+    // Buscar si este lugar es favorito
+    const placeIdStr = String(placeId);
+    const isFavorite = favorites.some(fav => {
+      const favPlaceId = fav.idPlaceFk || fav.idPlace;
+      return favPlaceId && String(favPlaceId) === placeIdStr;
+    });
+    
+    // Actualizar estado solo si hay un cambio
+    if (isHeartActive !== isFavorite) {
+      setIsHeartActive(isFavorite);
+    }
+  }, [placeId, favorites, isUpdating, isHeartActive]);
+
+  // Cargar favoritos solo una vez
+  useEffect(() => {
+    if (user?.id && !loadedRef.current) {
+      console.log('🔄 [NavigationTopBar] Cargando favoritos iniciales para usuario:', user.id);
+      loadedRef.current = true;
+      dispatch(fetchFavorites(user.id));
+    }
+  }, [dispatch, user]);
+
+  const handleHeartPress = async () => {
+    if (!user?.id || !placeId) {
+      console.log("⚠️ [NavigationTopBar] No se puede gestionar favorito: usuario o placeId no disponible");
+      return;
+    }
+
+    // Prevenir múltiples clics
+    if (isUpdating) return;
+
+    try {
+      setIsUpdating(true);
+      
+      // Actualización optimista
+      const previousState = isHeartActive;
+      setIsHeartActive(!previousState);
+
+      if (previousState) {
+        // Si ya es favorito, lo eliminamos
+        await dispatch(
+          deleteFavorite({
+            idUserFk: user.id,
+            idPlaceFk: placeId,
+          })
+        ).unwrap();
+        console.log("✅ [NavigationTopBar] Favorito eliminado correctamente");
+      } else {
+        // Si no es favorito, lo añadimos
+        await dispatch(
+          addFavorite({
+            idUserFk: user.id,
+            idPlaceFk: placeId,
+          })
+        ).unwrap();
+        console.log("✅ [NavigationTopBar] Favorito añadido correctamente");
+      }
+    } catch (error) {
+      console.error("❌ [NavigationTopBar] Error al gestionar favorito:", error);
+      // Revertir el cambio optimista en caso de error
+      setIsHeartActive(isHeartActive);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   // Cambia el ícono si el corazón está activo
@@ -53,7 +130,7 @@ const NavigationTopBar = ({
                 ? handleHeartPress
                 : null
             }
-            disabled={!useHeart && SecondIcon === "heart-outline"}
+            disabled={isUpdating || (!useHeart && SecondIcon === "heart-outline")}
           >
             <Ionicons style={styles.icon} name={secondaryIconName} />
           </TouchableOpacity>

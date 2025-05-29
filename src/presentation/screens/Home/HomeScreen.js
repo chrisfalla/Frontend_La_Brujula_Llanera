@@ -365,9 +365,9 @@ const HomeScreen = ({ navigation }) => {
                       ImagenPlaceCard={item.imageUrl}
                       ratingStars={item.ratingStars}
                       imageCategoryName={item.imageCategoryName}
+                      idPlace={item.idPlace} // Asegurar que esta prop se pasa correctamente
                       onPress={() => {
                         navigation.navigate("DetailScreen", { placeId: item.idPlace });
-                        /* TODO: Implementar navegación al detalle */
                       }}
                       style={{width: '100%'}} // Forzar ancho al 100% del contenedor
                     />
@@ -600,16 +600,16 @@ const styles = StyleSheet.create({
     overflow: "visible",
   },
   leftCardContainer: {
-    width: "48.5%", // Ancho exacto
-    alignItems: 'center', // Centrar contenido
-    paddingHorizontal: 0, // Sin padding horizontal
-    marginHorizontal: 0, // Sin margen horizontal
+    width: "48.5%", // Añadir coma aquí
+    alignItems: 'center', // Añadir coma aquí
+    paddingHorizontal: 0, // Añadir coma aquí
+    marginHorizontal: 0 // Esta es la última propiedad, no necesita coma
   },
   rightCardContainer: {
-    width: "48.5%", // Exactamente el mismo ancho
-    alignItems: 'center', // Centrar contenido
-    paddingHorizontal: 0, // Sin padding horizontal
-    marginHorizontal: 0, // Sin margen horizontal
+    width: "48.5%", // Añadir coma aquí
+    alignItems: 'center', // Añadir coma aquí
+    paddingHorizontal: 0, // Añadir coma aquí
+    marginHorizontal: 0 // Esta es la última propiedad, no necesita coma
   },
 
   // Sección tags

@@ -5,6 +5,7 @@ import { GlobalStyles, TextStyles, Colors } from '../../styles/styles';
 
 const CustomSearch = ({ placeholder, value, onChangeText, onSearch }) => {
     const [isFocused, setIsFocused] = useState(false);
+    const showCustomPlaceholder = !value && !isFocused;
 
     const handleSubmit = () => {
         if (onSearch && value.trim()) {
@@ -17,19 +18,22 @@ const CustomSearch = ({ placeholder, value, onChangeText, onSearch }) => {
             <Text style={styles.label}>Escriba la Categoria, o Tipo de Servicio.</Text>
             <View style={[
                 styles.searchContainer,
-                isFocused && styles.searchContainerFocused
+                isFocused && styles.searchContainerFocused                
             ]}>
+                {showCustomPlaceholder && (
+                    <Text style={styles.customPlaceholder}>{placeholder || "Buscar..."}</Text>
+                )}
                 <TextInput
                     style={styles.input}
-                    placeholder={placeholder || "Buscar..."}
-                    placeholderTextColor= {Colors.Black}
+                    placeholder="" // Placeholder se deja vacío para evitar problemas de fuente                   
                     value={value}
                     onChangeText={onChangeText}
                     onSubmitEditing={handleSubmit}
                     returnKeyType="search"
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    autoFocus={true}
+                    autoFocus={false} // se deja en false para evitar que al cambiar la pantalla se enfoque automáticamente
+                    // y mantenga oculto el teclado y se active solo al tocar el campo de búsqueda
                 />
                 <View style={styles.iconsContainer}>
                     {value?.length > 0 && (
@@ -73,15 +77,25 @@ const styles = StyleSheet.create({
         borderColor: Colors.ColorPrimary,
         borderWidth: 1.3,
     },
+    // se crrea estilo para personalizar el placeholder
+    customPlaceholder: {
+        position: 'absolute',
+        left: 15,
+        ...TextStyles.PoppinsRegular15,
+        color: Colors.DarkGray,
+        zIndex: 1,
+    },
     input: {
         ...TextStyles.PoppinsRegular15,
         flex: 1,
         color: Colors.Black,
         height: '100%',
+        zIndex: 2,
     },
     iconsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        zIndex: 3,
     },
     searchIcon: {
         marginLeft: 10,
