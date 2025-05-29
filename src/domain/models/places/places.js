@@ -11,3 +11,5 @@ export class Place {
       this.categoryInfo = categoryInfo;   // Información de categoría
     }
   }
+
+  

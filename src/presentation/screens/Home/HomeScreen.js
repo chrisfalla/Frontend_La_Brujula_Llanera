@@ -439,9 +439,8 @@ const HomeScreen = ({ navigation }) => {
                     }
                     address={item.placeAddress || "Dirección no disponible"}
                     image={item.imageUrl}
-                    onMapPress={() => {
+                    onPress={() => {
                       navigation.navigate("DetailScreen", { placeId: item.idPlace });
-                      /* TODO: Implementar navegación */
                     }}
                   />
                 )}
