@@ -3,10 +3,34 @@ import {
   loginUserApi,
   requestPasswordRecoveryCodeApi,
   verifyPasswordRecoveryCodeApi,
-  resetPasswordApi
+  resetPasswordApi, usersApi
 } from "../../../infrastructure/api/users/usersApi";
 
-export const usersDatasource = {
+export const usersDataSource = {
+  updateUser: async ({ id, name, email, phone }) => {
+      const raw = await usersApi.updateUser({
+      idUser: id,
+      names: name,
+      email,
+      phone
+    });
+
+    if (!raw) {
+      throw new Error("La respuesta de la API al actualizar usuario es indefinida");
+    }
+
+    // 2) Mapea a tu propio modelo:
+    return {
+      id:       raw.idUser,
+      name:     raw.names,
+      email:    raw.email,
+      phone:    raw.phone,
+      message:  raw.message,    // opcional si quieres mostrar el texto
+    };
+  },
+
+
+
   registerUser: async (userData) => {
     const response = await registerUserApi(userData);
 
@@ -25,6 +49,7 @@ export const usersDatasource = {
       },
     };
   },
+  
 
   loginUser: async (credentials) => {
     const response = await loginUserApi(credentials);

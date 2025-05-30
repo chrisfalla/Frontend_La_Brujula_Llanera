@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 
 const MainHeader = ({ primarytIcon, SecondIcon = "settings", username }) => {  {/* propiedades para llamar los iconos */}
 
-const usernames = useSelector(state => state.auth.user?.name || "Invitado");
+const usernames = useSelector(state => state.auth.user?.name || state.auth.user?.names || "Invitado");
 return (
     <View style={styles.header}>
         <Image source={require('../../../shared/assets/Avatar.png') } style={styles.avatar}/>
