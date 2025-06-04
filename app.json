@@ -13,7 +13,7 @@
     "ios": {
       "supportsTablet": true,
       "config": {
-        "googleMapsApiKey": "TU_API_KEY_DE_GOOGLE_MAPS"
+        "googleMapsApiKey": "AIzaSyBGjwzu6tIp_9S6zuWrv4qawcih-DcY5O4"
       },
       "bundleIdentifier": "com.anonymous.labrujulallanera"
     },
@@ -29,7 +29,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "TU_API_KEY_DE_GOOGLE_MAPS"
+          "apiKey": "AIzaSyBGjwzu6tIp_9S6zuWrv4qawcih-DcY5O4"
         }
       },
       "package": "com.anonymous.labrujulallanera"
