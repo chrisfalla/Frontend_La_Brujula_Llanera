@@ -14,9 +14,9 @@ const MapaScreen = () => {
   const [defaultSitios, setDefaultSitios] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [searchTimeout, setSearchTimeout] = useState(null); // 🆕
 
-  const pinImage = require("../../../shared/assets/pin.png"); // 🆕 optimización
+  const [selectedPlace, setSelectedPlace] = useState(null); // 🆕
+  const [isModalVisible, setModalVisible] = useState(false); // 🆕
 
   useEffect(() => {
     const fetchSitios = async () => {
@@ -47,20 +47,6 @@ const MapaScreen = () => {
     })();
   }, []);
 
-  const handleZoomIn = () => {
-    mapRef.current?.getCamera().then((camera) => {
-      camera.zoom += 1;
-      mapRef.current?.animateCamera(camera);
-    });
-  };
-
-  const handleZoomOut = () => {
-    mapRef.current?.getCamera().then((camera) => {
-      camera.zoom -= 1;
-      mapRef.current?.animateCamera(camera);
-    });
-  };
-
   const handleMarkerDragEnd = (e) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
     setLocation({ latitude, longitude });
@@ -77,30 +63,36 @@ const MapaScreen = () => {
   };
 
   // 🆕 Debounce manual para evitar múltiples llamadas
-  const handleSearch = (query) => {
-    setSearchValue(query);
-    if (searchTimeout) {
-      clearTimeout(searchTimeout);
-    }
-    const timeout = setTimeout(async () => {
-      if (!location) return;
-      setLoading(true);
-      try {
-        const locationStr = `${location.latitude},${location.longitude}`;
-        if (!query.trim()) {
-          setFilteredSitios(defaultSitios);
-        } else {
-          const results = await searchPlaces(query, locationStr);
-          setFilteredSitios(results);
-        }
-      } catch (error) {
-        Alert.alert("Error", "No se pudo completar la búsqueda.");
-      } finally {
+  const handleSearch = async (query) => {
+    if (!location) return;
+    setLoading(true);
+    try {
+      const locationStr = `${location.latitude},${location.longitude}`;
+      if (!query.trim()) {
+        setFilteredSitios(defaultSitios);
         setLoading(false);
+        return;
       }
-    }, 500); // 500ms debounce
-    setSearchTimeout(timeout);
+      const results = await searchPlaces(query, locationStr);
+      setFilteredSitios(results);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo completar la búsqueda.");
+    } finally {
+      setLoading(false);
+    }
   };
+  const handleMarkerPress = (sitio) => {
+    setSelectedPlace(sitio);
+    setModalVisible(true);
+  };
+
+  useEffect(() => {
+    if (searchValue.trim() === "") {
+      setFilteredSitios(defaultSitios);
+    } else {
+      handleSearch(searchValue);
+    }
+  }, [searchValue, defaultSitios]);
 
   if (errorMsg) {
     return (
@@ -117,7 +109,8 @@ const MapaScreen = () => {
         <CustomSearch
           style={styles.search}
           value={searchValue}
-          onChangeText={handleSearch}
+          onChangeText={setSearchValue}
+          onSearch={handleSearch}
           placeholder="Buscar lugares..."
         />
         <MapView
@@ -147,7 +140,7 @@ const MapaScreen = () => {
               coordinate={location}
               draggable
               onDragEnd={handleMarkerDragEnd}
-              image={pinImage}
+              image={require("../../../shared/assets/pin.png")} // 🆕 optimización
             />
           )}
           {(Array.isArray(filteredSitios) ? filteredSitios : []).map((sitio) => (
@@ -159,7 +152,8 @@ const MapaScreen = () => {
               }}
               title={sitio.name || sitio.placeName || sitio.title}
               description={sitio.formatted_address || sitio.placeAddress || sitio.description}
-              image={pinImage}
+              image={require("../../../shared/assets/pin.png")}
+              onPress={() => handleMarkerPress(sitio)} // 🆕
             />
           ))}
         </MapView>
@@ -169,17 +163,58 @@ const MapaScreen = () => {
           <Ionicons name="locate" size={24} color="#236A34" />
         </TouchableOpacity>
 
-        
-
         {loading && (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color="#fff" />
           </View>
         )}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                {selectedPlace?.name || selectedPlace?.title}
+              </Text>
+              <Text style={styles.modalDescription}>
+                {selectedPlace?.formatted_address || selectedPlace?.description}
+              </Text>
+
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => {
+                    Alert.alert("Ver más", "Implementar navegación al detalle");
+                    setModalVisible(false);
+                  }}
+                >
+                  <Text style={styles.modalButtonText}>Ver más</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => {
+                    Alert.alert("Favorito", "Sitio agregado a favoritos");
+                    setModalVisible(false);
+                  }}
+                >
+                  <Text style={styles.modalButtonText}>Favorito</Text>
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Text style={styles.modalClose}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -228,6 +263,47 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+   // 🆕 Estilos para Modal
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalDescription: {
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: "#236A34",
+    padding: 10,
+    borderRadius: 8,
+  },
+  modalButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  modalClose: {
+    color: "#999",
+    textAlign: "center",
+    marginTop: 10,
   },
 });
 
