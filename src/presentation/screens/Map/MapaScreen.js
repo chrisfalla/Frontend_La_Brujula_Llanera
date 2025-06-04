@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, TouchableOpacity, StatusBar } from "react-native";
+import { View, StyleSheet, TouchableOpacity, StatusBar, Alert, ActivityIndicator } from "react-native";
 import CustomSearch from "../../components/Search/Search";
-import MapView, { Marker, Polyline } from "react-native-maps";
+import MapView, { Marker} from "react-native-maps";
 import * as Location from "expo-location";
-
+import { searchPlaces } from "../../../services/places";
 import { Ionicons } from "@expo/vector-icons";
 
 const MapaScreen = () => {
@@ -13,6 +13,7 @@ const MapaScreen = () => {
   const [sitiosTuristicos, setSitiosTuristicos] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [filteredSitios, setFilteredSitios] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Cargar sitios desde la API (ajusta el endpoint si es necesario)
   useEffect(() => {
@@ -69,6 +70,32 @@ const MapaScreen = () => {
     setLocation({ latitude, longitude });
   };
 
+  // Buscar lugares usando la API cuando el usuario hace búsqueda
+  const handleSearch = async (query) => {
+    if (!location) return;
+    setLoading(true);
+    // Limpiar los sitios antes de buscar
+    setSitiosTuristicos([]);
+    setFilteredSitios([]);
+    try {
+      const locationStr = `${location.latitude},${location.longitude}`;
+      // Si el query está vacío, no busques nada y limpia los sitios
+      if (!query.trim()) {
+        setSitiosTuristicos([]);
+        setFilteredSitios([]);
+        setLoading(false);
+        return;
+      }
+      const results = await searchPlaces(query, locationStr);
+      setSitiosTuristicos(results);
+      setFilteredSitios(results);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo completar la búsqueda.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (errorMsg) {
     return (
       <View style={styles.container}>
@@ -89,6 +116,7 @@ const MapaScreen = () => {
           style={styles.search}
           value={searchValue}
           onChangeText={setSearchValue}
+          onSearch={handleSearch}
           placeholder="Buscar lugares..."
         />
         <MapView
@@ -111,33 +139,28 @@ const MapaScreen = () => {
                 }
               : undefined
           }
+          showsUserLocation={false}
         >
           {location && (
             <Marker
               coordinate={location}
-               //pinColor="#236A34" 
               draggable
               onDragEnd={handleMarkerDragEnd}
-              image={require('../../../shared/assets/pin.png') } // Usa tu propio icono PNG aquí
+              image={require('../../../shared/assets/pin.png')}
             />
           )}
-          {(Array.isArray(filteredSitios) ? filteredSitios : []).map(
-            (sitio) => (
-              <Marker
-                key={sitio.idPlace || sitio.id}
-                coordinate={{
-                  latitude:
-                    sitio.latitude ||
-                    (sitio.coordinate && sitio.coordinate.latitude),
-                  longitude:
-                    sitio.longitude ||
-                    (sitio.coordinate && sitio.coordinate.longitude),
-                }}
-                title={sitio.placeName || sitio.title}
-                description={sitio.placeAddress || sitio.description}
-              />
-            )
-          )}
+          {(Array.isArray(filteredSitios) ? filteredSitios : []).map((sitio) => (
+            <Marker
+              key={sitio.place_id || sitio.idPlace || sitio.id}
+              coordinate={{
+                latitude: sitio.geometry?.location?.lat || sitio.latitude || (sitio.coordinate && sitio.coordinate.latitude),
+                longitude: sitio.geometry?.location?.lng || sitio.longitude || (sitio.coordinate && sitio.coordinate.longitude),
+              }}
+              title={sitio.name || sitio.placeName || sitio.title}
+              description={sitio.formatted_address || sitio.placeAddress || sitio.description}
+              image={require('../../../shared/assets/pin.png')}
+            />
+          ))}
         </MapView>
         <View style={styles.zoomButtons}>
           <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
@@ -147,6 +170,11 @@ const MapaScreen = () => {
             <Ionicons name="remove" size={24} color="#236A34" />
           </TouchableOpacity>
         </View>
+        {loading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#fff" />
+          </View>
+        )}
       </View>
     </View>
   );
@@ -158,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   map: {
-    flex: 1, // <-- Cambiado para ocupar todo el espacio disponible
+    flex: 1,
   },
   error: {
     fontSize: 16,
@@ -200,6 +228,12 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
