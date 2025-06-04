@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, TouchableOpacity, StatusBar, Alert, ActivityIndicator, Text, Modal } from "react-native";
+import { View, StyleSheet, TouchableOpacity, StatusBar, Alert, ActivityIndicator, Text } from "react-native";
 import CustomSearch from "../../components/Search/Search";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { searchPlaces } from "../../../services/places";
 import { Ionicons } from "@expo/vector-icons";
+import HorizontalCardPlace from '../../components/HorizontalCardPLace/HorizontalCardPlace';
 
 const MapaScreen = () => {
   const mapRef = useRef(null);
@@ -16,7 +17,6 @@ const MapaScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const [selectedPlace, setSelectedPlace] = useState(null); // 🆕
-  const [isModalVisible, setModalVisible] = useState(false); // 🆕
 
   useEffect(() => {
     const fetchSitios = async () => {
@@ -83,12 +83,12 @@ const MapaScreen = () => {
   };
   const handleMarkerPress = (sitio) => {
     setSelectedPlace(sitio);
-    setModalVisible(true);
   };
 
   useEffect(() => {
     if (searchValue.trim() === "") {
       setFilteredSitios(defaultSitios);
+      setSelectedPlace(null); // Oculta la tarjeta al borrar búsqueda
     } else {
       handleSearch(searchValue);
     }
@@ -150,8 +150,6 @@ const MapaScreen = () => {
                 latitude: sitio.geometry?.location?.lat || sitio.latitude || (sitio.coordinate && sitio.coordinate.latitude),
                 longitude: sitio.geometry?.location?.lng || sitio.longitude || (sitio.coordinate && sitio.coordinate.longitude),
               }}
-              title={sitio.name || sitio.placeName || sitio.title}
-              description={sitio.formatted_address || sitio.placeAddress || sitio.description}
               image={require("../../../shared/assets/pin.png")}
               onPress={() => handleMarkerPress(sitio)} // 🆕
             />
@@ -168,48 +166,17 @@ const MapaScreen = () => {
             <ActivityIndicator size="large" color="#fff" />
           </View>
         )}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isModalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                {selectedPlace?.name || selectedPlace?.title}
-              </Text>
-              <Text style={styles.modalDescription}>
-                {selectedPlace?.formatted_address || selectedPlace?.description}
-              </Text>
-
-              <View style={styles.modalActions}>
-                <TouchableOpacity
-                  style={styles.modalButton}
-                  onPress={() => {
-                    Alert.alert("Ver más", "Implementar navegación al detalle");
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.modalButtonText}>Ver más</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.modalButton}
-                  onPress={() => {
-                    Alert.alert("Favorito", "Sitio agregado a favoritos");
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.modalButtonText}>Favorito</Text>
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalClose}>Cerrar</Text>
-              </TouchableOpacity>
-            </View>
+        {selectedPlace && (
+          <View style={{position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 20, padding: 16}}>
+            <HorizontalCardPlace
+              name={selectedPlace?.name || selectedPlace?.title}
+              category={selectedPlace?.category || selectedPlace?.types?.[0]}
+              address={selectedPlace?.formatted_address || selectedPlace?.description}
+              image={selectedPlace?.image || selectedPlace?.photos?.[0]?.url}
+              onMapPress={() => setSelectedPlace(null)}
+            />
           </View>
-        </Modal>
+        )}
       </View>
     </View>
   );
@@ -263,47 +230,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-   // 🆕 Estilos para Modal
-  modalContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.3)",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    elevation: 10,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  modalDescription: {
-    fontSize: 14,
-    marginBottom: 20,
-  },
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  modalButton: {
-    backgroundColor: "#236A34",
-    padding: 10,
-    borderRadius: 8,
-  },
-  modalButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  modalClose: {
-    color: "#999",
-    textAlign: "center",
-    marginTop: 10,
   },
 });
 
