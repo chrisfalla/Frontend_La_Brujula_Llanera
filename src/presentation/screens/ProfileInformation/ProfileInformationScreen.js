@@ -138,10 +138,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingVertical: 10,
+    paddingVertical: 0,
   },
   containerInformation: {
-    marginTop: 10,
+    marginTop: 0,
     marginBottom: 50,
   },
   image: {

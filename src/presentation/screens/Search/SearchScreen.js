@@ -206,10 +206,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.BackgroundPage,
-    paddingVertical: 10,
+    paddingVertical: 0,
   },
   containerSearch: {
-    marginTop: 12,
+    marginTop: 0,
     marginBottom: 20,
     position: "static",
   },
