@@ -1,11 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, TouchableOpacity, StatusBar, Alert, ActivityIndicator, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  StatusBar,
+  Alert,
+  ActivityIndicator,
+  Text,
+} from "react-native";
 import CustomSearch from "../../components/Search/Search";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { searchPlaces } from "../../../services/places";
 import { Ionicons } from "@expo/vector-icons";
-import HorizontalCardPlace from '../../components/HorizontalCardPLace/HorizontalCardPlace';
+import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace";
 
 const MapaScreen = () => {
   const mapRef = useRef(null);
@@ -38,7 +46,7 @@ const MapaScreen = () => {
   useEffect(() => {
     const fetchSitios = async () => {
       try {
-        const sitios = await searchPlaces("", "");  // tu BD o tu API “getAll”
+        const sitios = await searchPlaces("", ""); // tu BD o tu API “getAll”
         setDefaultSitios(sitios);
         setFilteredSitios(sitios);
       } catch (e) {
@@ -101,9 +109,10 @@ const MapaScreen = () => {
     if (searchValue.trim() === "") {
       setFilteredSitios(defaultSitios);
       setSelectedPlace(null);
-    } else {
+    } else if (searchValue.trim().length >= 5) {
       handleSearch(searchValue);
     }
+    // Si hay menos de 5 letras, no hace nada (ni busca ni limpia)
   }, [searchValue, defaultSitios]);
 
   if (errorMsg) {
@@ -116,7 +125,11 @@ const MapaScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" translucent={false} />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#ffffff"
+        translucent={false}
+      />
       <View style={styles.mapContainer}>
         <CustomSearch
           style={styles.search}
@@ -161,21 +174,25 @@ const MapaScreen = () => {
             />
           )}
 
-          {(Array.isArray(filteredSitios) ? filteredSitios : []).map((sitio) => (
-            <Marker
-              key={sitio.place_id || sitio.idPlace || sitio.id}
-              coordinate={{
-                latitude: sitio.geometry?.location?.lat || sitio.latitude,
-                longitude: sitio.geometry?.location?.lng || sitio.longitude,
-              }}
-              image={require("../../../shared/assets/pin.png")}
-              onPress={() => setSelectedPlace(sitio)}
-            />
-          ))}
+          {(Array.isArray(filteredSitios) ? filteredSitios : []).map(
+            (sitio) => (
+              <Marker
+                key={sitio.place_id || sitio.idPlace || sitio.id}
+                coordinate={{
+                  latitude: sitio.geometry?.location?.lat || sitio.latitude,
+                  longitude: sitio.geometry?.location?.lng || sitio.longitude,
+                }}
+                image={require("../../../shared/assets/pin.png")}
+                onPress={() => setSelectedPlace(sitio)}
+              />
+            )
+          )}
         </MapView>
 
         {/* Botón “Mi ubicación” */}
-        <TouchableOpacity style={styles.myLocationButton} onPress={() => {
+        <TouchableOpacity
+          style={styles.myLocationButton}
+          onPress={() => {
             if (location && mapRef.current) {
               mapRef.current.animateToRegion({
                 ...location,
@@ -183,7 +200,8 @@ const MapaScreen = () => {
                 longitudeDelta: 0.01,
               });
             }
-          }}>
+          }}
+        >
           <Ionicons name="locate" size={24} color="#236A34" />
         </TouchableOpacity>
 
@@ -194,13 +212,23 @@ const MapaScreen = () => {
         )}
 
         {/* Solo si hay un sitio seleccionado (ya sea por buscar o por tocar un marcador) */}
+        {selectedPlace && null}
         {selectedPlace && (
-          <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 20, padding: 16 }}>
+          <View
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 20,
+              padding: 16,
+            }}
+          >
             <HorizontalCardPlace
-              name={selectedPlace?.name || selectedPlace?.title}
-              category={selectedPlace?.category || selectedPlace?.types?.[0]}
-              address={selectedPlace?.formatted_address || selectedPlace?.description}
-              image={selectedPlace?.image || selectedPlace?.photos?.[0]?.url}
+              name={selectedPlace.name}
+              category={selectedPlace.category}
+              address={selectedPlace.address}
+              image={selectedPlace.image}
               onMapPress={() => setSelectedPlace(null)}
             />
           </View>
@@ -211,10 +239,23 @@ const MapaScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  map: { flex: 1 },
-  error: { fontSize: 16, color: "red", textAlign: "center", marginTop: 50 },
-  mapContainer: { flex: 1, position: "relative" },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  map: {
+    flex: 1,
+  },
+  error: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+    marginTop: 50,
+  },
+  mapContainer: {
+    flex: 1,
+    position: "relative",
+  },
   search: {
     position: "absolute",
     top: 20,
