@@ -1,15 +1,16 @@
 import httpClient from '../../services/httpClientService';
 
-const PlaceDetailApi = {
-    async getPlaceDetailById(idPlace) {
+class PlaceDetailApi {
+  async getPlaceDetailById(idPlace) {
     try {
-        const response = await httpClient.get(`/placeDetail/${idPlace}`);
-        return response.data;
+      const data = await httpClient.get(`/placeDetail/${idPlace}`);
+      console.log("✅ Received data from API:", data); // para verificar la estructura
+      return data;
     } catch (error) {
-        console.error("Error in PlaceDetailApi:", error);
-        throw error;
+      console.error("❌ Error in PlaceDetailApi:", error);
+      throw error;
     }
-    }
-};
+  }
+}
 
 export default PlaceDetailApi;
