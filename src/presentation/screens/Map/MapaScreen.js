@@ -11,17 +11,34 @@ const MapaScreen = () => {
   const mapRef = useRef(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [filteredSitios, setFilteredSitios] = useState([]);
+
   const [defaultSitios, setDefaultSitios] = useState([]);
+  const [filteredSitios, setFilteredSitios] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null);
 
-  const [selectedPlace, setSelectedPlace] = useState(null); // 🆕
+  // 1. Obtener permisos y ubicación del usuario
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permiso de ubicación denegado");
+        return;
+      }
+      let loc = await Location.getCurrentPositionAsync({});
+      setLocation({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+      });
+    })();
+  }, []);
 
+  // 2. Cargar todos los sitios al iniciar (sin filtro)
   useEffect(() => {
     const fetchSitios = async () => {
       try {
-        const sitios = await searchPlaces('', '');
+        const sitios = await searchPlaces("", "");  // tu BD o tu API “getAll”
         setDefaultSitios(sitios);
         setFilteredSitios(sitios);
       } catch (e) {
@@ -32,63 +49,58 @@ const MapaScreen = () => {
     fetchSitios();
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permiso de ubicación denegado");
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-    })();
-  }, []);
-
-  const handleMarkerDragEnd = (e) => {
-    const { latitude, longitude } = e.nativeEvent.coordinate;
-    setLocation({ latitude, longitude });
-  };
-
-  const centerOnUserLocation = () => { // 🆕 centrar mapa
-    if (location && mapRef.current) {
-      mapRef.current.animateToRegion({
-        ...location,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      });
-    }
-  };
-
-  // 🆕 Debounce manual para evitar múltiples llamadas
+  // 3. Función handleSearch: filtrar desde la BD
   const handleSearch = async (query) => {
     if (!location) return;
     setLoading(true);
     try {
       const locationStr = `${location.latitude},${location.longitude}`;
+
+      // Si borraron el texto, restauramos “modo predeterminado”
       if (!query.trim()) {
         setFilteredSitios(defaultSitios);
+        setSelectedPlace(null);
         setLoading(false);
         return;
       }
+
+      // Llamada a back-end / BD
       const results = await searchPlaces(query, locationStr);
+
+      // 3.1 Filtramos marcadores
       setFilteredSitios(results);
+
+      // 3.2 Si tenemos al menos 1 resultado, seleccionamos el primero
+      if (results && results.length > 0) {
+        setSelectedPlace(results[0]);
+
+        // 3.3 Opcional: centrar mapa sobre la primera coincidencia
+        if (mapRef.current) {
+          const primer = results[0];
+          const coord = {
+            latitude: primer.geometry?.location?.lat || primer.latitude,
+            longitude: primer.geometry?.location?.lng || primer.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          };
+          mapRef.current.animateToRegion(coord, 500);
+        }
+      } else {
+        // Si no hay coincidencias, borramos la tarjeta
+        setSelectedPlace(null);
+      }
     } catch (error) {
       Alert.alert("Error", "No se pudo completar la búsqueda.");
     } finally {
       setLoading(false);
     }
   };
-  const handleMarkerPress = (sitio) => {
-    setSelectedPlace(sitio);
-  };
 
+  // 4. Cada vez que cambia searchValue, llamamos handleSearch
   useEffect(() => {
     if (searchValue.trim() === "") {
       setFilteredSitios(defaultSitios);
-      setSelectedPlace(null); // Oculta la tarjeta al borrar búsqueda
+      setSelectedPlace(null);
     } else {
       handleSearch(searchValue);
     }
@@ -110,7 +122,7 @@ const MapaScreen = () => {
           style={styles.search}
           value={searchValue}
           onChangeText={setSearchValue}
-          onSearch={handleSearch}
+          onSearch={() => handleSearch(searchValue)}
           placeholder="Buscar lugares..."
         />
         <MapView
@@ -139,25 +151,39 @@ const MapaScreen = () => {
             <Marker
               coordinate={location}
               draggable
-              onDragEnd={handleMarkerDragEnd}
-              image={require("../../../shared/assets/pin.png")} // 🆕 optimización
+              onDragEnd={(e) =>
+                setLocation({
+                  latitude: e.nativeEvent.coordinate.latitude,
+                  longitude: e.nativeEvent.coordinate.longitude,
+                })
+              }
+              image={require("../../../shared/assets/pin.png")}
             />
           )}
+
           {(Array.isArray(filteredSitios) ? filteredSitios : []).map((sitio) => (
             <Marker
               key={sitio.place_id || sitio.idPlace || sitio.id}
               coordinate={{
-                latitude: sitio.geometry?.location?.lat || sitio.latitude || (sitio.coordinate && sitio.coordinate.latitude),
-                longitude: sitio.geometry?.location?.lng || sitio.longitude || (sitio.coordinate && sitio.coordinate.longitude),
+                latitude: sitio.geometry?.location?.lat || sitio.latitude,
+                longitude: sitio.geometry?.location?.lng || sitio.longitude,
               }}
               image={require("../../../shared/assets/pin.png")}
-              onPress={() => handleMarkerPress(sitio)} // 🆕
+              onPress={() => setSelectedPlace(sitio)}
             />
           ))}
         </MapView>
 
-        {/* 🆕 Botón "Mi Ubicación" */}
-        <TouchableOpacity style={styles.myLocationButton} onPress={centerOnUserLocation}>
+        {/* Botón “Mi ubicación” */}
+        <TouchableOpacity style={styles.myLocationButton} onPress={() => {
+            if (location && mapRef.current) {
+              mapRef.current.animateToRegion({
+                ...location,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              });
+            }
+          }}>
           <Ionicons name="locate" size={24} color="#236A34" />
         </TouchableOpacity>
 
@@ -166,8 +192,10 @@ const MapaScreen = () => {
             <ActivityIndicator size="large" color="#fff" />
           </View>
         )}
+
+        {/* Solo si hay un sitio seleccionado (ya sea por buscar o por tocar un marcador) */}
         {selectedPlace && (
-          <View style={{position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 20, padding: 16}}>
+          <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 20, padding: 16 }}>
             <HorizontalCardPlace
               name={selectedPlace?.name || selectedPlace?.title}
               category={selectedPlace?.category || selectedPlace?.types?.[0]}
@@ -182,25 +210,11 @@ const MapaScreen = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  map: {
-    flex: 1,
-  },
-  error: {
-    fontSize: 16,
-    color: "red",
-    textAlign: "center",
-    marginTop: 50,
-  },
-  mapContainer: {
-    flex: 1,
-    position: "relative",
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  map: { flex: 1 },
+  error: { fontSize: 16, color: "red", textAlign: "center", marginTop: 50 },
+  mapContainer: { flex: 1, position: "relative" },
   search: {
     position: "absolute",
     top: 20,
@@ -208,11 +222,9 @@ const styles = StyleSheet.create({
     right: 16,
     zIndex: 10,
     backgroundColor: "transparent",
-    marginBottom: 0,
-    padding: 0,
     elevation: 0,
   },
-  myLocationButton: { // 🆕 estilo del botón de centrado
+  myLocationButton: {
     position: "absolute",
     bottom: 10,
     right: 16,
@@ -227,9 +239,9 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
