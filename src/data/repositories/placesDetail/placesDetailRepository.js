@@ -5,7 +5,7 @@ export default class PlaceDetailRepository {
     this.placeDetailDatasource = placeDetailDatasource;
   }
 
-  async getPlaceDetailById(idPlace) {
+  async getPlaceDetail(idPlace) {
     try {
       // Delegamos el trabajo al datasource
       const placeDetail = await this.placeDetailDatasource.getPlaceDetail(idPlace);
