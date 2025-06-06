@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import NavigationTopBar from '../NavigationTopBar/NavigationTopBar';
-import { TextStyles } from '../../styles/styles';
+import { TextStyles, Colors,  } from '../../styles/styles';
 
 const MainImage = ({ mainImage, name, category, onBackPress, placeId }) => {
     return (
@@ -18,12 +18,12 @@ const MainImage = ({ mainImage, name, category, onBackPress, placeId }) => {
                             onBackPress={onBackPress}
                             useBackground={true}
                             useHeart={true}
-                            placeId={placeId} // Añadir esta prop
+                            placeId={placeId}
                         />
-                        <View style={styles.infoContainer}>
+                    </View>
+                    <View style={styles.infoContainer}>
                             <Text style={styles.name}>{name}</Text>
                             <Text style={styles.category}>{category}</Text>
-                        </View>
                     </View>
                 </ImageBackground>
             </View>
@@ -35,62 +35,48 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         alignItems: 'center',
-        backgroundColor: '#fff',
     },
     imageContainer: {
         width: '92%',
         aspectRatio: 370 / 430,
-        borderRadius: 10, // Agregamos borderRadius al contenedor
-        overflow: 'hidden', // Necesario para que se vea el borderRadius
-        marginTop: '12.5%',
-        // Sombra para iOS
+        borderRadius: 10,
+        overflow: 'hidden',
+        marginTop: 30,
         shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 8, // Más pronunciada
-        },
-        shadowOpacity: 0.35, // Más opaca
-        shadowRadius: 12, // Más difusa
-        // Sombra para Android
-        elevation: 1, // Más alta
-        // backgroundColor: '#000', // Quitado para que la sombra no tape la imagen
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.35,
+        shadowRadius: 12,
+        elevation: 10,
     },
     mainImage: {
         width: '100%',
         height: '100%',
     },
     imageStyle: {
-        borderRadius: 10, // Agregamos borderRadius a la imagen
+        borderRadius: 10,
     },
     contentContainer: {
+        paddingHorizontal: 20,
         flex: 1,
         marginTop: 14,
         justifyContent: 'space-between',
-        borderRadius: 10, // Agregamos borderRadius al overlay
-        overflow: 'hidden',
     },
     infoContainer: {
         padding: 10,
         paddingBottom: 16,
         paddingLeft: 15,
         backgroundColor: 'rgba(0, 0, 0, 0.69)',
-       
-        
     },
     name: {
         fontFamily: 'Poppins-SemiBold',
         fontSize: 24,
         color: '#fff',
-       
     },
     category: {
         ...TextStyles.PoppinsRegular15,
         color: '#fff',
         opacity: 0.9,
         left: 5,
-
-        
-       
     },
 });
 
