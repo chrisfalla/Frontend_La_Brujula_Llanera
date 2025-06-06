@@ -4,7 +4,6 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { getTermsAndConditionsUrlUseCase } from '../../../domain/usecases/termsAndConditions/getTermsAndConditionsUrlUseCase';
 //imports logout 
 import { logout } from '../../../shared/store/authSlice/authSlice';
 import { useDispatch } from 'react-redux';
@@ -54,25 +53,9 @@ const ProfileScreen = () => {
         navigation.navigate('Favorites');
     };
     
-    const handleOpenTermsAndConditions = async () => {
-        try {
-            const url = await getTermsAndConditionsUrlUseCase();
-            console.log("URL de términos y condiciones:", url);
-            
-            if (!url) {
-                console.error('URL de términos y condiciones no disponible');
-                return;
-            }
-            
-            const canOpen = await Linking.canOpenURL(url);
-            if (canOpen) {
-                await Linking.openURL(url);
-            } else {
-                console.error('No se puede abrir la URL:', url);
-            }
-        } catch (error) {
-            console.error('Error al abrir los términos y condiciones:', error);
-        }
+    const handleOpenTermsAndConditions = () => {
+        // Navegar a la pantalla de términos y condiciones en lugar de abrir URL directamente
+        navigation.navigate('TermsCondition');
     };
 
     return (
