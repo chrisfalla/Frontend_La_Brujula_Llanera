@@ -49,7 +49,7 @@ const DetailInfo = ({ description, phoneNumber, mail }) => {
                 <>
                     <TouchableOpacity style={styles.mapContainer}>
                         <ImageBackground
-                            source={{ uri: 'https://ulgrkkcquytkafmoqwqt.supabase.co/storage/v1/object/sign/brujula-llanera/ejemplo/mapa.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJicnVqdWxhLWxsYW5lcmEvZWplbXBsby9tYXBhLndlYnAiLCJpYXQiOjE3NDYwODE4ODQsImV4cCI6MTc3NzYxNzg4NH0.rOGcXvni5FqpcBj2baslW85AAPv735hkOXHm-xRSjY0' }}
+                            source={require('../../../shared/assets/MapsYopal.png')}
                             style={styles.mapImage}
                             imageStyle={styles.mapImageStyle}
                         >
@@ -72,7 +72,7 @@ const DetailInfo = ({ description, phoneNumber, mail }) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        padding: 18,
         paddingTop: 0,
     },
     tabContainer: {
@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     tab: {
-        paddingHorizontal: 12,
+        marginRight: 20,
+        spacwBetween: 10,
         paddingVertical: 8,
     },
     tabText: {
