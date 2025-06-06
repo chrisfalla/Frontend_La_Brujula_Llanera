@@ -27,24 +27,25 @@ const GalleryImage = ({ images }) => {
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 20,
         paddingTop: 20,
         paddingBottom: 5,
     },
     title: {
+        paddingHorizontal: 15,
         ...TextStyles.PoppinsBold15,
         color: Colors.ColorPrimary,
         marginBottom: 14,
     },
     imagesContainer: {
+        marginHorizontal: 5,
         flexDirection: "row",
         flexWrap: "wrap",
-        justifyContent: "center",
+        
     },
     imageWrapper: {
         width: 100,
         height: 100,
-        marginHorizontal: 7,
+        marginHorizontal: 11,
         marginBottom: 10,
         borderRadius: GlobalStyles.borderRadius,
         backgroundColor: Colors.BackgroundPage,
@@ -55,8 +56,8 @@ const styles = StyleSheet.create({
         elevation: GlobalStyles.elevation,
     },
     image: {
-        width: "100%",
-        height: "100%",
+        width: "110%",
+        height: "110%",
         borderRadius: GlobalStyles.borderRadius,
         borderWidth: 3,
         borderColor: Colors.BackgroundPage,
