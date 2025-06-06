@@ -159,6 +159,75 @@ const MapaScreen = () => {
               : undefined
           }
           showsUserLocation={false}
+          onPoiClick={async (e) => {
+            const poi = e.nativeEvent;
+            setLoading(true); // Mostrar indicador de carga
+
+            try {
+              // Intentar buscar el POI por su nombre en la base de datos
+              const locationStr = `${poi.coordinate.latitude},${poi.coordinate.longitude}`;
+              const searchResults = await searchPlaces(poi.name, locationStr, 500); // Radio de 500 metros
+
+              let placeToShow = {
+                name: poi.name,
+                latitude: poi.coordinate.latitude,
+                longitude: poi.coordinate.longitude,
+                place_id: poi.placeId,
+                category: "Punto de Interés", // Categoría por defecto
+                address: poi.name, // Usar nombre como dirección provisional
+                image: null, // Sin imagen por defecto
+              };
+
+              if (searchResults && searchResults.length > 0) {
+                // Intentar encontrar una coincidencia por nombre o proximidad
+                const bestMatch = searchResults.find(
+                  (p) =>
+                    p.name.toLowerCase().includes(poi.name.toLowerCase()) ||
+                    poi.name.toLowerCase().includes(p.name.toLowerCase())
+                );
+
+                if (bestMatch) {
+                  // Si encontramos coincidencia, usar sus datos completos (incluida la imagen)
+                  placeToShow = {
+                    ...bestMatch,
+                    // Mantener las coordenadas exactas del POI
+                    latitude: poi.coordinate.latitude,
+                    longitude: poi.coordinate.longitude,
+                    place_id: poi.placeId,
+                  };
+                }
+              }
+
+              setSelectedPlace(placeToShow);
+            } catch (error) {
+              console.error("Error al buscar detalles del POI:", error);
+              // En caso de error, mostrar información básica del POI sin imagen
+              setSelectedPlace({
+                name: poi.name,
+                latitude: poi.coordinate.latitude,
+                longitude: poi.coordinate.longitude,
+                place_id: poi.placeId,
+                category: "Punto de Interés",
+                address: poi.name,
+                image: null,
+              });
+            } finally {
+              setLoading(false); // Ocultar indicador de carga
+            }
+
+            // Centrar el mapa en el POI
+            if (mapRef.current) {
+              mapRef.current.animateToRegion(
+                {
+                  latitude: poi.coordinate.latitude,
+                  longitude: poi.coordinate.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                },
+                500
+              );
+            }
+          }}
         >
           {location && (
             <Marker
@@ -219,7 +288,7 @@ const MapaScreen = () => {
               position: "absolute",
               left: 0,
               right: 0,
-              bottom: 0,
+              top: 80,              
               zIndex: 20,
               padding: 16,
             }}
