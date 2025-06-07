@@ -3,7 +3,7 @@ import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-nativ
 import { Ionicons } from '@expo/vector-icons';
 import { GlobalStyles, TextStyles, Colors } from '../../styles/styles';
 
-const CustomSearch = ({ placeholder, value, onChangeText, onSearch }) => {
+const CustomSearch = ({ placeholder, value, onChangeText, onSearch, style}) => {
     const [isFocused, setIsFocused] = useState(false);
     const showCustomPlaceholder = !value && !isFocused;
 
@@ -14,8 +14,7 @@ const CustomSearch = ({ placeholder, value, onChangeText, onSearch }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.label}>Escriba la Categoria, o Tipo de Servicio.</Text>
+        <View style={[styles.container, style]}>
             <View style={[
                 styles.searchContainer,
                 isFocused && styles.searchContainerFocused                
@@ -57,6 +56,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 16,
         marginBottom: 20,
+        
     },
     label: {
         ...TextStyles.PoppinsRegular15,
@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
     },
     searchContainer: {
+        backgroundColor: Colors.BackgroundPage,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.Black,
         paddingHorizontal: 15,
         height: 50,
+        
     },
     searchContainerFocused: {
         borderColor: Colors.ColorPrimary,
