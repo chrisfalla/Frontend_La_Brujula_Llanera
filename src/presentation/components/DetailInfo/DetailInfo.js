@@ -5,9 +5,16 @@ import { Colors, TextStyles } from '../../styles/styles';
 
 const tabs = ['Sobre nosotros', 'Contacto', 'Reviews'];
 
-const DetailInfo = ({ description, phoneNumber, mail }) => {
+const DetailInfo = ({ description, phoneNumber, mail, navigation }) => {
     const [activeTab, setActiveTab] = useState('Sobre nosotros');
     
+    const handleTabPress = (tab) => {
+        setActiveTab(tab);
+        if (tab === 'Reviews' && navigation) {
+            navigation.navigate('PlaceReviews');
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.tabContainer}>
@@ -16,7 +23,7 @@ const DetailInfo = ({ description, phoneNumber, mail }) => {
                     return (
                         <TouchableOpacity
                             key={tab}
-                            onPress={() => setActiveTab(tab)}
+                            onPress={() => handleTabPress(tab)}
                             style={styles.tab}
                         >
                             <Text style={[

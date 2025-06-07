@@ -92,6 +92,7 @@ const DetailScreen = ({ navigation, route }) => {
           description={placeDetail.description}
           phoneNumber={contactInfo?.phone || "3001234567"}
           mail={contactInfo?.mail || "contacto@ejemplo.com"}
+          navigation={navigation} // <-- Añade esta línea
         />
         
         
