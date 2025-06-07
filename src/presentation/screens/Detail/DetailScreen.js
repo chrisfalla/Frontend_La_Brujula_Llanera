@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { StatusBar, StyleSheet, ScrollView, View, ActivityIndicator, Text } from 'react-native';
-import MainImage from '../../components/MainImage/MainImage';
-import GalleryImage from '../../components/GalleryImage/GalleryImage';
-import DetailInfo from '../../components/DetailInfo/DetailInfo';
-import Rating from '../../components/Rating/Rating';
-import GetPlaceDetailUseCase from '../../../domain/usecases/placesDetail/getPlaceDetailUseCase';
-import PlaceDetailRepository from '../../../data/repositories/placesDetail/placesDetailRepository';
-import PlaceDetailApi from '../../../infrastructure/api/placesDetail/placesDetailApi';
-import PlaceDetailDatasource from '../../../data/datasources/placesDetail/placesDetailDataSource';
+import React, { useEffect, useState } from "react";
+import {
+  StatusBar,
+  StyleSheet,
+  ScrollView,
+  View,
+  ActivityIndicator,
+  Text,
+} from "react-native";
+import MainImage from "../../components/MainImage/MainImage";
+import GalleryImage from "../../components/GalleryImage/GalleryImage";
+import DetailInfo from "../../components/DetailInfo/DetailInfo";
+import Rating from "../../components/Rating/Rating";
+import GetPlaceDetailUseCase from "../../../domain/usecases/placesDetail/getPlaceDetailUseCase";
+import PlaceDetailRepository from "../../../data/repositories/placesDetail/placesDetailRepository";
+import PlaceDetailApi from "../../../infrastructure/api/placesDetail/placesDetailApi";
+import PlaceDetailDatasource from "../../../data/datasources/placesDetail/placesDetailDataSource";
 
 const DetailScreen = ({ navigation, route }) => {
   const idPlace = route?.params?.idPlace ?? 2;
@@ -22,7 +29,7 @@ const DetailScreen = ({ navigation, route }) => {
         const datasource = new PlaceDetailDatasource(api);
         const repository = new PlaceDetailRepository(datasource);
         const useCase = new GetPlaceDetailUseCase(repository);
-        
+
         const data = await useCase.execute(idPlace);
         setPlaceDetail(data);
       } catch (err) {
@@ -51,17 +58,22 @@ const DetailScreen = ({ navigation, route }) => {
   if (error || !placeDetail) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.errorText}>{error || 'Error al cargar los datos'}</Text>
+        <Text style={styles.errorText}>
+          {error || "Error al cargar los datos"}
+        </Text>
       </View>
     );
   }
 
   // Procesamiento de imágenes
-  const mainImage = placeDetail.images?.find(img => img.categoryId === 3)?.url;
-  const galleryImages = placeDetail.images
-    ?.filter(img => img.categoryId !== 3)
-    ?.slice(0, 3)
-    ?.map(img => img.url) || [];
+  const mainImage = placeDetail.images?.find(
+    (img) => img.categoryId === 3
+  )?.url;
+  const galleryImages =
+    placeDetail.images
+      ?.filter((img) => img.categoryId !== 3)
+      ?.slice(0, 3)
+      ?.map((img) => img.url) || [];
 
   // Extraer datos de contacto (ajusta según tu API real)
   const contactInfo = placeDetail.socialMedia?.reduce((acc, curr) => {
@@ -72,8 +84,12 @@ const DetailScreen = ({ navigation, route }) => {
 
   return (
     <ScrollView style={styles.scrollContainer}>
-      <StatusBar barStyle="light-content" />
-      
+      <StatusBar
+        barStyle="dark-content" // Para iconos oscuros en fondo claro
+        backgroundColor="#ffffff" // Fondo blanco para Android
+        translucent={false} // No translúcido para evitar superposiciones
+      />
+
       <MainImage
         mainImage={mainImage}
         name={placeDetail.name}
@@ -81,25 +97,21 @@ const DetailScreen = ({ navigation, route }) => {
         onBackPress={handleBackPress}
         placeId={idPlace}
       />
-      <View style= {styles.rating}>
+      <View style={styles.rating}>
         <Rating average={placeDetail.rating} />
       </View>
-      
 
-        <GalleryImage images={galleryImages} />
+      <GalleryImage images={galleryImages} />
 
-        <DetailInfo
-          description={placeDetail.description}
-          phoneNumber={contactInfo?.phone || "3001234567"}
-          mail={contactInfo?.mail || "contacto@ejemplo.com"}
-          navigation={navigation}
-          placeId={idPlace}
-          initialTab="Sobre nosotros"
-        />
-        
-        
-      </ScrollView>
-    
+      <DetailInfo
+        description={placeDetail.description}
+        phoneNumber={contactInfo?.phone || "3001234567"}
+        mail={contactInfo?.mail || "contacto@ejemplo.com"}
+        navigation={navigation}
+        placeId={idPlace}
+        initialTab="Sobre nosotros"
+      />
+    </ScrollView>
   );
 };
 
@@ -110,19 +122,19 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   rating: {
-    position: 'absolute',
+    position: "absolute",
     top: 423,
-    alignSelf: 'center',
-},
+    alignSelf: "center",
+  },
   errorText: {
-    color: 'red',
+    color: "red",
     padding: 20,
-    textAlign: 'center',
-  }
+    textAlign: "center",
+  },
 });
 
 export default DetailScreen;
