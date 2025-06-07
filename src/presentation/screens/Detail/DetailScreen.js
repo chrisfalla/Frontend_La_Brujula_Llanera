@@ -94,6 +94,7 @@ const DetailScreen = ({ navigation, route }) => {
           mail={contactInfo?.mail || "contacto@ejemplo.com"}
           navigation={navigation}
           placeId={idPlace}
+          initialTab="Sobre nosotros"
         />
         
         

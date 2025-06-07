@@ -2,19 +2,26 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, TextStyles } from '../../styles/styles';
+import { useFocusEffect } from '@react-navigation/native';
 
 const tabs = ['Sobre nosotros', 'Contacto', 'Reviews'];
 
-const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId }) => {
-    const [activeTab, setActiveTab] = useState('Sobre nosotros');
-    
+const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId, initialTab = 'Sobre nosotros' }) => {
+    const [activeTab, setActiveTab] = useState(initialTab);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            setActiveTab(initialTab);
+        }, [initialTab])
+    );
+
     const handleTabPress = (tab) => {
         setActiveTab(tab);
         if (tab === 'Reviews' && navigation && placeId) {
             navigation.navigate('PlaceReviews', { placeId });
         }
     };
-    
+
     return (
         <View style={styles.container}>
             <View style={styles.tabContainer}>
@@ -52,7 +59,7 @@ const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId }) => 
                         <Text style={styles.contactText}>{mail}</Text>
                     </View>
                 </View>
-            ) : (
+            ) : activeTab === 'Sobre nosotros' ? (
                 <>
                     <TouchableOpacity style={styles.mapContainer}>
                         <ImageBackground
@@ -72,7 +79,7 @@ const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId }) => 
                         </Text>
                     </View>
                 </>
-            )}
+            ) : null}
         </View>
     );
 };

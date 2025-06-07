@@ -76,6 +76,7 @@ const PlaceReviews = ({ navigation, route }) => {
                     barStyle="dark-content" // Para iconos oscuros en fondo claro
                     backgroundColor="#ffffff" // Fondo blanco para Android
                     translucent={false} // No translúcido para evitar superposiciones
+                    
                     />
 
             <NavigationTopBar
