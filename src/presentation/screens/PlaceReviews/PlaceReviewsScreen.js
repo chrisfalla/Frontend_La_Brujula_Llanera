@@ -1,52 +1,83 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, StatusBar } from 'react-native';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import NavigationTopBar from '../../components/NavigationTopBar/NavigationTopBar';
 import ReviewCard from '../../components/ReviewCard/ReviewCard';
 import { GlobalStyles, TextStyles, Colors } from '../../styles/styles';
 import Rating from '../../components/Rating/Rating';
 import CustomInputText from '../../components/CustomInput/CustomInputText';
-import { getReviewsByPlaceId } from '../../../infrastructure/api/reviews/reviewApi';
+import { getReviewsByPlaceId, addReview } from '../../../infrastructure/api/reviews/reviewApi';
+import { useSelector } from 'react-redux';
 
 const PlaceReviews = ({ navigation, route }) => {
     const [isAddingReview, setIsAddingReview] = useState(false);
     const [newComment, setNewComment] = useState('');
     const [rating, setRating] = useState(1);
     const [reviews, setReviews] = useState([]);
+    const [generalInfo, setGeneralInfo] = useState({});
     const [isLoading, setIsLoading] = useState(true);
 
     // Suponiendo que el placeId llega por route.params.placeId
     const placeId = route?.params?.placeId;
+    const user = useSelector(state => state.auth.user);
 
     useEffect(() => {
         const fetchReviews = async () => {
             try {
                 const data = await getReviewsByPlaceId(placeId);
                 console.log('Reviews desde backend:', data); // LOG para depuración
-                setReviews(data);
+                setReviews(data.reviews || []);
+                setGeneralInfo(data.generalInfo || {});
             } catch (error) {
                 console.log('Error al obtener reviews:', error); // LOG para depuración
                 setReviews([]);
+                setGeneralInfo({});
             } finally {
                 setIsLoading(false);
             }
         };
         if (placeId) fetchReviews();
-    }, [placeId]);
+    }, [placeId, isAddingReview]);
 
     const handleAddReview = () => {
         setIsAddingReview(true); // Mostrar el input y botón
     };
 
-    const handleSubmitReview = () => {
-        console.log('Comentario enviado:', newComment);
-        // Aquí podrías agregar la lógica para enviar el comentario
-        setNewComment('');
-        setIsAddingReview(false); // Vuelve a mostrar la lista
+    const handleSubmitReview = async () => {
+        try {
+            const userId = user?.id || user?.idUser;
+            if (!userId) {
+                alert('Debes iniciar sesión para dejar un comentario');
+                return;
+            }
+            const reviewPayload = {
+                comment: newComment,
+                ratingValue: rating,
+                userId,
+                placeId,
+            };
+            console.log('Payload que se envía al backend:', reviewPayload);
+            await addReview(reviewPayload);
+            setNewComment('');
+            setIsAddingReview(false);
+            // Refresca la lista de reviews
+            setIsLoading(true);
+            const data = await getReviewsByPlaceId(placeId);
+            setReviews(data.reviews || []);
+            setGeneralInfo(data.generalInfo || {});
+        } catch (error) {
+            console.log('Error al enviar review:', error.response?.data || error);
+        }
     };
 
     return (
         <View style={styles.container}>
+            <StatusBar
+                    barStyle="dark-content" // Para iconos oscuros en fondo claro
+                    backgroundColor="#ffffff" // Fondo blanco para Android
+                    translucent={false} // No translúcido para evitar superposiciones
+                    />
+
             <NavigationTopBar
                 primaryIcon="chevron-back"
                 onBackPress={() => navigation.goBack()}
@@ -58,10 +89,10 @@ const PlaceReviews = ({ navigation, route }) => {
             <View style={styles.ratingcontainer}>
                 <View style={styles.ratingcard}>
                     <Text style={styles.text}>Calificación General</Text>
-                    <Text style={styles.score}>4.3</Text>
+                    <Text style={styles.score}>{generalInfo.generalRating ?? 'N/A'}</Text>
                 </View>
                 <View style={styles.rating}>
-                    <Rating average={4.3} />
+                    <Rating average={generalInfo.generalRating ?? 0} />
                 </View>
             </View>
 
@@ -101,14 +132,18 @@ const PlaceReviews = ({ navigation, route }) => {
                 ) : (
                     <FlatList
                         data={reviews}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => (
-                            <ReviewCard
-                                username={item.username}
-                                comment={item.comment}
-                                date={item.date}
-                            />
-                        )}
+                        keyExtractor={(item) => (item.idReview?.toString ? item.idReview.toString() : String(item.idReview))}
+                        renderItem={({ item }) => {
+                            // El campo user puede ser un objeto, ajusta según la estructura real
+                            const username = item.user?.name || item.user?.username || 'Usuario';
+                            return (
+                                <ReviewCard
+                                    username={username}
+                                    comment={item.comment}
+                                    date={item.updatedAt?.slice(0, 10) || ''}
+                                />
+                            );
+                        }}
                     />
                 )
             )}
