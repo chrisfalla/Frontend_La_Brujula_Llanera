@@ -274,7 +274,7 @@ const HomeScreen = ({ navigation }) => {
                 <MostVisitedPlaces
                   place={item}
                   onPress={() => {
-                    navigation.navigate("DetailScreen", { placeId: item.idPlace });
+                    navigation.navigate("DetailScreen", { idPlace: item.idPlace });
                     /* TODO: Implementar navegación al detalle */
                   }}
                   cardWidth={CARD_WIDTH}
@@ -367,7 +367,7 @@ const HomeScreen = ({ navigation }) => {
                       imageCategoryName={item.imageCategoryName}
                       idPlace={item.idPlace} // Asegurar que esta prop se pasa correctamente
                       onPress={() => {
-                        navigation.navigate("DetailScreen", { placeId: item.idPlace });
+                        navigation.navigate("DetailScreen", { idPlace: item.idPlace });
                       }}
                       style={{width: '100%'}} // Forzar ancho al 100% del contenedor
                     />
@@ -439,9 +439,10 @@ const HomeScreen = ({ navigation }) => {
                     }
                     address={item.placeAddress || "Dirección no disponible"}
                     image={item.imageUrl}
-                    onPress={() => {
-                      navigation.navigate("DetailScreen", { placeId: item.idPlace });
+                    onDetailPress={() => {
+                      navigation.navigate("DetailScreen", { idPlace: item.idPlace });
                     }}
+                    onMapPress={() => navigation.navigate("Map")}
                   />
                 )}
                 scrollEnabled={false}

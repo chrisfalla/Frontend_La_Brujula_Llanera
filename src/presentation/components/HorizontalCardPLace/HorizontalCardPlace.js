@@ -12,6 +12,7 @@ const HorizontalCardPlace = ({
   address,
   image,
   onMapPress, 
+  onDetailPress
 }) => {
   return (
     <View style={styles.container}>
@@ -33,7 +34,7 @@ const HorizontalCardPlace = ({
       <View style={styles.actionsContainer}>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={onMapPress}
+          onPress={onDetailPress}
         >
           <FontAwesome5 name="chevron-right" size={16} color="#FFFFFF" />
         </TouchableOpacity>

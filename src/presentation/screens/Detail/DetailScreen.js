@@ -1,70 +1,125 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar, StyleSheet, ScrollView } from 'react-native';
+import { StatusBar, StyleSheet, ScrollView, View, ActivityIndicator, Text } from 'react-native';
 import MainImage from '../../components/MainImage/MainImage';
 import GalleryImage from '../../components/GalleryImage/GalleryImage';
 import DetailInfo from '../../components/DetailInfo/DetailInfo';
+import Rating from '../../components/Rating/Rating';
+import GetPlaceDetailUseCase from '../../../domain/usecases/placesDetail/getPlaceDetailUseCase';
+import PlaceDetailRepository from '../../../data/repositories/placesDetail/placesDetailRepository';
+import PlaceDetailApi from '../../../infrastructure/api/placesDetail/placesDetailApi';
+import PlaceDetailDatasource from '../../../data/datasources/placesDetail/placesDetailDataSource';
 
-const DetailScreen = ({ navigation }) => {
-    const [placeDetail, setPlaceDetail] = useState(null);
-    const [categoryName, setCategoryName] = useState('');
+const DetailScreen = ({ navigation, route }) => {
+  const idPlace = route?.params?.idPlace ?? 2;
+  const [placeDetail, setPlaceDetail] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const loadPlaceDetail = async () => {
-            const repository = providePlaceDetailRepository();
-            const useCase = new GetPlaceDetailUseCase(repository);
-            const detail = await useCase.execute("1"); // ID del lugar que queremos mostrar
-            setPlaceDetail(detail);
-            // Buscar nombre de la categoría
-            if (detail && detail.idCategorie) {
-                const catRepo = provideCategoryRepository();
-                const catUseCase = new GetCategoriesUseCase(catRepo);
-                const categories = await catUseCase.execute();
-                const found = categories.find(cat => cat.idCategory === detail.idCategorie);
-                setCategoryName(found ? found.name : '');
-            }
-        };
-
-        loadPlaceDetail();
-    }, []);
-
-    if (!placeDetail) {
-        return null; // o un componente de carga
-    }
-
-    const handleBackPress = () => {
-        navigation.goBack();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const api = new PlaceDetailApi();
+        const datasource = new PlaceDetailDatasource(api);
+        const repository = new PlaceDetailRepository(datasource);
+        const useCase = new GetPlaceDetailUseCase(repository);
+        
+        const data = await useCase.execute(idPlace);
+        setPlaceDetail(data);
+      } catch (err) {
+        console.error("Error loading data:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
+    fetchData();
+  }, [idPlace]);
+
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
+
+  if (loading) {
     return (
-        <ScrollView style={styles.container}>
-            <StatusBar
-                    barStyle="dark-content" // Para iconos oscuros en fondo claro
-                    backgroundColor="#ffffff" // Fondo blanco para Android
-                    translucent={false} // No translúcido para evitar superposiciones
-                  />
-            <MainImage
-                mainImage={placeDetail.mainImage}
-                name={placeDetail.name}
-                category="Gastronomía" // Esto debería venir de una tabla de categorías
-                // category={categoryName}
-                
-                onBackPress={handleBackPress}
-            />
-            <GalleryImage images={placeDetail.secondaryImages} />
-            <DetailInfo 
-                description={placeDetail.description}
-                coordinates={placeDetail.coordinates}
-                phoneNumber={placeDetail.phoneNumber}
-            />
-        </ScrollView>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" />
+      </View>
     );
+  }
+
+  if (error || !placeDetail) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{error || 'Error al cargar los datos'}</Text>
+      </View>
+    );
+  }
+
+  // Procesamiento de imágenes
+  const mainImage = placeDetail.images?.find(img => img.categoryId === 3)?.url;
+  const galleryImages = placeDetail.images
+    ?.filter(img => img.categoryId !== 3)
+    ?.slice(0, 3)
+    ?.map(img => img.url) || [];
+
+  // Extraer datos de contacto (ajusta según tu API real)
+  const contactInfo = placeDetail.socialMedia?.reduce((acc, curr) => {
+    if (curr.typeSocialMediaId === "3") acc.phone = curr.value;
+    if (curr.typeSocialMediaId === "4") acc.mail = curr.value;
+    return acc;
+  }, {});
+
+  return (
+    <ScrollView style={styles.scrollContainer}>
+      <StatusBar barStyle="light-content" />
+      
+      <MainImage
+        mainImage={mainImage}
+        name={placeDetail.name}
+        category={placeDetail.category}
+        onBackPress={handleBackPress}
+        placeId={idPlace}
+      />
+      <View style= {styles.rating}>
+        <Rating average={placeDetail.rating} />
+      </View>
+      
+
+        <GalleryImage images={galleryImages} />
+
+        <DetailInfo
+          description={placeDetail.description}
+          phoneNumber={contactInfo?.phone || "3001234567"}
+          mail={contactInfo?.mail || "contacto@ejemplo.com"}
+        />
+        
+        
+      </ScrollView>
+    
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
+  scrollContainer: {
+    flex: 1,
+    paddingBottom: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rating: {
+    position: 'absolute',
+    top: 423,
+    alignSelf: 'center',
+},
+  errorText: {
+    color: 'red',
+    padding: 20,
+    textAlign: 'center',
+  }
 });
 
 export default DetailScreen;

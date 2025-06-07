@@ -10,7 +10,7 @@ const instance = axios.create({
   }
 });
 
-// Token por header (usando SecureStore en lugar de AsyncStorage)
+// Interceptor de solicitud
 instance.interceptors.request.use(async (config) => {
   try {
     const userData = await SecureStore.getItemAsync('loggedUser');
@@ -23,71 +23,50 @@ instance.interceptors.request.use(async (config) => {
   } catch (error) {
     console.error('Error al obtener token', error);
   }
-  return config;
-});
+  return config});
 
-// Manejo de errores
-// instance.interceptors.response.use(
-//   response => response,
-//   error => {
-//     const { response } = error;
-
-//     if (!response) console.error('❌ Error de red');
-//     else if (response.status === 401) console.warn('⚠️ No autorizado');
-//     else if (response.status === 500) console.error('💥 Error del servidor');
-
-//     return Promise.reject(error);
-//   }
-// );
-//logs
-// Eliminado el httpClient duplicado que tenía una baseURL incorrecta
-// y dejamos solo el instance principal que está correctamente configurado
-
-
-
-
-// 👉 Logging helper
-const logRequest = (method, url, data) => {
-  console.log(`📡 [${method.toUpperCase()}] Request to: ${url}`);
-  if (data) console.log('📤 Payload:', JSON.stringify(data, null, 2));
+// Helpers para logging
+const logRequest = (method, url) => {
+  console.log(`🚀 [${method.toUpperCase()}] ${url}`);
 };
 
-const logResponse = (data) => {
-  console.log('✅ Response:', JSON.stringify(data, null, 2));
+const logResponse = (response) => {
+  console.log('✅ Received response with status:', response.status);
+  return response;
 };
 
-// Métodos genéricos     que es el config?
+const logError = (error) => {
+  if (error.response) {
+    console.error('❌ Server responded with:', error.response.status);
+  } else if (error.request) {
+    console.error('❌ No response received:', error.request);
+  } else {
+    console.error('❌ Request error:', error.message);
+  }
+  return Promise.reject(error);
+};
+
+// Configurar interceptores
+instance.interceptors.response.use(logResponse, logError);
+
+// Métodos HTTP
 const get = async (url, config = {}) => {
-  logRequest('get', url);
-  const res = await instance.get(url, config);//peticion al back 
-  logResponse(res.data); //logs console 
-  return res.data;
+  logRequest('GET', url);
+  const response = await instance.get(url, config);
+  return response.data; // Devuelve directamente los datos
 };
 
 const post = async (url, data, config = {}) => {
-  logRequest('post', url, data);
-  const res = await instance.post(url, data, config);
-  logResponse(res.data);
-  return res.data;
+  logRequest('POST', url);
+  const response = await instance.post(url, data, config);
+  return response.data;
 };
 
-const put = async (url, data, config = {}) => {
-  logRequest('put', url, data);
-  const res = await instance.put(url, data, config);
-  logResponse(res.data);
-  return res.data;
-};
-
-const del = async (url, config = {}) => {
-  logRequest('delete', url);
-  const res = await instance.delete(url, config);
-  logResponse(res.data);
-  return res.data;
-};
+// ... otros métodos (put, delete)
 
 export default {
   get,
   post,
-  put,
-  delete: del
+  put: instance.put,
+  delete: instance.delete
 };
