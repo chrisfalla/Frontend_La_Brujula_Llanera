@@ -5,16 +5,16 @@ import { Colors, TextStyles } from '../../styles/styles';
 
 const tabs = ['Sobre nosotros', 'Contacto', 'Reviews'];
 
-const DetailInfo = ({ description, phoneNumber, mail, navigation }) => {
+const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId }) => {
     const [activeTab, setActiveTab] = useState('Sobre nosotros');
     
     const handleTabPress = (tab) => {
         setActiveTab(tab);
-        if (tab === 'Reviews' && navigation) {
-            navigation.navigate('PlaceReviews');
+        if (tab === 'Reviews' && navigation && placeId) {
+            navigation.navigate('PlaceReviews', { placeId });
         }
     };
-
+    
     return (
         <View style={styles.container}>
             <View style={styles.tabContainer}>
