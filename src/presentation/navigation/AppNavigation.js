@@ -26,6 +26,7 @@ import FavoritesScreen from "../screens/Favorites/FavoritesScreen";
 import	DetailScreen from "../screens/Detail/DetailScreen";
 import SearchScreen from "../screens/Search/SearchScreen";
 import TermsCondition from "../screens/TermsCondition/TermsCondition";
+import PlaceReviews from "../screens/PlaceReviews/PlaceReviewsScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,6 +46,7 @@ const RootStack = ({ isLoggedIn }) => (
     <Stack.Screen name="Favorites" component={FavoritesScreen} />
     <Stack.Screen name="DetailScreen" component={DetailScreen} />
     <Stack.Screen name="TermsCondition" component={TermsCondition} />
+    <Stack.Screen name="PlaceReviews" component={PlaceReviews} />
   </Stack.Navigator>
 );
 

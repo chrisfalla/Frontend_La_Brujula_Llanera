@@ -14,6 +14,11 @@ const HorizontalCardPlace = ({
   onMapPress, 
   onDetailPress
 }) => {
+  // Handler para toda la card
+  const handleCardPress = () => {
+    if (onDetailPress) onDetailPress();
+  };
+
   return (
     <View style={styles.container}>
       <Image

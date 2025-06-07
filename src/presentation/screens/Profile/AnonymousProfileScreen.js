@@ -33,8 +33,11 @@ const AnonymousProfileScreen = () => {
             {/* Saludo */}
             <Text style={styles.greeting}>Actualmente esta usando la app como visitante</Text>
 
-            <Text style={styles.text}>Si desea poder acceder a contactar los diferentes sitios que estan en 
-            <Text style= {styles.strong}>La Brujula Llanera </Text> inicie sesion o registrese.</Text>
+            <Text style={styles.text}>
+              Si desea poder acceder a contactar los diferentes sitios que estan en 
+              <Text style={styles.strong}>La Brujula Llanera </Text>
+              inicie sesion o registrese.
+            </Text>
             
             <CustomButton 
                 titletext={'Iniciar sesión'}
@@ -68,7 +71,7 @@ const MenuItem = ({ title, onPress }) => (
         style={styles.menuItem} 
         onPress={onPress}
     >
-        <Text style= {{...TextStyles.PoppinsRegular15}}>{title}</Text>
+        <Text style={{...TextStyles.PoppinsRegular15}}>{title}</Text>
         <Text style={styles.arrow}>›</Text>
     </TouchableOpacity>
 );

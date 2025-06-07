@@ -18,7 +18,7 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
-  StatusBar
+  StatusBar, TouchableOpacity
 } from "react-native";
 
 // Redux imports
@@ -432,18 +432,21 @@ const HomeScreen = ({ navigation }) => {
                   item.idPlace?.toString() || Math.random().toString()
                 }
                 renderItem={({ item }) => (
-                  <HorizontalCardPlace
-                    name={item.placeName}
-                    category={
-                      item.categoryInfo?.categoryName || "Categoría desconocida"
-                    }
-                    address={item.placeAddress || "Dirección no disponible"}
-                    image={item.imageUrl}
-                    onDetailPress={() => {
-                      navigation.navigate("DetailScreen", { idPlace: item.idPlace });
-                    }}
-                    onMapPress={() => navigation.navigate("Map")}
-                  />
+                  <TouchableOpacity // SE usa TouchableOpacity para manejar la navegación al detalle
+                    activeOpacity={0.9}
+                    onPress={() => navigation.navigate("DetailScreen", { idPlace: item.idPlace })}
+                  >
+                    <HorizontalCardPlace
+                      name={item.placeName}
+                      category={
+                        item.categoryInfo?.categoryName || "Categoría desconocida"
+                      }
+                      address={item.placeAddress || "Dirección no disponible"}
+                      image={item.imageUrl}
+                      onDetailPress={() => navigation.navigate("DetailScreen", { idPlace: item.idPlace })}
+                      onMapPress={() => navigation.navigate("detailMap", { idPlace: item.idPlace })}
+                    />
+                  </TouchableOpacity>
                 )}
                 scrollEnabled={false}
                 contentContainerStyle={styles.placesByTagsListContainer}

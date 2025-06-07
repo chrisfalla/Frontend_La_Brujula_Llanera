@@ -6,6 +6,7 @@ import {
   FlatList,
   Text,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { GlobalStyles, TextStyles } from "../../styles/styles";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
@@ -111,7 +112,7 @@ const SearchScreen = () => {
   };
 
   const handlePlacePress = (place) => {
-    navigation.navigate("DetailScreen", { placeId: place.idPlace });
+    navigation.navigate("DetailScreen", { idPlace: place.idPlace });
   };
 
   return (
@@ -168,22 +169,19 @@ const SearchScreen = () => {
     
     // Pasar el objeto normalizado con los nombres de prop correctos
     return (
-      <HorizontalCardPlace
-        name={normalizedItem.name}
-        address={normalizedItem.address}
-        image={normalizedItem.image}
-        category={normalizedItem.category}
-        onPress={() => {
-          navigation.navigate("DetailScreen", { 
-            placeId: normalizedItem.idPlace 
-          });
-        }}
-        onMapPress={() => {
-          navigation.navigate("DetailScreen", { 
-            placeId: normalizedItem.idPlace 
-          });
-        }}
-      />
+      <TouchableOpacity // SE usa TouchableOpacity para manejar la navegación al detalle
+        activeOpacity={0.9}
+        onPress={() => navigation.navigate("DetailScreen", { idPlace: normalizedItem.idPlace })}
+      >
+        <HorizontalCardPlace
+          name={normalizedItem.name}
+          address={normalizedItem.address}
+          image={normalizedItem.image}
+          category={normalizedItem.category}
+          onDetailPress={() => navigation.navigate("DetailScreen", { idPlace: normalizedItem.idPlace })}
+          onMapPress={() => navigation.navigate("MapScreen", { idPlace: normalizedItem.idPlace })}
+        />
+      </TouchableOpacity>
     );
   }}
   keyExtractor={(item, index) => (item.idPlace?.toString() || `place-${index}`)}
