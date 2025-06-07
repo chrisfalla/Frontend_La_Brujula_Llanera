@@ -10,7 +10,7 @@ import PlaceDetailApi from '../../../infrastructure/api/placesDetail/placesDetai
 import PlaceDetailDatasource from '../../../data/datasources/placesDetail/placesDetailDataSource';
 
 const DetailScreen = ({ navigation, route }) => {
-  const idPlace = route?.params?.idPlace ?? 1;
+  const idPlace = route?.params?.idPlace ?? 2;
   const [placeDetail, setPlaceDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
