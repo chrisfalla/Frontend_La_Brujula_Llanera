@@ -160,10 +160,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingVertical: 10,
+    paddingVertical: 0,
   },
   favoritesContainer: {
-    marginTop: 20, // Aumentado de 12 a 20
+    marginTop: 0, // Aumentado de 12 a 20
     marginBottom: 10,
     position: 'static'
   },

@@ -16,17 +16,9 @@ const AnonymousProfileScreen = () => {
         navigation.navigate('Login');
     };
 
-    const handleOpenTermsAndConditions = async () => {
-        try {
-            const url = await getTermsAndConditionsUrlUseCase();
-            if (await Linking.canOpenURL(url)) {
-                await Linking.openURL(url);
-            } else {
-                console.log('No se puede abrir la URL:', url);
-            }
-        } catch (error) {
-            console.error('Error al abrir los términos y condiciones:', error);
-        }
+    const handleOpenTermsAndConditions = () => {
+        // Navegar a la pantalla de términos y condiciones en lugar de abrir URL directamente
+        navigation.navigate('TermsCondition');
     };
 
     return (

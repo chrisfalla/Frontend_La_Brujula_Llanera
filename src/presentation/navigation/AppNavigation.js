@@ -25,6 +25,7 @@ import ProfileInformationScreen from "../screens/ProfileInformation/ProfileInfor
 import FavoritesScreen from "../screens/Favorites/FavoritesScreen";
 import	DetailScreen from "../screens/Detail/DetailScreen";
 import SearchScreen from "../screens/Search/SearchScreen";
+import TermsCondition from "../screens/TermsCondition/TermsCondition";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -43,6 +44,7 @@ const RootStack = ({ isLoggedIn }) => (
     <Stack.Screen name="SearchScreen" component={SearchScreen} />
     <Stack.Screen name="Favorites" component={FavoritesScreen} />
     <Stack.Screen name="DetailScreen" component={DetailScreen} />
+    <Stack.Screen name="TermsCondition" component={TermsCondition} />
   </Stack.Navigator>
 );
 
@@ -139,13 +141,14 @@ const TabNavigator = ({ isLoggedIn }) => (
 
 // Navegador de autenticación (registro y recuperación)
 const AuthStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login" >
+  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
     <Stack.Screen name="RegisterStepOne" component={RegisterStepOneScreen} />
     <Stack.Screen name="RegisterStepTwo" component={RegisterStepTwoScreen} />
     <Stack.Screen name="RecoveryOne" component={PasswordRecoveryStepOneScreen} />
     <Stack.Screen name="RecoveryTwo" component={PasswordRecoveryStepTwoScreen} />
     <Stack.Screen name="RecoveryThree" component={PasswordRecoveryStepThreeScreen} />
     <Stack.Screen name="Login" component={LoginScreen} />
+    <Stack.Screen name="TermsCondition" component={TermsCondition} />
   </Stack.Navigator>
 );
 

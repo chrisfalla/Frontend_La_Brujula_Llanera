@@ -11,7 +11,7 @@ import { GlobalStyles, TextStyles } from "../../styles/styles";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import CustomSearch from "../../components/Search/Search";
-import HorizontalCardPlace from "../../components/HorizontalCardPLace/HorizontalCardPlace";
+import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace";
 import { Colors } from "../../styles/styles";
 import { getPlacesByCategory } from "../../../domain/usecases/places/getPlacesByCategoryUseCase";
 
@@ -206,10 +206,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.BackgroundPage,
-    paddingVertical: 10,
+    paddingVertical: 0,
   },
   containerSearch: {
-    marginTop: 12,
+    marginTop: 0,
     marginBottom: 20,
     position: "static",
   },
