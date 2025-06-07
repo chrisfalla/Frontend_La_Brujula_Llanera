@@ -11,7 +11,7 @@ import {
 import CustomSearch from "../../components/Search/Search";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import { searchPlaces } from "../../../services/places";
+import { searchPlaces, getPlaceDetails } from "../../../services/places";
 import { Ionicons } from "@expo/vector-icons";
 import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace";
 
@@ -252,7 +252,33 @@ const MapaScreen = () => {
                   longitude: sitio.geometry?.location?.lng || sitio.longitude,
                 }}
                 image={require("../../../shared/assets/pin.png")}
-                onPress={() => setSelectedPlace(sitio)}
+                onPress={async () => {
+                  setLoading(true);
+                  // Si ya tiene imagen, mostrar directo
+                  if (sitio.image) {
+                    setSelectedPlace(sitio);
+                    setLoading(false);
+                  } else {
+                    try {
+                      // Buscar detalles por idPlace o place_id primero
+                      const id = sitio.idPlace || sitio.place_id || sitio.id;
+                      let detail = null;
+                      if (id) {
+                        detail = await getPlaceDetails(id);
+                      }
+                      // Si se obtuvo detalle, usar la imagen del detalle
+                      setSelectedPlace({
+                        ...sitio,
+                        image: detail?.image || detail?.photos?.[0]?.url || null,
+                        // Puedes mapear más campos si lo deseas
+                      });
+                    } catch (e) {
+                      setSelectedPlace(sitio);
+                    } finally {
+                      setLoading(false);
+                    }
+                  }
+                }}
               />
             )
           )}

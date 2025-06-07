@@ -44,28 +44,11 @@ function mapPlaceFromGoogle(googlePlace) {
 
 export const searchPlaces = async (query, location, radius = 5000) => {
   if (!query) {
-    // Trae todos los lugares del backend
-    try {
-      const backendResults = await httpClient.get('/places');
-      return backendResults.map(mapPlaceFromBackend);
-    } catch (error) {
-      throw error;
-    }
+    // Si no hay query, NO consultar /places (no existe), solo retornar array vacío
+    return [];
   }
 
-  // Busca primero en el backend usando el endpoint correcto
-  let backendResults = [];
-  try {
-    backendResults = await httpClient.get(`/placeDetail/placesByName/${encodeURIComponent(query)}`);
-    if (Array.isArray(backendResults) && backendResults.length > 0) {
-      return backendResults.map(mapPlaceFromBackend);
-    }
-  } catch (error) {
-    // Si el error es porque no hay resultados, seguimos con Google
-    // Si es otro error grave, puedes loguear o manejarlo aquí
-  }
-
-  // Si no hay resultados en el backend, busca en Google Places
+  // Ya NO buscar en el backend por nombre, solo buscar en Google si hay query
   try {
     const response = await axios.get(`${GOOGLE_BASE_URL}/textsearch/json`, {
       params: {
