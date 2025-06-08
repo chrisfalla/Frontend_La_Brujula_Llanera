@@ -9,6 +9,7 @@ import { usersRepository } from "../../../data/repositories/users/usersRepositor
 import { update } from "../../../shared/store/authSlice/authSlice";
 import { updateUserUseCase } from "../../../domain/usecases/user/updateUserUseCase";
 import { userStorage } from "../../../infrastructure/storage/userStorage";
+import { changePasswordUseCase } from "../../../domain/usecases/user/changePasswordUseCase";
 
 const InformationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const InformationScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [newPasswordError, setNewPasswordError] = useState(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState(null);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const toggleEditMode = () => {
     if (!isEditable) {
@@ -82,6 +84,58 @@ const InformationScreen = ({ navigation }) => {
     } catch (error) {
       console.error("Error al actualizar:", error);
       Alert.alert("Error", "No se pudo actualizar la información");
+    }
+  };
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=(?:.*\d){2,}).{6,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const handleChangePassword = async () => {
+    // Validar contraseñas
+    let hasErrors = false;
+
+    if (!newPassword) {
+      setNewPasswordError("La contraseña es requerida");
+      hasErrors = true;
+    } else if (!validatePassword(newPassword)) {
+      setNewPasswordError(
+        "Formato inválido: mínimo 6 caracteres, una mayúscula y dos números"
+      );
+      hasErrors = true;
+    } else {
+      setNewPasswordError(null);
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError("Debe confirmar la contraseña");
+      hasErrors = true;
+    } else if (newPassword !== confirmPassword) {
+      setConfirmPasswordError("Las contraseñas no coinciden");
+      hasErrors = true;
+    } else {
+      setConfirmPasswordError(null);
+    }
+
+    if (hasErrors) return;
+
+    setIsChangingPassword(true);
+    try {
+      await changePasswordUseCase(usersRepository)(user.email, newPassword);
+      Alert.alert("Éxito", "Tu contraseña ha sido actualizada correctamente");
+      setShowPasswordModal(false);
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      console.error("Error al cambiar contraseña:", error);
+      let errorMessage = "No se pudo actualizar la contraseña";
+      if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+      Alert.alert("Error", errorMessage);
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -166,9 +220,9 @@ const InformationScreen = ({ navigation }) => {
               SupportingText={newPasswordError}
               IsPassword
               value={newPassword}
-              onChangeText={''}
+              onChangeText={(text) => setNewPassword(text)}
               style={styles.modalInput}
-              editable={''}
+              editable={!isChangingPassword}
             />
             <CustomInputText
               LabelText="Confirmar contraseña"
@@ -177,18 +231,15 @@ const InformationScreen = ({ navigation }) => {
               SupportingText={confirmPasswordError}
               IsPassword
               value={confirmPassword}
-              onChangeText={''}
+              onChangeText={(text) => setConfirmPassword(text)}
               style={styles.modalInput}
-              editable={''}
+              editable={!isChangingPassword}
             />
             <CustomButton
-              titletext="Guardar"
+              titletext={isChangingPassword ? "Guardando..." : "Guardar"}
               type="Primary"
-              onPress={() => {
-                setShowPasswordModal(false);
-                setNewPassword("");
-                setConfirmPassword("");
-              }}
+              onPress={handleChangePassword}
+              disabled={isChangingPassword}
             />
           </View>
         </View>

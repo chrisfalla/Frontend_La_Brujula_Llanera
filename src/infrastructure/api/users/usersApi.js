@@ -117,7 +117,7 @@ export const verifyPasswordRecoveryCodeApi = async (email, code) => {
   }
 };
 
-// Función mejorada con diagnóstico y múltiples formatos de payload
+// Esta función puede ser reutilizada tanto para recuperación como para cambio de contraseña
 export const resetPasswordApi = async (email, newPassword) => {
   console.log('📡 [API] Solicitando cambio de contraseña para:', email);
   try {
