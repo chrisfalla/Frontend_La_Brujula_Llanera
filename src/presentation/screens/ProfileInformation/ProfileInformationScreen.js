@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Image, StyleSheet, Alert } from "react-native";
+import { View, Image, StyleSheet, Alert, Modal } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import CustomInputText from "../../components/CustomInput/CustomInputText";
 import CustomButton from "../../components/CustomButton/CustomButton";
@@ -18,6 +18,12 @@ const InformationScreen = ({ navigation }) => {
   const [editName, setEditName] = useState(user?.name || "");
   const [editEmail, setEditEmail] = useState(user?.email || "");
   const [editPhone, setEditPhone] = useState(user?.phone || "");
+
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState(null);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(null);
 
   const toggleEditMode = () => {
     if (!isEditable) {
@@ -121,7 +127,11 @@ const InformationScreen = ({ navigation }) => {
 
       <View style={styles.button}>
         {!isEditable ? (
-          <CustomButton titletext={"Cambiar contraseña"} type="Secondary" />
+          <CustomButton
+            titletext={"Cambiar contraseña"}
+            type="Secondary"
+            onPress={() => setShowPasswordModal(true)}
+          />
         ) : (
           <CustomButton
             titletext={"Guardar cambios"}
@@ -130,6 +140,59 @@ const InformationScreen = ({ navigation }) => {
           />
         )}
       </View>
+
+      {/* Modal para cambiar contraseña */}
+      <Modal
+        visible={showPasswordModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowPasswordModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalTopBar}>
+              <NavigationTopBar
+                primaryIcon="chevron-back"
+                SecondIcon={false}
+                onBackPress={() => setShowPasswordModal(false)}
+                title="Cambiar contraseña"
+                useBackground={false}
+              />
+            </View>
+            <CustomInputText
+              LabelText="Nueva contraseña"
+              PlaceholderText="********"
+              HasError={newPasswordError}
+              SupportingText={newPasswordError}
+              IsPassword
+              value={newPassword}
+              onChangeText={''}
+              style={styles.modalInput}
+              editable={''}
+            />
+            <CustomInputText
+              LabelText="Confirmar contraseña"
+              PlaceholderText="********"
+              HasError={confirmPasswordError}
+              SupportingText={confirmPasswordError}
+              IsPassword
+              value={confirmPassword}
+              onChangeText={''}
+              style={styles.modalInput}
+              editable={''}
+            />
+            <CustomButton
+              titletext="Guardar"
+              type="Primary"
+              onPress={() => {
+                setShowPasswordModal(false);
+                setNewPassword("");
+                setConfirmPassword("");
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -161,6 +224,25 @@ const styles = StyleSheet.create({
     marginTop: 50,
     top: 50,
     paddingHorizontal: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  modalContainer: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    alignItems: "stretch",
+  },
+  modalTopBar: {
+    marginBottom: 20,
+  },
+  modalInput: {
+    marginBottom: 16,
   },
 });
 
