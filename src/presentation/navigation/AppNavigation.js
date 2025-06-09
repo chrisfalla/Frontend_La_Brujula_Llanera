@@ -60,11 +60,11 @@ const TabNavigator = ({ isLoggedIn }) => (
           case "Home":
             iconName = focused ? "home" : "home-outline";
             break;
-          case "Categories":
-            iconName = focused ? "search" : "search-outline";
+          case "Explora":
+            iconName = focused ? "compass" : "compass-outline";
             break;
-          case "Map":
-            iconName = focused ? "location" : "location-outline";
+          case "Categories":
+            iconName = focused ? "pricetags" : "pricetags-outline";
             break;
           case "Profile":
             iconName = focused ? "person" : "person-outline";
@@ -84,11 +84,11 @@ const TabNavigator = ({ isLoggedIn }) => (
           case "Home":
             label = "Inicio";
             break;
+          case "Explora":
+            label = "Explora";
+            break;
           case "Categories":
             label = "Categorías";
-            break;
-          case "Map":
-            label = "Mapa";
             break;
           case "Profile":
             label = "Perfil";
@@ -104,7 +104,7 @@ const TabNavigator = ({ isLoggedIn }) => (
       tabBarActiveTintColor: "#236A34",
       tabBarInactiveTintColor: "black",
       tabBarStyle: {
-        height: 54,
+        height: 60, // antes: 54
         paddingBottom: 5,
         backgroundColor: "#fff",
         borderTopWidth: 0,
@@ -117,13 +117,13 @@ const TabNavigator = ({ isLoggedIn }) => (
       options={{ headerShown: false }}
     />
     <Tab.Screen
-      name="Categories"
-      component={CategoriesScreen}
+      name="Explora"
+      component={MapaScreen}
       options={{ headerShown: false }}
     />
     <Tab.Screen
-      name="Map"
-      component={MapaScreen}
+      name="Categories"
+      component={CategoriesScreen}
       options={{ headerShown: false }}
     />
     <Tab.Screen

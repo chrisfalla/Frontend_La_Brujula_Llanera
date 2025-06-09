@@ -8,6 +8,37 @@ import { GlobalStyles, Colors } from "../../styles/styles";
 import MainHeader from "../../components/MainHeader/MainHeader";
 import CategorieCardBig from "../../components/CategorieCardBig/CategorieCardBig";
 
+// Definición de constantes fuera del componente
+const CATEGORY_ORDER = [
+  "Ecoturismo",
+  "Cultura",
+  "Gastronomía",
+  "Servicios",
+  "Alojamiento",
+  "Entretenimiento"
+];
+
+const CATEGORY_ICONS = {
+  "Ecoturismo": "planet-outline", // Probamos con otro icono
+  "Cultura": "color-palette-outline",
+  "Gastronomía": "restaurant-outline",
+  "Servicios": "briefcase-outline",
+  "Alojamiento": "business-outline",
+  "Entretenimiento": "musical-notes-outline",
+};
+
+// Agregar función de depuración
+const getIconForCategory = (categoryName) => {
+  console.log('Buscando icono para:', categoryName);
+  console.log('Icono encontrado:', CATEGORY_ICONS[categoryName]);
+  return CATEGORY_ICONS[categoryName] || "earth-outline"; // Icono por defecto diferente para prueba
+};
+
+// Función de normalización simplificada
+function normalizeCategoryName(name) {
+  return name || "";  // Si name es undefined, retorna string vacío
+}
+
 const CategoriesScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -23,14 +54,25 @@ const CategoriesScreen = () => {
   // Filtrar categorías cuando cambia la búsqueda o las categorías
   useEffect(() => {
     if (all && all.length > 0) {
-      if (searchQuery.trim() === '') {
-        setFilteredCategories(all);
-      } else {
-        const filtered = all.filter(category => 
+      let filtered = [...all]; // Crear copia del array
+      
+      if (searchQuery.trim() !== '') {
+        filtered = filtered.filter(category =>
           category.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
-        setFilteredCategories(filtered);
       }
+
+      // Ordenar según CATEGORY_ORDER
+      filtered.sort((a, b) => {
+        const idxA = CATEGORY_ORDER.indexOf(a.name);
+        const idxB = CATEGORY_ORDER.indexOf(b.name);
+        return idxA - idxB;
+      });
+
+      // Debug
+      console.log('Categorías filtradas:', filtered.map(c => c.name));
+      
+      setFilteredCategories(filtered);
     }
   }, [all, searchQuery]);
 
@@ -98,7 +140,7 @@ const CategoriesScreen = () => {
             <CategorieCardBig
               key={category.id}
               nameCategory={category.name}
-              iconCategory={category.icon || "pricetag-outline"}
+              iconCategory={getIconForCategory(category.name)}
               onPress={() => handleCategoryPress(category.id)}
             />
           ))}
