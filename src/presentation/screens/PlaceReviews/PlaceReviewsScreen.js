@@ -105,6 +105,7 @@ const PlaceReviews = ({ navigation, route }) => {
 
       <View style={styles.buttoncontainer}>
         <CustomButton
+          style={{ width: "70%" }}
           titletext="Añadir Review"
           onPress={handleAddReview}
           type="Primary"
@@ -135,6 +136,7 @@ const PlaceReviews = ({ navigation, route }) => {
             onPress={handleSubmitReview}
             type="Secondary"
             size="Small"
+            style={{ width: "80%" }}
           />
         </View>
       ) : isLoading ? (
@@ -156,11 +158,14 @@ const PlaceReviews = ({ navigation, route }) => {
               item.user?.name ||
               item.user?.username ||
               "Usuario";
+            const reviewRating = item.ratingValue || item.rating || 0;
             return (
               <ReviewCard
                 username={username}
                 comment={item.comment}
                 date={item.updatedAt?.slice(0, 10) || ""}
+                rating={reviewRating}
+                starSize={20}
               />
             );
           }}
