@@ -5,6 +5,8 @@ const API_KEY =
   Constants.manifest?.extra?.GOOGLE_PLACES_API_KEY ||
   Constants.expoConfig?.extra?.GOOGLE_PLACES_API_KEY;
 
+console.log('[places.js] GOOGLE_PLACES_API_KEY:', API_KEY);
+
 const GOOGLE_BASE_URL = 'https://maps.googleapis.com/maps/api/place';
 
 function mapPlaceFromGoogle(googlePlace) {
@@ -24,6 +26,7 @@ function mapPlaceFromGoogle(googlePlace) {
 }
 
 export const searchPlaces = async (query, location, radius = 5000) => {
+  console.log('[searchPlaces] query:', query, 'location:', location, 'API_KEY:', API_KEY);
   if (!query) return [];
 
   if (!API_KEY) {
@@ -40,6 +43,8 @@ export const searchPlaces = async (query, location, radius = 5000) => {
         key: API_KEY,
       },
     });
+
+    console.log('[searchPlaces] response.data:', JSON.stringify(response.data));
 
     return response.data.results.map(mapPlaceFromGoogle);
   } catch (error) {
