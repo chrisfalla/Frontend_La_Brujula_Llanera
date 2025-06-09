@@ -23,8 +23,6 @@
       },
       "permissions": [
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION"
       ],
       "config": {
@@ -36,6 +34,7 @@
     },
     "newArchEnabled": true,
     "extra": {
+      "GOOGLE_PLACES_API_KEY": "AIzaSyBGjwzu6tIp_9S6zuWrv4qawcih-DcY5O4",
       "eas": {
         "projectId": "386a2332-feb2-4420-aae8-07b0cbd9ef1f"
       }
