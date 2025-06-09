@@ -14,6 +14,7 @@ const VerticalPlaceCard = ({
   onPress,
   idPlace,
   onRemoveFavorite,
+  onMapPress, // <- Nuevo prop
 }) => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth?.user);
@@ -143,7 +144,7 @@ const VerticalPlaceCard = ({
         {name}
       </Text>
       <View style={styles.iconStyle}>
-        <Ionicons name="location" size={28} color={Colors.ColorPrimary} />
+        <Ionicons name="location" size={28} color={Colors.ColorPrimary} onPress={onMapPress} /> {/* <- Aquí */}
         <View style={styles.locationTextContainer}>
           {/* Mostramos el nombre de la categoría solo si existe y no contiene "SmallCard" */}
           {imageCategoryName && !String(imageCategoryName).includes("SmallCard") ? (
