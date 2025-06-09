@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   rating: {
     position: "absolute",
-    top: 423,
+    top: 430,
     alignSelf: "center",
   },
   errorText: {

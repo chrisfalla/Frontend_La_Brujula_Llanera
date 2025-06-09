@@ -105,6 +105,7 @@ const PlaceReviews = ({ navigation, route }) => {
 
       <View style={styles.buttoncontainer}>
         <CustomButton
+          style={{ width: "70%" }}
           titletext="Añadir Review"
           onPress={handleAddReview}
           type="Primary"
@@ -135,6 +136,7 @@ const PlaceReviews = ({ navigation, route }) => {
             onPress={handleSubmitReview}
             type="Secondary"
             size="Small"
+            style={{ width: "80%" }}
           />
         </View>
       ) : isLoading ? (
