@@ -61,7 +61,14 @@ const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId, initi
                 </View>
             ) : activeTab === 'Sobre nosotros' ? (
                 <>
-                    <TouchableOpacity style={styles.mapContainer}>
+                    <TouchableOpacity
+                        style={styles.mapContainer}
+                        onPress={() => {
+                            if (navigation && placeId) {
+                                navigation.navigate('Explora', { idPlace: placeId });
+                            }
+                        }}
+                    >
                         <ImageBackground
                             source={require('../../../shared/assets/MapsYopal.png')}
                             style={styles.mapImage}
