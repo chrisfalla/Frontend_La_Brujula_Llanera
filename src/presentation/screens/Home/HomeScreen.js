@@ -52,6 +52,39 @@ const CARD_WIDTH = SCREEN_WIDTH - PADDING_HORIZONTAL * 2; // Ancho visible (excl
 const CARD_MARGIN = 10; // Separación entre cards
 const SNAP_INTERVAL = CARD_WIDTH; // Ajustado para mejorar el desplazamiento
 
+// Constante de iconos para categorías (igual que en CategoriesScreen)
+const CATEGORY_ICONS = {
+  "Ecoturismo": "earth", // Cambiado a "earth" para mostrar el planeta Tierra
+  "Cultura": "color-palette-outline",
+  "Gastronomía": "restaurant-outline",
+  "Servicios": "briefcase-outline",
+  "Alojamiento": "business-outline",
+  "Entretenimiento": "musical-notes-outline",
+};
+
+// Función para obtener el icono según el nombre de la categoría (normalización robusta)
+const getIconForCategory = (categoryName) => {
+  if (!categoryName) return "pricetag-outline";
+  // Normalizar: quitar espacios, pasar a minúsculas y quitar acentos
+  const normalizedName = categoryName
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+
+  // Mapeo normalizado para asegurar coincidencia
+  const normalizedIcons = {
+    "ecoturismo": "earth", // Cambiado a "earth"
+    "cultura": "color-palette-outline",
+    "gastronomia": "restaurant-outline",
+    "servicios": "briefcase-outline",
+    "alojamiento": "business-outline",
+    "entretenimiento": "musical-notes-outline",
+  };
+
+  return normalizedIcons[normalizedName] || "pricetag-outline";
+};
+
 //==============================================================================
 // HOME SCREEN COMPONENT
 //==============================================================================
@@ -327,7 +360,7 @@ const HomeScreen = ({ navigation }) => {
             <View key={item.id} style={styles.cardWrapper}>
               <CategoryCardSmall
                 nameCategory={item.name}
-                iconCategory={item.icon || "pricetag-outline"}
+                iconCategory={getIconForCategory(item.name)}
                 isSelectedCategory={selectedCategory === item.id}
                 onPressCard={() => {
                   setSelectedCategory(item.id);
