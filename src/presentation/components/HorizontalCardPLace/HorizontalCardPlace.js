@@ -45,7 +45,7 @@ const HorizontalCardPlace = ({
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={onMapPress}
+          onPress={onMapPress} // <- Aquí se usa el prop para navegación al mapa
         >
           <FontAwesome5 name="map-marker-alt" size={16} color="#FFFFFF" />
         </TouchableOpacity>
