@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
 import { GlobalStyles, TextStyles,Colors } from '../../styles/styles';
+import Rating from '../Rating/Rating';
 
 
-const ReviewCard = ({ username, comment, date }) => {
+const ReviewCard = ({ username, comment, date, rating = 0, starSize = 16 }) => {
     return (
         <View style={styles.card} >
             <View style={styles.header}>
@@ -13,13 +14,20 @@ const ReviewCard = ({ username, comment, date }) => {
                     source={require('../../../shared/assets/AvatarHeader.png')}
                 />
                
-                <View>
+                <View style={styles.userInfo}>
                     <Text style={styles.username} >{username} </Text>
                 </View>            
             </View>
         <Text  style={styles.comment}>{comment} </Text>
         <View style={styles.footer} >
             <Text style={styles.date} > {date} </Text>
+            <View style={styles.ratingContainer}>
+                <Rating 
+                    average={rating} 
+                    useBackground={false} 
+                    size={starSize} 
+                />
+            </View>
         </View>
         </View>
     );
@@ -37,7 +45,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 5,
     },
-      avatarimg:{
+    avatarimg:{
         width: 30,
         height: 30,
         alignItems: 'center',
@@ -45,9 +53,16 @@ const styles = StyleSheet.create({
         
        
     },
+    userInfo: {
+        marginLeft: 10,
+        flex: 1,
+    },
     username:{
         ...TextStyles.PoppinsSemiBold15,
-        marginLeft:10,
+        marginBottom: 2,
+    },
+    ratingContainer: {
+        alignSelf: 'flex-start',
     },
     comment:{
         ...TextStyles.PoppinsRegular15,
@@ -56,9 +71,12 @@ const styles = StyleSheet.create({
 
     },
     footer:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginLeft: 40,
-        marginTop:25,      
-        textAlign: 'left'
+        marginRight: 15,
+        marginTop: 25,
     },
     date:{
         ...TextStyles.PoppinsRegular15,
