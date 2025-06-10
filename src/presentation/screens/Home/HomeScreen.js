@@ -140,7 +140,12 @@ const HomeScreen = ({ navigation }) => {
   // Seleccionar la primera categoría por defecto al iniciar
   useEffect(() => {
     if (all && all.length > 0 && !selectedCategory) {
-      setSelectedCategory(all[0].id);
+      const alojamiento = all.find(cat => cat.name && cat.name.toLowerCase().includes("alojamiento"));
+      if (alojamiento) {
+        setSelectedCategory(alojamiento.id);
+      } else {
+        setSelectedCategory(all[0].id); // fallback
+      }
     }
   }, [all, selectedCategory]);
 
