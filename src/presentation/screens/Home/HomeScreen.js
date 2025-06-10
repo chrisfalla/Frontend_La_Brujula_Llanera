@@ -264,7 +264,7 @@ const HomeScreen = ({ navigation }) => {
   //============================================================================
   // LOADING & ERROR STATES
   //============================================================================
-  if (status === "loading") return <Text>Cargando...</Text>;
+  
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error al cargar lugares: {String(error)}</Text>;
 
