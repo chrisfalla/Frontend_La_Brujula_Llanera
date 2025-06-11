@@ -73,19 +73,85 @@ const PlaceRegisterScreen = ({ navigation }) => {
     );
   };
 
+  // 1. Estado para los valores y errores del formulario
+  const [form, setForm] = useState({
+    nombre: "",
+    descripcion: "",
+    direccion: "",
+    telefono: "",
+    whatsapp: "",
+    email: "",
+    facebook: "",
+    instagram: "",
+    sitioWeb: "",
+    // agrega los demás campos si los necesitas
+  });
+  const [errors, setErrors] = useState({});
+
+  // 2. Manejar cambios en los campos
+  const handleChange = (field, value) => {
+    setForm({ ...form, [field]: value });
+    setErrors({ ...errors, [field]: undefined }); // limpia el error al escribir
+    console.log("Nuevo valor de", field, ":", value); // <-- Agrega esto
+  };
+
+  // 3. Validar campos
+  const validate = () => {
+    const newErrors = {};
+    if (!form.nombre) newErrors.nombre = "El nombre es obligatorio";
+    if (!form.descripcion) newErrors.descripcion = "La descripción es obligatoria";
+    if (!form.direccion) {
+      newErrors.direccion = "La dirección es obligatoria";
+    } else if (!form.direccion.includes("#")) {
+      newErrors.direccion = "La dirección debe contener el carácter #";
+    }
+    if (!form.telefono) {
+      newErrors.telefono = "El teléfono es obligatorio";
+    } else if (!/^\d{10}$/.test(form.telefono)) {
+      newErrors.telefono = "El teléfono debe tener exactamente 10 números";
+    }
+    if (!form.whatsapp) {
+      newErrors.whatsapp = "El WhatsApp es obligatorio";
+    } else if (!/^\d{10}$/.test(form.whatsapp)) {
+      newErrors.whatsapp = "El WhatsApp debe tener exactamente 10 números";
+    }
+    if (!form.email) {
+      newErrors.email = "El email es obligatorio";
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      newErrors.email = "El email no es válido";
+    } else {
+      const allowedDomains = ["@gmail.com", "@hotmail.com", "@outlook.com"];
+      const emailLower = form.email.toLowerCase();
+      if (!allowedDomains.some(domain => emailLower.endsWith(domain))) {
+        newErrors.email = "Solo se permiten correos @gmail, @hotmail o @outlook";
+      }
+    }
+    // Validación de imágenes
+    if (!photos.some(uri => !!uri)) newErrors.galeria = "Agrega las 4 fotos, es obligatorio";
+    if (!logo) newErrors.logo = "El logo es obligatorio";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   return (
     <View style={styles.container}>
+      <View style={GlobalStyles.HeaderTopBar}>
       <NavigationTopBar
         title={"Información del sitio "}
         useBackground={false}
         SecondIcon={false}
         onBackPress={() => navigation.goBack()}
       />
+      </View>
       <ScrollView>
       <View style={styles.formContainer}>
-        <CustomInputText style={styles.inputBig}
+        <CustomInputText
+          style={styles.inputBig}
           LabelText={"Nombre del sitio"}
           PlaceholderText={"Ej: Restaurante El Buen Sabor"}
+          value={form.nombre}
+          onChangeText={text => handleChange("nombre", text)}
+          HasError={errors.nombre}
         />
         <CustomInputText
           style={styles.inputBig}
@@ -93,38 +159,73 @@ const PlaceRegisterScreen = ({ navigation }) => {
           PlaceholderText={"Restaurante con comida típica"}
           multiline={true}
           numberOfLines={4}
+          value={form.descripcion}
+          onChangeText={text => handleChange("descripcion", text)}
+          HasError={errors.descripcion}
         />
       
         <View style={styles.formrow} >
           <CustomInputText
-          style={styles.input}
-          LabelText={"Dirección"}
-          PlaceholderText={"Calle 24 # 45-67"}
+            style={styles.input}
+            LabelText={"Dirección"}
+            PlaceholderText={"Calle 24 # 45-67"}
+            value={form.direccion}
+            onChangeText={text => handleChange("direccion", text)}
+            HasError={errors.direccion}
           />
           <CustomDropdown style={styles.dropdown}
           LabelText={'Ciudad'}
           placeholder={"Selecciona una ciudad"}
           
           />
-          <CustomInputText style={styles.input}
-          LabelText={'Teléfono'}
-          PlaceholderText={"Ej: 3001234567"}
+          <CustomInputText
+            style={styles.input}
+            LabelText={'Teléfono'}
+            PlaceholderText={"Ej: 3001234567"}
+            value={form.telefono}
+            onChangeText={text => handleChange("telefono", text)}
+            HasError={errors.telefono}
           />
-          <CustomInputText style={styles.input}
-          LabelText={'WhatsApp'} 
-          PlaceholderText={"Ej: 3001234567"} />
-          <CustomInputText style={styles.input}
-          LabelText={'Email'} 
-          PlaceholderText={"eje@correo.com"} />
-          <CustomInputText style={styles.input}
-          LabelText={'Facebook'} 
-          PlaceholderText={"El buen sabor"} />
-          <CustomInputText style={styles.input}
-          LabelText={'Instagram'} 
-          PlaceholderText={"@elbuensabor"} />
-          <CustomInputText style={styles.input}
-          LabelText={'Sitio web'} 
-          PlaceholderText={"www.sabor.com"} />
+          <CustomInputText
+            style={styles.input}
+            LabelText={'WhatsApp'} 
+            PlaceholderText={"Ej: 3001234567"}
+            value={form.whatsapp}
+            onChangeText={text => handleChange("whatsapp", text)}
+            HasError={errors.whatsapp}
+          />
+          <CustomInputText
+            style={styles.input}
+            LabelText={'Email'} 
+            PlaceholderText={"eje@correo.com"}
+            value={form.email}
+            onChangeText={text => handleChange("email", text)}
+            HasError={errors.email}
+          />
+          <CustomInputText
+            style={styles.input}
+            LabelText={'Facebook'} 
+            PlaceholderText={"El buen sabor"} 
+            value={form.facebook}
+            onChangeText={text => handleChange("facebook", text)}
+            HasError={errors.facebook}
+          />
+          <CustomInputText
+            style={styles.input}
+            LabelText={'Instagram'} 
+            PlaceholderText={"@elbuensabor"} 
+            value={form.instagram}
+            onChangeText={text => handleChange("instagram", text)}
+            HasError={errors.instagram}
+          />
+          <CustomInputText
+            style={styles.input}
+            LabelText={'Sitio web'} 
+            PlaceholderText={"www.sabor.com"} 
+            value={form.sitioWeb}
+            onChangeText={text => handleChange("sitioWeb", text)}
+            HasError={errors.sitioWeb}
+          />
           <CustomDropdown style={styles.dropdown}
           LabelText={'Categoría'} 
           placeholder={"Selecciona una categoría"}
@@ -151,6 +252,9 @@ const PlaceRegisterScreen = ({ navigation }) => {
               </View>
             ))}
           </View>
+          {errors.galeria && (
+            <Text style={styles.errorText}>{errors.galeria}</Text>
+          )}
           <View style={styles.containerPhoto}>
             <View style={styles.logoContainer}>
               <TouchableOpacity style={styles.photoIconButton} onPress={pickLogo}>
@@ -161,6 +265,9 @@ const PlaceRegisterScreen = ({ navigation }) => {
                 )}
               </TouchableOpacity>
               <Text style={styles.photoText}>Logo</Text>
+              {errors.logo && (
+                <Text style={styles.errorText}>{errors.logo}</Text>
+              )}
             </View>
           </View>
         </View>
@@ -168,7 +275,13 @@ const PlaceRegisterScreen = ({ navigation }) => {
       <CustomButton
         type="Primary"
         titletext={"Guardar"}
-        />
+        onPress={() => {
+          if (validate()) {
+            // Aquí puedes enviar el formulario o guardar los datos
+            Alert.alert("Formulario válido", "¡Datos guardados correctamente!");
+          }
+        }}
+      />
 
       </ScrollView>
     </View>
@@ -177,10 +290,14 @@ const PlaceRegisterScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingVertical: 0,
     flex: 1,
   },
-formrow: { 
+  HeaderTopBar: {
+    marginTop: 0,
+    marginBottom: 50,
+  },
+  formrow: { 
   flexDirection: 'row',
   flexWrap: 'wrap',
   justifyContent: 'space-between',
@@ -257,6 +374,12 @@ input: {
     ...TextStyles.PoppinsSemiBold15,
     marginBottom: 10,
     color: Colors.ColorPrimary,
+  },
+  errorText: {
+    ...TextStyles.PoppinsRegular13,
+    color: Colors.ErrorAdvertisingColor,
+    marginTop: 2,
+    paddingLeft: 15,
   },
 
 });
