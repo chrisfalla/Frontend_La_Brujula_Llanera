@@ -53,7 +53,7 @@ const ProfileScreen = () => {
         navigation.navigate('Favorites');
     };
     const handleNavigateToDashboard = () => {
-        navigation.navigate('Dashboard');
+        navigation.navigate('DashboardScreen');
     };
 
     const handleOpenTermsAndConditions = () => {
