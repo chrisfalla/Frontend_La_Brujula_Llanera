@@ -1,9 +1,18 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, FlatList, Alert, StatusBar } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  Alert,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import CustomSearch from "../../components/Search/Search";
 import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace";
 import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
+import { Ionicons } from "@expo/vector-icons";
 
 const DashboardScreen = ({ navigation }) => {
   return (
@@ -13,36 +22,44 @@ const DashboardScreen = ({ navigation }) => {
         backgroundColor="#ffffff"
         translucent={false}
       />
-      <NavigationTopBar
-        title={"Panel de Gestión"}
-        useBackground={false}
-        SecondIcon="add-circle"
-        onBackPress={() => navigation.goBack()}
-        onSecondIconPress={() => navigation.navigate("PlaceRegisterScreen")}
-      />
-      <CustomSearch placeholder={"Buscar sitio..."} />
-
-      <View>
-        <HorizontalCardPlace
-          name={"Nombre del lugar"}
-          category="Categoría del lugar"
-          address="Dirección del lugar"
-          image="https://via.placeholder.com/150"
-          onMapPress={() => console.log("Mapa presionado")}
-          onDetailPress={() => console.log("Detalles presionados")}
-          detailIconName="pencil-alt"
-          mapIconName="trash-alt"
+      <View style={styles.headerTopBar}>
+        <NavigationTopBar
+          title={"Panel de Gestión"}
+          useBackground={false}
+          SecondIcon={false}
+          onBackPress={() => navigation.goBack()}
           onSecondIconPress={() => navigation.navigate("PlaceRegisterScreen")}
         />
-
-        <View style={styles.statsContainer}>
-          <Text style={styles.sectionTitle}>Estadísticas</Text>
-          <View style={styles.sectionStatsContainer}>
-            <Text style={styles.sectionStats}>Los Más visitados</Text>
-            <Text style={styles.sectionStats}>Con más comentarios</Text>
-            <Text style={styles.sectionStats}>Los de mejor valoración</Text>
-          </View>
+        <View style={styles.searchRow}>
+          <CustomSearch
+            style={styles.searchInput}
+            placeholder={"Buscar sitio..."}
+          />
+          <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate("PlaceRegisterScreen")}>
+            <Ionicons name="add" size={24} color={Colors.LightGray} style={styles.addIcon} />
+          </TouchableOpacity>
         </View>
+      </View>
+      <View style={styles.cardcontainer}>
+      <HorizontalCardPlace
+        style={styles.card}
+        name={"Nombre del lugar"}
+        category="Categoría del lugar"
+        address="Dirección del lugar"
+        image="https://via.placeholder.com/150"
+        onMapPress={() => console.log("Mapa presionado")}
+        onDetailPress={() => navigation.navigate("PlaceRegisterScreen")}
+        detailIconName="pencil-alt"
+        mapIconName="trash-alt"
+        onSecondIconPress={() => navigation.navigate("PlaceRegisterScreen")}
+      />
+
+      <Text style={styles.sectionTitle}>Estadísticas</Text>
+      <View style={styles.sectionStatsContainer}>
+        <Text style={styles.sectionStats}>Los Más visitados</Text>
+        <Text style={styles.sectionStats}>Con más comentarios</Text>
+        <Text style={styles.sectionStats}>Los de mejor valoración</Text>
+      </View>
       </View>
     </View>
   );
@@ -50,19 +67,21 @@ const DashboardScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingVertical: 0,
     flex: 1,
     backgroundColor: Colors.BackgroundPage,
   },
-  statsContainer: {
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: Colors.ColorWhite,
-    alignItems: "center",
+  headerTopBar: {
+    marginTop: 0,
+   
+  },
+  cardcontainer: {
+    paddingHorizontal: 20,
   },
   sectionTitle: {
     ...TextStyles.PoppinsSemibold20,
     color: Colors.ColorPrimary,
+    textAlign: "center",
   },
   sectionStats: {
     marginTop: 10,
@@ -74,6 +93,27 @@ const styles = StyleSheet.create({
   sectionStatsContainer: {
     textAlign: "left",
     width: "100%",
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center', // centra horizontalmente
+   
+   
+  },
+  searchInput: {
+     width: "85%",
+    
+  },
+ 
+  iconButton: {
+    width: 30,
+    height: 30,
+    backgroundColor: Colors.ColorPrimary,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: 10,
   },
 });
 

@@ -154,7 +154,7 @@ const PlaceRegisterScreen = ({ navigation }) => {
         backgroundColor="#ffffff"
         translucent={false}
       />
-      <View style={styles.HeaderTopBar}>
+      <View style={styles.headerTopBar}>
         <NavigationTopBar
           title={"Información del sitio "}
           useBackground={false}
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.BackgroundPage,
 
   },
-  HeaderTopBar: {
+  headerTopBar: {
     marginTop: 0,
     marginBottom: 50,
   },
