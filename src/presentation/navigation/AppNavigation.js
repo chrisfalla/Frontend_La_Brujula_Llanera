@@ -28,6 +28,7 @@ import SearchScreen from "../screens/Search/SearchScreen";
 import TermsCondition from "../screens/TermsCondition/TermsCondition";
 import PlaceReviews from "../screens/PlaceReviews/PlaceReviewsScreen";
 import DashboardScreen from "../screens/Dashboard/DashboardScreen";
+import PlaceRegisterScreen from "../screens/PlaceRegister/PlaceRegisterScreen";
 
 // 👇 Importa el SplashScreen
 import SplashScreen from "../screens/Splash/SplashScreen";
@@ -48,6 +49,7 @@ const RootStack = ({ isLoggedIn }) => (
     <Stack.Screen name="TermsCondition" component={TermsCondition} />
     <Stack.Screen name="PlaceReviews" component={PlaceReviews} />
     <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+    <Stack.Screen name="PlaceRegisterScreen" component={PlaceRegisterScreen} />
   </Stack.Navigator>
 );
 

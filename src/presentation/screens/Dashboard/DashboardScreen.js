@@ -13,6 +13,7 @@ const DashboardScreen = ({ navigation }) => {
         useBackground={false}
         SecondIcon="add-circle"
         onBackPress={() => navigation.goBack()}
+        onSecondIconPress={() => navigation.navigate("PlaceRegisterScreen")}
       />
       <CustomSearch placeholder={"Buscar sitio..."} />
 
@@ -26,6 +27,7 @@ const DashboardScreen = ({ navigation }) => {
           onDetailPress={() => console.log("Detalles presionados")}
           detailIconName="pencil-alt"
           mapIconName="trash-alt"
+           onSecondIconPress={() => navigation.navigate("PlaceRegisterScreen")}
         />
 
         <View style={styles.statsContainer}>
