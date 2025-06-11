@@ -5,6 +5,7 @@ import { Colors, TextStyles, GlobalStyles } from "../../../presentation/styles/s
 import Rating from "../Rating/Rating";
 import { useSelector, useDispatch } from "react-redux";
 import { addFavorite, deleteFavorite, fetchFavorites } from "../../../shared/store/favoritesSlice/favoritesSlice";
+import { useLogVisit } from '../../../context/LogVisitContext';
 
 const VerticalPlaceCard = ({
   NameCard,
@@ -20,6 +21,7 @@ const VerticalPlaceCard = ({
   const favorites = useSelector(state => state.favorites?.favorites || []);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const { logVisit } = useLogVisit();
 
   // Obtener el ID del lugar directamente de la prop
   const placeId = idPlace;
@@ -94,6 +96,13 @@ const VerticalPlaceCard = ({
     }
   };
 
+  const handleCardPress = () => {
+    if (idPlace) {
+      logVisit(idPlace);
+    }
+    if (onPress) onPress();
+  };
+
   // Si recibimos placeName y imageUrl en lugar de NameCard y ImagenPlaceCard
   const name = NameCard || "";
   const imageUrl = ImagenPlaceCard || "";
@@ -116,7 +125,7 @@ const VerticalPlaceCard = ({
   return (
     <TouchableOpacity 
       style={styles.mainContainer}
-      onPress={onPress}
+      onPress={handleCardPress}
       activeOpacity={0.9}
     >
       {/* Contenedor relativo para imagen y rating */}
