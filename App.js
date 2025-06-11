@@ -5,6 +5,7 @@ import AppNavigation from './src/presentation/navigation/AppNavigation';
 import { Provider } from 'react-redux';
 import { store } from './src/shared/store/store';
 import { useFonts } from 'expo-font';
+import { LogVisitProvider } from './src/context/LogVisitContext';
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -17,9 +18,11 @@ const App = () => {
 
   return (
     <Provider store={store}>
-      <View style={styles.container}>
-        <AppNavigation />
-      </View>
+      <LogVisitProvider>
+        <View style={styles.container}>
+          <AppNavigation />
+        </View>
+      </LogVisitProvider>
     </Provider>
   );
 };
