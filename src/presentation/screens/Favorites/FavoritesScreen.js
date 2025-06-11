@@ -56,22 +56,22 @@ const FavoritesScreen = ({ navigation }) => {
   }, [favoritesState.status, favorites]);
 
   // Optimización: Función para eliminar localmente un favorito inmediatamente
-  const handleLocalRemove = (placeId) => {
-    if (!placeId) return;
-    
+  const handleLocalRemove = (idPlace) => {
+    if (!idPlace) return;
+
     // Actualización optimista: remover de la UI inmediatamente
     setFavoritePlaces(currentPlaces => 
       currentPlaces.filter(place => {
         const currentPlaceId = place.idPlace || place.idPlaceFk;
-        return String(currentPlaceId) !== String(placeId);
+        return String(currentPlaceId) !== String(idPlace);
       })
     );
   };
 
   // Función para renderizar cada favorito
   const renderItem = ({ item }) => {
-    const placeId = item.idPlace || item.idPlaceFk;
-    
+    const idPlace = item.idPlace || item.idPlaceFk;
+
     return (
       <View style={styles.card}>
         <VerticalPlaceCard
@@ -79,8 +79,11 @@ const FavoritesScreen = ({ navigation }) => {
           ImagenPlaceCard={item.imageUrl || 'https://via.placeholder.com/150'}
           ratingStars={item.rating}
           imageCategoryName={item.categoryName || "Lugar"}
-          idPlace={placeId} 
-          onPress={() => navigation.navigate("DetailScreen", { placeId })}
+          idPlace={idPlace} 
+          onPress={() => {
+            console.log('[FavoritesScreen] Navegando a DetailScreen con idPlace:', idPlace, 'item:', item);
+            navigation.navigate("DetailScreen", { idPlace });
+          }}
           onRemoveFavorite={handleLocalRemove}
         />
       </View>

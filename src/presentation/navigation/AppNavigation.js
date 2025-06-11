@@ -23,25 +23,24 @@ import PasswordRecoveryStepTwoScreen from "../screens/PasswordRecovery/PasswordR
 import PasswordRecoveryStepThreeScreen from "../screens/PasswordRecovery/PasswordRecoveryStepThreeScreen";
 import ProfileInformationScreen from "../screens/ProfileInformation/ProfileInformationScreen";
 import FavoritesScreen from "../screens/Favorites/FavoritesScreen";
-import	DetailScreen from "../screens/Detail/DetailScreen";
+import DetailScreen from "../screens/Detail/DetailScreen";
 import SearchScreen from "../screens/Search/SearchScreen";
 import TermsCondition from "../screens/TermsCondition/TermsCondition";
 import PlaceReviews from "../screens/PlaceReviews/PlaceReviewsScreen";
 
+// 👇 Importa el SplashScreen
+import SplashScreen from "../screens/Splash/SplashScreen";
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Stack para pantallas que no están en los tabs pero requieren autenticación
+// Stack principal
 const RootStack = ({ isLoggedIn }) => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="MainTabs">
       {() => <TabNavigator isLoggedIn={isLoggedIn} />}
     </Stack.Screen>
-    {/* Pantallas para usuarios logueados */}
-    <Stack.Screen
-      name="ProfileInformation"
-      component={ProfileInformationScreen}
-    />
+    <Stack.Screen name="ProfileInformation" component={ProfileInformationScreen} />
     <Stack.Screen name="SearchScreen" component={SearchScreen} />
     <Stack.Screen name="Favorites" component={FavoritesScreen} />
     <Stack.Screen name="DetailScreen" component={DetailScreen} />
@@ -50,7 +49,7 @@ const RootStack = ({ isLoggedIn }) => (
   </Stack.Navigator>
 );
 
-// Navegador de tabs principal
+// Navegación con tabs inferiores
 const TabNavigator = ({ isLoggedIn }) => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -78,7 +77,6 @@ const TabNavigator = ({ isLoggedIn }) => (
         return <Ionicons name={iconName} size={size} color={color} />;
       },
       tabBarLabel: ({ color }) => {
-        // realiza el mapeo para el cambio de nombres de inglés a español
         let label;
         switch (route.name) {
           case "Home":
@@ -104,44 +102,24 @@ const TabNavigator = ({ isLoggedIn }) => (
       tabBarActiveTintColor: "#236A34",
       tabBarInactiveTintColor: "black",
       tabBarStyle: {
-        height: 60, // antes: 54
+        height: 60,
         paddingBottom: 5,
         backgroundColor: "#fff",
         borderTopWidth: 0,
       },
     })}
   >
-    <Tab.Screen
-      name="Home"
-      component={HomeScreen}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
-      name="Explora"
-      component={MapaScreen}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
-      name="Categories"
-      component={CategoriesScreen}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
-      name="Profile"
-      component={isLoggedIn ? ProfileScreen : AnonymousProfileScreen}
-      options={{ headerShown: false }}
-    />
+    <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Explora" component={MapaScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Categories" component={CategoriesScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Profile" component={isLoggedIn ? ProfileScreen : AnonymousProfileScreen} options={{ headerShown: false }} />
     {!isLoggedIn && (
-      <Tab.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ headerShown: false }}
-      />
+      <Tab.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
     )}
   </Tab.Navigator>
 );
 
-// Navegador de autenticación (registro y recuperación)
+// Navegación para autenticación
 const AuthStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
     <Stack.Screen name="RegisterStepOne" component={RegisterStepOneScreen} />
@@ -154,12 +132,15 @@ const AuthStack = () => (
   </Stack.Navigator>
 );
 
+// Componente principal
 const AppNavigator = () => {
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
   const isLoggedIn = authState.isLoggedIn;
   const isGuest = authState.isGuest;
+
   const [isLoading, setIsLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true); // 👈 Nuevo estado para splash
 
   useEffect(() => {
     const loadUser = async () => {
@@ -167,20 +148,28 @@ const AppNavigator = () => {
       if (user) {
         dispatch(login(user));
       }
-      setIsLoading(false);
+
+      // Simular duración del SplashScreen (4 segundos)
+      setTimeout(() => {
+        setIsLoading(false);
+        setShowSplash(false); // Ocultar splash
+      }, 4000);
     };
+
     loadUser();
   }, [dispatch]);
 
-  if (isLoading) return null; // Puedes mostrar un splash o loader aquí
+  // Mostrar splash screen primero
+  if (showSplash) {
+    return <SplashScreen />;
+  }
 
   return (
     <NavigationContainer ref={navigationRef}>
       {isLoggedIn || isGuest ? (
-        // Usuario autenticado o invitado
         <RootStack isLoggedIn={isLoggedIn} />
       ) : (
-        <AuthStack initialRouteName="Login" />
+        <AuthStack />
       )}
     </NavigationContainer>
   );

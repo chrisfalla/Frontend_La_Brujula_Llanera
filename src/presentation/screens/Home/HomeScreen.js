@@ -140,7 +140,12 @@ const HomeScreen = ({ navigation }) => {
   // Seleccionar la primera categoría por defecto al iniciar
   useEffect(() => {
     if (all && all.length > 0 && !selectedCategory) {
-      setSelectedCategory(all[0].id);
+      const alojamiento = all.find(cat => cat.name && cat.name.toLowerCase().includes("alojamiento"));
+      if (alojamiento) {
+        setSelectedCategory(alojamiento.id);
+      } else {
+        setSelectedCategory(all[0].id); // fallback
+      }
     }
   }, [all, selectedCategory]);
 
@@ -239,7 +244,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   // Event handlers
-  const handleViewMore = () => {};
+  const handleViewMore = () => { };
 
   const handleTagPress = useCallback((tagId) => {
     setSelectedTags({ [tagId]: true }); // Solo uno seleccionado a la vez
@@ -264,7 +269,7 @@ const HomeScreen = ({ navigation }) => {
   //============================================================================
   // LOADING & ERROR STATES
   //============================================================================
-  if (status === "loading") return <Text>Cargando...</Text>;
+  
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error al cargar lugares: {String(error)}</Text>;
 
@@ -274,10 +279,10 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.outerContainer}>
       <StatusBar
-                          barStyle="dark-content" // Para iconos oscuros en fondo claro
-                          backgroundColor="#ffffff" // Fondo blanco para Android
-                          translucent={false} // No translúcido para evitar superposiciones
-                        />
+        barStyle="dark-content" // Para iconos oscuros en fondo claro
+        backgroundColor="#ffffff" // Fondo blanco para Android
+        translucent={false} // No translúcido para evitar superposiciones
+      />
       {/* Header */}
       <View style={styles.headerContainer}>
         <MainHeader username={"Christofer"} />
@@ -369,8 +374,8 @@ const HomeScreen = ({ navigation }) => {
             </View>
           ))}
           <View style={styles.cardWrapper}>
-            <CategoryCardSmall isViewMore 
-            onPressCard={() => navigation.navigate("Categories")} />
+            <CategoryCardSmall isViewMore
+              onPressCard={() => navigation.navigate("Categories")} />
           </View>
         </View>
 
@@ -389,8 +394,8 @@ const HomeScreen = ({ navigation }) => {
             <View style={styles.topRatedOuterContainer}>
               <View style={styles.topRatedGrid}>
                 {topRatedPlaces.map((item, index) => (
-                  <View 
-                    key={item.idPlace.toString()} 
+                  <View
+                    key={item.idPlace.toString()}
                     style={index % 2 === 0 ? styles.leftCardContainer : styles.rightCardContainer}
                   >
                     <VerticalPlaceCard
@@ -398,11 +403,12 @@ const HomeScreen = ({ navigation }) => {
                       ImagenPlaceCard={item.imageUrl}
                       ratingStars={item.ratingStars}
                       imageCategoryName={item.imageCategoryName}
-                      idPlace={item.idPlace} // Asegurar que esta prop se pasa correctamente
+                      idPlace={item.idPlace}
                       onPress={() => {
                         navigation.navigate("DetailScreen", { idPlace: item.idPlace });
                       }}
-                      style={{width: '100%'}} // Forzar ancho al 100% del contenedor
+                      onMapPress={() => navigation.navigate("Explora", { idPlace: item.idPlace })} // <- Navegación al mapa
+                      style={{ width: '100%' }} // Forzar ancho al 100% del contenedor
                     />
                   </View>
                 ))}
@@ -477,7 +483,7 @@ const HomeScreen = ({ navigation }) => {
                       address={item.placeAddress || "Dirección no disponible"}
                       image={item.imageUrl}
                       onDetailPress={() => navigation.navigate("DetailScreen", { idPlace: item.idPlace })}
-                      onMapPress={() => navigation.navigate("detailMap", { idPlace: item.idPlace })}
+                      onMapPress={() => navigation.navigate("Explora", { idPlace: item.idPlace })} // <- Navegación al mapa
                     />
                   </TouchableOpacity>
                 )}
@@ -629,8 +635,8 @@ const styles = StyleSheet.create({
     overflow: "visible",
   },
   topRatedGrid: {
-    flexDirection: "row", 
-    flexWrap: "wrap", 
+    flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
     width: "100%",
     overflow: "visible",
