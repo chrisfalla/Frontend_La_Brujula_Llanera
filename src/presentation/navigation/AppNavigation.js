@@ -27,6 +27,7 @@ import DetailScreen from "../screens/Detail/DetailScreen";
 import SearchScreen from "../screens/Search/SearchScreen";
 import TermsCondition from "../screens/TermsCondition/TermsCondition";
 import PlaceReviews from "../screens/PlaceReviews/PlaceReviewsScreen";
+import Dashboard from "../screens/Dashboard/DashboardScreen";
 
 // 👇 Importa el SplashScreen
 import SplashScreen from "../screens/Splash/SplashScreen";
@@ -46,6 +47,7 @@ const RootStack = ({ isLoggedIn }) => (
     <Stack.Screen name="DetailScreen" component={DetailScreen} />
     <Stack.Screen name="TermsCondition" component={TermsCondition} />
     <Stack.Screen name="PlaceReviews" component={PlaceReviews} />
+    <Stack.Screen name="Dashboard" component={Dashboard} />
   </Stack.Navigator>
 );
 
