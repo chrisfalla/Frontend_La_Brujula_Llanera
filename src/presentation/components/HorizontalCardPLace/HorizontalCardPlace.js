@@ -3,6 +3,7 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { GlobalStyles, Colors, TextStyles } from '../../styles/styles';
+import { useLogVisit } from '../../../context/LogVisitContext';
 
 const defaultImage = 'https://via.placeholder.com/50';
 
@@ -12,10 +13,16 @@ const HorizontalCardPlace = ({
   address,
   image,
   onMapPress, 
-  onDetailPress
+  onDetailPress,
+  idPlace
 }) => {
+  const { logVisit } = useLogVisit();
+
   // Handler para toda la card
   const handleCardPress = () => {
+    if (idPlace) {
+      logVisit(idPlace);
+    }
     if (onDetailPress) onDetailPress();
   };
 
