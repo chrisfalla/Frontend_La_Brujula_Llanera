@@ -14,6 +14,7 @@ const CustomInputText = ({
   style,
   onFocus,
   onBlur,
+  keyboardType,
   useBgColorOnFocus = false,  // Nuevo prop con valor predeterminado false
   customInputStyle, // Nuevo prop para estilos específicos del input
 }) => {
@@ -29,9 +30,7 @@ const CustomInputText = ({
         <View style={styles.inputWrapper}>
           {showCustomPlaceholder && (
             <Text style={styles.customPlaceholder}>{PlaceholderText}</Text>
-          )}
-
-      <TextInput
+          )}      <TextInput
         value={value}
         onChangeText={(text) => {
           console.log(`🧪 [CustomInputText] onChangeText (${LabelText}):`, text);
@@ -51,6 +50,7 @@ const CustomInputText = ({
         secureTextEntry={IsPassword}
         editable={IsDisabled !== true}
         placeholderTextColor={Colors.DarkGray}
+        keyboardType={keyboardType || 'default'}
         
         onFocus={(e) => {
           setIsFocused(true);
@@ -64,11 +64,10 @@ const CustomInputText = ({
             onBlur(e);
           }
         }}
-      />
-       </View> 
-      {HasError ? (
-        <Text style={styles.errorText}>
-          {typeof HasError === 'string' ? HasError : 'Error de validación'}
+      /></View> 
+      {SupportingText ? (
+        <Text style={[styles.errorText, HasError && styles.errorTextActive]}>
+          {SupportingText}
         </Text>
       ) : null}
     </View>
@@ -125,12 +124,14 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: Colors.ErrorAdvertisingColor,
     borderWidth: 1,
-  },
-  errorText: {
+  },  errorText: {
     ...TextStyles.PoppinsRegular13,
-    color: Colors.ErrorAdvertisingColor,
+    color: Colors.DarkGray,
     marginTop: 2,
     paddingLeft: 15,
+  },
+  errorTextActive: {
+    color: Colors.ErrorAdvertisingColor,
   },
 
 });
