@@ -15,7 +15,7 @@ import GetPlaceDetailUseCase from "../../../domain/usecases/placesDetail/getPlac
 import PlaceDetailRepository from "../../../data/repositories/placesDetail/placesDetailRepository";
 import PlaceDetailApi from "../../../infrastructure/api/placesDetail/placesDetailApi";
 import PlaceDetailDatasource from "../../../data/datasources/placesDetail/placesDetailDataSource";
-import { useLogVisit } from '../../../context/LogVisitContext';
+import { useLogVisit } from '../../../shared/context/LogVisitContext';
 
 const DetailScreen = ({ navigation, route }) => {
   const idPlace = route?.params?.idPlace ?? 2;

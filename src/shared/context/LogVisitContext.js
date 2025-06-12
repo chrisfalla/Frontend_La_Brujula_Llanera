@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
-import { logPlaceVisit } from '../infrastructure/api/logVisit/logVisitApi';
+import { logPlaceVisit } from '../../infrastructure/api/logVisit/logVisitApi';
 import { useSelector } from 'react-redux';
 
 const LogVisitContext = createContext(null);
