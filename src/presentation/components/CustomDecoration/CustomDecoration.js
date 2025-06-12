@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     },
     RightVector:  {
         position: 'absolute',
-        bottom: 0,
+        bottom: -3,
         right: 0,
         width: 180,
         height: 250,
