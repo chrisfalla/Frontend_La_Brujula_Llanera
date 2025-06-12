@@ -221,7 +221,7 @@ const MapaScreen = () => {
             <Polyline
               coordinates={routeCoords}
               strokeWidth={4}
-              strokeColor={Colors.Black}
+              strokeColor={Colors.ColorOnPrimary}
             />
           )}
         </MapView>
@@ -257,6 +257,14 @@ const MapaScreen = () => {
               onMapPress={() => {
                 setSelectedPlace(null);
                 setRouteCoords([]);
+              }}
+              detailIconName="chevron-right" // Cambia el ícono de detalle
+              mapIconName="route" // Cambia el ícono de mapa
+              onDetailIconPress={() => {
+                // Manejar el evento del ícono de detalle
+              }}
+              onMapIconPress={() => {
+                // Manejar el evento del ícono de mapa
               }}
             />
           </View>
