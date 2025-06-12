@@ -110,10 +110,43 @@ const MapaScreen = () => {
     }
   }, [searchValue, defaultSitios]);
 
+  // Nueva función para volver a pedir permisos
+  const requestLocationPermission = async () => {
+    setErrorMsg(null);
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permiso de ubicación denegado");
+      return;
+    }
+    let loc = await Location.getCurrentPositionAsync({});
+    setLocation({
+      latitude: loc.coords.latitude,
+      longitude: loc.coords.longitude,
+    });
+  };
+
   if (errorMsg) {
+    // Mostrar el mapa con ubicación por defecto y un botón para reintentar
     return (
       <View style={styles.container}>
         <Text style={styles.error}>{errorMsg}</Text>
+        <TouchableOpacity
+          style={{ margin: 20, padding: 12, backgroundColor: Colors.ColorPrimary, borderRadius: 8 }}
+          onPress={requestLocationPermission}
+        >
+          <Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'bold' }}>Volver a intentar</Text>
+        </TouchableOpacity>
+        <MapView
+          style={{ flex: 1, width: '100%' }}
+          initialRegion={{
+            latitude: 5.3396,
+            longitude: -72.4058,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        >
+          {/* Puedes mostrar marcadores generales si lo deseas */}
+        </MapView>
       </View>
     );
   }
@@ -222,7 +255,7 @@ const MapaScreen = () => {
             }
           }}
         >
-          <Ionicons name="locate" size={24} color="#236A34" />
+          <Ionicons name="locate" size={24} color={Colors.ColorPrimary} />
         </TouchableOpacity>
 
         {loading && (
