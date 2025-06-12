@@ -127,17 +127,11 @@ const MapaScreen = () => {
   };
 
   if (errorMsg) {
-    // Mostrar el mapa con ubicación por defecto y un botón para reintentar
+    // Mostrar el mapa con ubicación por defecto y un recuadro flotante con transparencia y botón de icono para reintentar
     return (
       <View style={styles.container}>
-        <Text style={styles.error}>{errorMsg}</Text>
-        <TouchableOpacity
-          style={{ margin: 20, padding: 12, backgroundColor: Colors.ColorPrimary, borderRadius: 8 }}
-          onPress={requestLocationPermission}
-        >
-          <Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'bold' }}>Volver a intentar</Text>
-        </TouchableOpacity>
         <MapView
+          googleMapId="6bc2ed877465664dff366b78"
           style={{ flex: 1, width: '100%' }}
           initialRegion={{
             latitude: 5.3396,
@@ -145,9 +139,35 @@ const MapaScreen = () => {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
-        >
-          {/* Puedes mostrar marcadores generales si lo deseas */}
-        </MapView>
+        />
+        <View style={{
+          position: 'absolute',
+          top: 80,
+          left: 32,
+          right: 32,
+          backgroundColor: 'rgba(255,255,255,0.92)',
+          borderRadius: 16,
+          padding: 20,
+          alignItems: 'center',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.2,
+          shadowRadius: 6,
+          elevation: 8,
+        }}>
+          <TouchableOpacity
+            style={{ padding: 16, backgroundColor: Colors.ColorPrimary, borderRadius: 50, marginBottom: 10 }}
+            onPress={requestLocationPermission}
+          >
+            <Ionicons name="locate" size={28} color="#fff" />
+          </TouchableOpacity>
+          <Text style={{ color: Colors.ColorPrimary, fontWeight: 'bold', fontSize: 16, marginBottom: 0, textAlign: 'center' }}>
+            Activa la ubicación para usar el mapa
+          </Text>
+          <Text style={{ color: Colors.ColorPrimary, fontSize: 13, marginTop: 4, textAlign: 'center' }}>
+            Presiona el ícono para volver a solicitar los permisos de ubicación
+          </Text>
+        </View>
       </View>
     );
   }
