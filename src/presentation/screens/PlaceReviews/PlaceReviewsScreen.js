@@ -6,10 +6,7 @@ import ReviewCard from "../../components/ReviewCard/ReviewCard";
 import { GlobalStyles, TextStyles, Colors } from "../../styles/styles";
 import Rating from "../../components/Rating/Rating";
 import CustomInputText from "../../components/CustomInput/CustomInputText";
-import {
-  getReviewsByPlaceId,
-  addReview,
-} from "../../../infrastructure/api/reviews/reviewApi";
+import {getReviewsByPlaceId,addReview,} from "../../../infrastructure/api/reviews/reviewApi";
 import { useSelector } from "react-redux";
 
 const PlaceReviews = ({ navigation, route }) => {
@@ -106,7 +103,7 @@ const PlaceReviews = ({ navigation, route }) => {
       <View style={styles.buttoncontainer}>
         <CustomButton
           style={{ width: "70%" }}
-          titletext="Añadir Review"
+          titletext="Añadir Comentario"
           onPress={handleAddReview}
           type="Primary"
           size="Small"
@@ -132,7 +129,7 @@ const PlaceReviews = ({ navigation, route }) => {
           </View>
 
           <CustomButton
-            titletext="Guardar review"
+            titletext="Guardar comentario"
             onPress={handleSubmitReview}
             type="Secondary"
             size="Small"

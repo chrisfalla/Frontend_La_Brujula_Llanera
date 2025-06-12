@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground,Linking, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, TextStyles } from '../../styles/styles';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Clipboard from 'expo-clipboard';
 
-const tabs = ['Sobre nosotros', 'Contacto', 'Reviews'];
+
+const tabs = ['Sobre nosotros', 'Contacto', 'Comentar'];
 
 const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId, initialTab = 'Sobre nosotros' }) => {
     const [activeTab, setActiveTab] = useState(initialTab);
@@ -17,9 +19,46 @@ const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId, initi
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
-        if (tab === 'Reviews' && navigation && placeId) {
+        if (tab === 'Comentar' && navigation && placeId) {
             navigation.navigate('PlaceReviews', { placeId });
         }
+    };
+    const showOptions = (type, value) => {
+        const options = [];
+
+        if (type === 'whatsapp') {
+            options.push({
+                text: 'Abrir WhatsApp',
+                onPress: () => Linking.openURL(`https://wa.me/57${value}`),
+            });
+        } else if (type === 'phone') {
+            options.push({
+                text: 'Llamar',
+                onPress: () => Linking.openURL(`tel:+57${value}`),
+            });
+        } else if (type === 'email') {
+            options.push({
+                text: 'Enviar correo',
+                onPress: () => Linking.openURL(`mailto:${value}`),
+            });
+        }
+
+        options.push({
+            text: 'Copiar',
+            onPress: () => {
+                Clipboard.setStringAsync(type === 'email' ? value : `+57${value}`);
+                Alert.alert('Copiado', `${type === 'email' ? 'Correo' : 'Número'} copiado al portapapeles`);
+            },
+        });
+
+        options.push({ text: 'Cancelar', style: 'cancel' });
+
+        Alert.alert(
+            type === 'email' ? 'Correo' : 'Número',
+            type === 'email' ? value : `+57 ${value}`,
+            options,
+            { cancelable: true }
+        );
     };
 
     return (
@@ -46,18 +85,29 @@ const DetailInfo = ({ description, phoneNumber, mail, navigation, placeId, initi
 
             {activeTab === 'Contacto' ? (
                 <View style={styles.contactContainer}>
-                    <View style={styles.contactRow}>
+                    <TouchableOpacity
+                        style={styles.contactRow}
+                        onPress={() => showOptions('whatsapp', phoneNumber)}
+                    >
                         <Ionicons name="logo-whatsapp" size={22} color={Colors.ColorPrimary} style={styles.icon} />
                         <Text style={styles.contactText}>+57 {phoneNumber}</Text>
-                    </View>
-                    <View style={styles.contactRow}>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.contactRow}
+                        onPress={() => showOptions('phone', phoneNumber)}
+                    >
                         <Ionicons name="call" size={22} color={Colors.ColorPrimary} style={styles.icon} />
                         <Text style={styles.contactText}>+57 {phoneNumber}</Text>
-                    </View>
-                    <View style={styles.contactRow}>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.contactRow}
+                        onPress={() => showOptions('email', mail)}
+                    >
                         <Ionicons name="mail" size={22} color={Colors.ColorPrimary} style={styles.icon} />
                         <Text style={styles.contactText}>{mail}</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             ) : activeTab === 'Sobre nosotros' ? (
                 <>
