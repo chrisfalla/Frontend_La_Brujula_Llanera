@@ -62,10 +62,11 @@ const MapaScreen = () => {
   }, []);
 
   const handleSearch = async (query) => {
-    if (!location) return;
+    // Permitir búsqueda aunque no haya ubicación, usando una ubicación por defecto
+    const userLocation = location || { latitude: 5.3396, longitude: -72.4058 };
     setLoading(true);
     try {
-      const locationStr = `${location.latitude},${location.longitude}`;
+      const locationStr = `${userLocation.latitude},${userLocation.longitude}`;
       if (!query.trim()) {
         setFilteredSitios(defaultSitios);
         setSelectedPlace(null);
@@ -198,6 +199,7 @@ const MapaScreen = () => {
             />
           )}
 
+          {/* Mostrar marcadores aunque no haya ubicación */}
           {(Array.isArray(filteredSitios) ? filteredSitios : []).map(
             (sitio) => (
               <Marker
