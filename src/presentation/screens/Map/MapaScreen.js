@@ -110,22 +110,6 @@ const MapaScreen = () => {
     }
   }, [searchValue, defaultSitios]);
 
-  useEffect(() => {
-    const fetchRoute = async () => {
-      if (location && selectedPlace) {
-        const route = await getRouteDirections(location, {
-          latitude: selectedPlace.latitude,
-          longitude: selectedPlace.longitude,
-        });
-        setRouteCoords(route);
-      } else {
-        setRouteCoords([]);
-      }
-    };
-
-    fetchRoute();
-  }, [selectedPlace]);
-
   if (errorMsg) {
     return (
       <View style={styles.container}>
@@ -258,13 +242,26 @@ const MapaScreen = () => {
                 setSelectedPlace(null);
                 setRouteCoords([]);
               }}
-              detailIconName="chevron-right" // Cambia el ícono de detalle
-              mapIconName="route" // Cambia el ícono de mapa
+              detailIconName="chevron-right"
+              mapIconName="route"
               onDetailIconPress={() => {
                 // Manejar el evento del ícono de detalle
               }}
-              onMapIconPress={() => {
-                // Manejar el evento del ícono de mapa
+              onMapIconPress={async () => {
+                // Calcular la ruta y hacer zoom out para mostrarla
+                if (location && selectedPlace && mapRef.current) {
+                  const route = await getRouteDirections(location, {
+                    latitude: selectedPlace.latitude,
+                    longitude: selectedPlace.longitude,
+                  });
+                  setRouteCoords(route);
+                  if (route.length > 1) {
+                    mapRef.current.fitToCoordinates(route, {
+                      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                      animated: true,
+                    });
+                  }
+                }
               }}
             />
           </View>
