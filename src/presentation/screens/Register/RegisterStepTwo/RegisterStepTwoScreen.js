@@ -21,7 +21,9 @@ const RegisterStepTwoScreen = () => {
   const navigation = useNavigation(); // Aseguro tener la navegación disponible
 
   const { name, email, phone, birthdate, gender } = route.params || {};
-  console.log('Datos recibidos en Step 2:', { name, email, phone, birthdate, gender }); // ← Agrega esto
+  console.log('Datos recibidos en Step 2:', { name, email, phone, birthdate, gender }); 
+  
+  // Declaración correcta del estado form
   const [form, setForm] = useState({ password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({ password: '', confirmPassword: '', terms: '' });
   const [hasErrorPassword, setHasErrorPassword] = useState(false);
@@ -38,20 +40,45 @@ const RegisterStepTwoScreen = () => {
     navigation.navigate('TermsCondition');
   };
 
+  const validatePassword = (password) => {
+    const errors = [];
+    
+    if (password.length < 8) {
+      errors.push(`Faltan ${8 - password.length} caracteres (mínimo 8)`);
+    }
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Falta al menos una mayúscula');
+    }
+    
+    if (!/\d.*\d/.test(password)) {
+      errors.push('Faltan números (mínimo 2)');
+    }
+    
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      errors.push('Falta al menos un carácter especial (!@#$%^&*)');
+    }
+    
+    return errors;
+  };
   const validateForm = async () => {
     let hasErrors = false;
-    const passwordRegex = /^(?=.*[A-Z])(?=(?:.*\d){2,}).{6,}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
 
+    // Validación de contraseña con mensajes específicos
     if (form.password.trim() === '') {
       setErrors(prev => ({ ...prev, password: 'La contraseña es requerida' }));
       setHasErrorPassword(true);
       hasErrors = true;
-    } else if (!passwordRegex.test(form.password)) {
-      setErrors(prev => ({ ...prev, password: 'Formato inválido: mínimo 6 caracteres, una mayúscula y dos números' }));
-      setHasErrorPassword(true);
-      hasErrors = true;
     } else {
-      setHasErrorPassword(false);
+      const passwordErrors = validatePassword(form.password);
+      if (passwordErrors.length > 0) {
+        setErrors(prev => ({ ...prev, password: passwordErrors.join(', ') }));
+        setHasErrorPassword(true);
+        hasErrors = true;
+      } else {
+        setHasErrorPassword(false);
+      }
     }
 
     if (form.confirmPassword.trim() === '') {
