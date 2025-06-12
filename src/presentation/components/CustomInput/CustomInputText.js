@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors, GlobalStyles, TextStyles } from '../../../presentation/styles/styles';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const CustomInputText = ({
   LabelText,
@@ -14,24 +15,22 @@ const CustomInputText = ({
   style,
   onFocus,
   onBlur,
+  keyboardType,
   useBgColorOnFocus = false,  // Nuevo prop con valor predeterminado false
   customInputStyle, // Nuevo prop para estilos específicos del input
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const showCustomPlaceholder = !value && !isFocused;
 
   return (
     <View style={[styles.container, style]}>
-      <Text style={[styles.label, HasError && styles.labelError]}>{LabelText}</Text>
-
-
-      {/* envoltura del input para que el placeholder  muestre la fuente correctamente */}
+      <Text style={[styles.label, HasError && styles.labelError]}>{LabelText}</Text>      {/* envoltura del input para que el placeholder  muestre la fuente correctamente */}
         <View style={styles.inputWrapper}>
           {showCustomPlaceholder && (
             <Text style={styles.customPlaceholder}>{PlaceholderText}</Text>
-          )}
-
-      <TextInput
+          )}      
+          <TextInput
         value={value}
         onChangeText={(text) => {
           console.log(`🧪 [CustomInputText] onChangeText (${LabelText}):`, text);
@@ -44,13 +43,15 @@ const CustomInputText = ({
           IsDisabled && styles.inputDisabled,
           isFocused && !HasError && styles.inputFocused,
           HasError && styles.inputError,
+          IsPassword && styles.inputWithIcon, // Nuevo estilo para inputs con ícono
           customInputStyle, // Aplicamos estilos personalizados si existen
         ]}
          //PlaceholderText lo eliminamos para que acepte la fuente correctamente 
         placeholder='' 
-        secureTextEntry={IsPassword}
+        secureTextEntry={IsPassword && !showPassword}
         editable={IsDisabled !== true}
         placeholderTextColor={Colors.DarkGray}
+        keyboardType={keyboardType || 'default'}
         
         onFocus={(e) => {
           setIsFocused(true);
@@ -65,10 +66,22 @@ const CustomInputText = ({
           }
         }}
       />
-       </View> 
-      {HasError ? (
-        <Text style={styles.errorText}>
-          {typeof HasError === 'string' ? HasError : 'Error de validación'}
+          {IsPassword && (
+            <TouchableOpacity 
+              style={styles.eyeIcon}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Ionicons 
+                name={showPassword ? 'eye-off' : 'eye'} 
+                size={20} 
+                color={Colors.DarkGray} 
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      {SupportingText ? (
+        <Text style={[styles.errorText, HasError && styles.errorTextActive]}>
+          {SupportingText}
         </Text>
       ) : null}
     </View>
@@ -121,16 +134,27 @@ const styles = StyleSheet.create({
     borderColor: Colors.ColorOnPrimary,
     borderWidth: 1,
     // Removemos la línea de backgroundColor para no afectar globalmente
-  },
-  inputError: {
+  },  inputError: {
     borderColor: Colors.ErrorAdvertisingColor,
     borderWidth: 1,
   },
+  inputWithIcon: {
+    paddingRight: 50, // Espacio para el ícono
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 15,
+    top: 14,
+    zIndex: 2,
+  },
   errorText: {
     ...TextStyles.PoppinsRegular13,
-    color: Colors.ErrorAdvertisingColor,
+    color: Colors.DarkGray,
     marginTop: 2,
     paddingLeft: 15,
+  },
+  errorTextActive: {
+    color: Colors.ErrorAdvertisingColor,
   },
 
 });
