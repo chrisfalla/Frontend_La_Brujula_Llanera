@@ -54,9 +54,9 @@ const RegisterStepOneScreen = () => {
         if (!/^\d+$/.test(form.phone)) {
           currentErrors.phone = "Solo Números";
         } else if (form.phone.length < 10) {
-          currentErrors.phone = "(faltan " + (10 - form.phone.length) + ")";
+          currentErrors.phone = "Faltan " + (10 - form.phone.length) + " dígitos";
         } else if (form.phone.length > 10) {
-          currentErrors.phone = "(sobran " + (form.phone.length - 10) + ")";
+          currentErrors.phone = "Sobran " + (form.phone.length - 10) + " dígitos";
         }
         currentHasErrors.phone = true;
       }
