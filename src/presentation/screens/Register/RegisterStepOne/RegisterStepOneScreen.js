@@ -35,21 +35,31 @@ const RegisterStepOneScreen = () => {
 
     console.log("Estado actual del formulario:", form);
 
-    if (form.name.trim() === "") {
+    if (!form.name || form.name.trim() === "") {
       currentErrors.name = "El nombre es requerido";
       currentHasErrors.name = true;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
+    if (!form.email || !emailRegex.test(form.email)) {
       currentErrors.email = "Correo inválido";
       currentHasErrors.email = true;
-    }
-
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(form.phone)) {
-      currentErrors.phone = "Teléfono inválido (10 dígitos)";
+    }    // Validación de teléfono: solo números y 10 dígitos
+    if (!form.phone || form.phone.trim() === "") {
+      currentErrors.phone = "El teléfono es requerido";
       currentHasErrors.phone = true;
+    } else {
+      const phoneRegex = /^\d{10}$/; // Exactamente 10 dígitos
+      if (!phoneRegex.test(form.phone)) {
+        if (!/^\d+$/.test(form.phone)) {
+          currentErrors.phone = "Solo Números";
+        } else if (form.phone.length < 10) {
+          currentErrors.phone = "(faltan " + (10 - form.phone.length) + ")";
+        } else if (form.phone.length > 10) {
+          currentErrors.phone = "(sobran " + (form.phone.length - 10) + ")";
+        }
+        currentHasErrors.phone = true;
+      }
     }
 
     if (!form.birthdate) {
@@ -127,15 +137,14 @@ const RegisterStepOneScreen = () => {
               HasError={hasErrors.email}
               value={form.email}
               onChangeText={(value) => handleChange("email", value)}
-            />
-
-            <CustomInputText
+            />            <CustomInputText
               LabelText="Ingrese su teléfono"
               PlaceholderText="Escriba el teléfono"
               SupportingText={hasErrors.phone ? errors.phone : ""}
               HasError={hasErrors.phone}
               value={form.phone}
               onChangeText={(value) => handleChange("phone", value)}
+              keyboardType="numeric"
             />
 
             <CustomDropdown
