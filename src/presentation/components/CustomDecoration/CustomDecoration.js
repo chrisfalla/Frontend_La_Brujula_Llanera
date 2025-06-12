@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     
     LeftVertor: {
     position: 'absolute',
-    bottom: 0,
+    bottom: -3,
     left: 0,
     width: 180,
     height: 250,

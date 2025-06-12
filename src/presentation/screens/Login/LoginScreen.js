@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     alignItems: "center",
-    paddingBottom: 0,
+    paddingBottom: 10,
   },
   logoRight: {
     position: "absolute",
