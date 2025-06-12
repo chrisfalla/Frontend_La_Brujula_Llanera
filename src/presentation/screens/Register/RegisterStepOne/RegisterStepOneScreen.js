@@ -40,10 +40,22 @@ const RegisterStepOneScreen = () => {
       currentHasErrors.name = true;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Validar solo emails de dominios permitidos
+    const allowedDomains = [
+      "gmail.com",
+      "hotmail.com",
+      "outlook.com"
+    ];
+    const emailRegex = /^[^\s@]+@([^\s@]+)$/;
     if (!form.email || !emailRegex.test(form.email)) {
       currentErrors.email = "Correo inválido";
       currentHasErrors.email = true;
+    } else {
+      const domain = form.email.split("@")[1]?.toLowerCase();
+      if (!allowedDomains.includes(domain)) {
+        currentErrors.email = "Solo se permiten correos Gmail, Hotmail u Outlook";
+        currentHasErrors.email = true;
+      }
     }    // Validación de teléfono: solo números y 10 dígitos
     if (!form.phone || form.phone.trim() === "") {
       currentErrors.phone = "El teléfono es requerido";
