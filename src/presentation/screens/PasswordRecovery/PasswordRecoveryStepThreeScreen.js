@@ -33,26 +33,59 @@ const PasswordRecoveryStepThreeScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);//import chris recovery password
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Validación de contraseña más completa
   const validatePassword = (pass) => {
-    return pass.length >= 8; // Requisito mínimo
+    // Requisito mínimo de longitud
+    if (pass.length < 8) {
+      return {
+        isValid: false,
+        message: "La contraseña debe tener al menos 8 caracteres"
+      };
+    }
+    
+    // Verifica si contiene al menos un número
+    if (!/\d/.test(pass)) {
+      return {
+        isValid: false,
+        message: "La contraseña debe contener al menos un número"
+      };
+    }
+    
+    // Verifica si contiene al menos una letra
+    if (!/[a-zA-Z]/.test(pass)) {
+      return {
+        isValid: false,
+        message: "La contraseña debe contener al menos una letra"
+      };
+    }
+    
+    // Si pasa todas las validaciones
+    return {
+      isValid: true,
+      message: ""
+    };
   };
 
-  //modify chris recovery password
   const handleContinue = async () => {
     let hasError = false;
 
+    // Validación para el campo de contraseña
     if (!password) {
       setPasswordError("La contraseña es obligatoria");
       hasError = true;
-    } else if (!validatePassword(password)) {
-      setPasswordError("La contraseña debe tener al menos 8 caracteres");
-      hasError = true;
     } else {
-      setPasswordError(null);
+      const validationResult = validatePassword(password);
+      if (!validationResult.isValid) {
+        setPasswordError(validationResult.message);
+        hasError = true;
+      } else {
+        setPasswordError(null);
+      }
     }
 
+    // Validación para el campo de confirmación de contraseña
     if (!confirmPassword) {
       setConfirmPasswordError("Debe confirmar la contraseña");
       hasError = true;
@@ -175,6 +208,10 @@ const PasswordRecoveryStepThreeScreen = () => {
             </View>
 
             <Text style={styles.subtitle}>Ingrese la nueva contraseña:</Text>
+            
+            <Text style={styles.passwordRequirements}>
+              La contraseña debe tener al menos 8 caracteres, incluir números y letras.
+            </Text>
 
             <CustomInputText
               style={{ marginBottom: 20 }}
@@ -186,7 +223,8 @@ const PasswordRecoveryStepThreeScreen = () => {
                 if (passwordError) setPasswordError(null);
               }}
               value={password}
-              secureTextEntry={true}
+              IsPassword={true}
+              SupportingText={passwordError}
               editable={!isLoading}
             />
 
@@ -199,7 +237,8 @@ const PasswordRecoveryStepThreeScreen = () => {
                 if (confirmPasswordError) setConfirmPasswordError(null);
               }}
               value={confirmPassword}
-              secureTextEntry={true}
+              IsPassword={true}
+              SupportingText={confirmPasswordError}
               editable={!isLoading}
             />
           </View>
@@ -245,7 +284,14 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...TextStyles.PoppinsSemiBold15,
-    marginVertical: 20,
+    marginTop: 20,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  passwordRequirements: {
+    ...TextStyles.PoppinsRegular13,
+    color: Colors.DarkGray,
+    marginBottom: 15,
     textAlign: "center",
   },
   footer: {
