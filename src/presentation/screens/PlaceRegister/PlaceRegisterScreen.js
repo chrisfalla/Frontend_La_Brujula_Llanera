@@ -17,8 +17,12 @@ const PlaceRegisterScreen = ({ navigation }) => {
 
   const requestGalleryPermission = async () => {
     if (Platform.OS === "android") {
+      let permission = PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+      if (Platform.Version >= 33) {
+        permission = PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES;
+      }
       const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        permission,
         {
           title: "Permiso para acceder a la galería",
           message: "La aplicación necesita acceso a tus fotos",
