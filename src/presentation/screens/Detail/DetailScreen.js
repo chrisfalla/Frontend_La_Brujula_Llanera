@@ -15,9 +15,11 @@ import GetPlaceDetailUseCase from "../../../domain/usecases/placesDetail/getPlac
 import PlaceDetailRepository from "../../../data/repositories/placesDetail/placesDetailRepository";
 import PlaceDetailApi from "../../../infrastructure/api/placesDetail/placesDetailApi";
 import PlaceDetailDatasource from "../../../data/datasources/placesDetail/placesDetailDataSource";
+import { useLogVisit } from '../../../context/LogVisitContext';
 
 const DetailScreen = ({ navigation, route }) => {
   const idPlace = route?.params?.idPlace ?? 2;
+  const { logVisit } = useLogVisit();
   const [placeDetail, setPlaceDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,6 +34,7 @@ const DetailScreen = ({ navigation, route }) => {
 
         const data = await useCase.execute(idPlace);
         setPlaceDetail(data);
+        logVisit(idPlace);
       } catch (err) {
         console.error("Error loading data:", err);
         setError(err.message);
@@ -41,7 +44,7 @@ const DetailScreen = ({ navigation, route }) => {
     };
 
     fetchData();
-  }, [idPlace]);
+  }, [idPlace, logVisit]);
 
   const handleBackPress = () => {
     navigation.goBack();

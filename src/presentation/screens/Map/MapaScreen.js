@@ -9,24 +9,29 @@ import {
   Text,
 } from "react-native";
 import CustomSearch from "../../components/Search/Search";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { searchPlaces, getPlaceDetails } from "../../../services/places";
 import { Ionicons } from "@expo/vector-icons";
 import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace";
+import Constants from "expo-constants";
+import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
+
+const API_KEY =
+  Constants.manifest?.extra?.GOOGLE_PLACES_API_KEY ||
+  Constants.expoConfig?.extra?.GOOGLE_PLACES_API_KEY;
 
 const MapaScreen = () => {
   const mapRef = useRef(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-
   const [defaultSitios, setDefaultSitios] = useState([]);
   const [filteredSitios, setFilteredSitios] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const [routeCoords, setRouteCoords] = useState([]); // NUEVO
 
-  // 1. Obtener permisos y ubicación del usuario
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -42,11 +47,10 @@ const MapaScreen = () => {
     })();
   }, []);
 
-  // 2. Cargar todos los sitios al iniciar (sin filtro)
   useEffect(() => {
     const fetchSitios = async () => {
       try {
-        const sitios = await searchPlaces("", ""); // tu BD o tu API “getAll”
+        const sitios = await searchPlaces("", "");
         setDefaultSitios(sitios);
         setFilteredSitios(sitios);
       } catch (e) {
@@ -57,32 +61,25 @@ const MapaScreen = () => {
     fetchSitios();
   }, []);
 
-  // 3. Función handleSearch: filtrar desde la BD
   const handleSearch = async (query) => {
-    if (!location) return;
+    // Permitir búsqueda aunque no haya ubicación, usando una ubicación por defecto
+    const userLocation = location || { latitude: 5.3396, longitude: -72.4058 };
     setLoading(true);
     try {
-      const locationStr = `${location.latitude},${location.longitude}`;
-
-      // Si borraron el texto, restauramos “modo predeterminado”
+      const locationStr = `${userLocation.latitude},${userLocation.longitude}`;
       if (!query.trim()) {
         setFilteredSitios(defaultSitios);
         setSelectedPlace(null);
+        setRouteCoords([]); // LIMPIAR RUTA
         setLoading(false);
         return;
       }
 
-      // Llamada a back-end / BD
       const results = await searchPlaces(query, locationStr);
-
-      // 3.1 Filtramos marcadores
       setFilteredSitios(results);
 
-      // 3.2 Si tenemos al menos 1 resultado, seleccionamos el primero
       if (results && results.length > 0) {
         setSelectedPlace(results[0]);
-
-        // 3.3 Opcional: centrar mapa sobre la primera coincidencia
         if (mapRef.current) {
           const primer = results[0];
           const coord = {
@@ -94,8 +91,8 @@ const MapaScreen = () => {
           mapRef.current.animateToRegion(coord, 500);
         }
       } else {
-        // Si no hay coincidencias, borramos la tarjeta
         setSelectedPlace(null);
+        setRouteCoords([]);
       }
     } catch (error) {
       Alert.alert("Error", "No se pudo completar la búsqueda.");
@@ -104,32 +101,80 @@ const MapaScreen = () => {
     }
   };
 
-  // 4. Cada vez que cambia searchValue, llamamos handleSearch
   useEffect(() => {
     if (searchValue.trim() === "") {
       setFilteredSitios(defaultSitios);
       setSelectedPlace(null);
+      setRouteCoords([]);
     } else if (searchValue.trim().length >= 5) {
       handleSearch(searchValue);
     }
-    // Si hay menos de 5 letras, no hace nada (ni busca ni limpia)
   }, [searchValue, defaultSitios]);
 
+  // Nueva función para volver a pedir permisos
+  const requestLocationPermission = async () => {
+    setErrorMsg(null);
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permiso de ubicación denegado");
+      return;
+    }
+    let loc = await Location.getCurrentPositionAsync({});
+    setLocation({
+      latitude: loc.coords.latitude,
+      longitude: loc.coords.longitude,
+    });
+  };
+
   if (errorMsg) {
+    // Mostrar el mapa con ubicación por defecto y un recuadro flotante con transparencia y botón de icono para reintentar
     return (
       <View style={styles.container}>
-        <Text style={styles.error}>{errorMsg}</Text>
+        <MapView
+          googleMapId="6bc2ed877465664dff366b78"
+          style={{ flex: 1, width: '100%' }}
+          initialRegion={{
+            latitude: 5.3396,
+            longitude: -72.4058,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+        <View style={{
+          position: 'absolute',
+          top: 80,
+          left: 32,
+          right: 32,
+          backgroundColor: 'rgba(255,255,255,0.92)',
+          borderRadius: 16,
+          padding: 20,
+          alignItems: 'center',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.2,
+          shadowRadius: 6,
+          elevation: 8,
+        }}>
+          <TouchableOpacity
+            style={{ padding: 16, backgroundColor: Colors.ColorPrimary, borderRadius: 50, marginBottom: 10 }}
+            onPress={requestLocationPermission}
+          >
+            <Ionicons name="locate" size={28} color="#fff" />
+          </TouchableOpacity>
+          <Text style={{ color: Colors.ColorPrimary, fontWeight: 'bold', fontSize: 16, marginBottom: 0, textAlign: 'center' }}>
+            Activa la ubicación para usar el mapa
+          </Text>
+          <Text style={{ color: Colors.ColorPrimary, fontSize: 13, marginTop: 4, textAlign: 'center' }}>
+            Presiona el ícono para volver a solicitar los permisos de ubicación
+          </Text>
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor="#ffffff"
-        translucent={false}
-      />
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <View style={styles.mapContainer}>
         <CustomSearch
           style={styles.search}
@@ -159,75 +204,6 @@ const MapaScreen = () => {
               : undefined
           }
           showsUserLocation={false}
-          onPoiClick={async (e) => {
-            const poi = e.nativeEvent;
-            setLoading(true); // Mostrar indicador de carga
-
-            try {
-              // Intentar buscar el POI por su nombre en la base de datos
-              const locationStr = `${poi.coordinate.latitude},${poi.coordinate.longitude}`;
-              const searchResults = await searchPlaces(poi.name, locationStr, 500); // Radio de 500 metros
-
-              let placeToShow = {
-                name: poi.name,
-                latitude: poi.coordinate.latitude,
-                longitude: poi.coordinate.longitude,
-                place_id: poi.placeId,
-                category: "Punto de Interés", // Categoría por defecto
-                address: poi.name, // Usar nombre como dirección provisional
-                image: null, // Sin imagen por defecto
-              };
-
-              if (searchResults && searchResults.length > 0) {
-                // Intentar encontrar una coincidencia por nombre o proximidad
-                const bestMatch = searchResults.find(
-                  (p) =>
-                    p.name.toLowerCase().includes(poi.name.toLowerCase()) ||
-                    poi.name.toLowerCase().includes(p.name.toLowerCase())
-                );
-
-                if (bestMatch) {
-                  // Si encontramos coincidencia, usar sus datos completos (incluida la imagen)
-                  placeToShow = {
-                    ...bestMatch,
-                    // Mantener las coordenadas exactas del POI
-                    latitude: poi.coordinate.latitude,
-                    longitude: poi.coordinate.longitude,
-                    place_id: poi.placeId,
-                  };
-                }
-              }
-
-              setSelectedPlace(placeToShow);
-            } catch (error) {
-              console.error("Error al buscar detalles del POI:", error);
-              // En caso de error, mostrar información básica del POI sin imagen
-              setSelectedPlace({
-                name: poi.name,
-                latitude: poi.coordinate.latitude,
-                longitude: poi.coordinate.longitude,
-                place_id: poi.placeId,
-                category: "Punto de Interés",
-                address: poi.name,
-                image: null,
-              });
-            } finally {
-              setLoading(false); // Ocultar indicador de carga
-            }
-
-            // Centrar el mapa en el POI
-            if (mapRef.current) {
-              mapRef.current.animateToRegion(
-                {
-                  latitude: poi.coordinate.latitude,
-                  longitude: poi.coordinate.longitude,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                },
-                500
-              );
-            }
-          }}
         >
           {location && (
             <Marker
@@ -243,6 +219,7 @@ const MapaScreen = () => {
             />
           )}
 
+          {/* Mostrar marcadores aunque no haya ubicación */}
           {(Array.isArray(filteredSitios) ? filteredSitios : []).map(
             (sitio) => (
               <Marker
@@ -254,23 +231,19 @@ const MapaScreen = () => {
                 image={require("../../../shared/assets/pin.png")}
                 onPress={async () => {
                   setLoading(true);
-                  // Si ya tiene imagen, mostrar directo
                   if (sitio.image) {
                     setSelectedPlace(sitio);
                     setLoading(false);
                   } else {
                     try {
-                      // Buscar detalles por idPlace o place_id primero
                       const id = sitio.idPlace || sitio.place_id || sitio.id;
                       let detail = null;
                       if (id) {
                         detail = await getPlaceDetails(id);
                       }
-                      // Si se obtuvo detalle, usar la imagen del detalle
                       setSelectedPlace({
                         ...sitio,
                         image: detail?.image || detail?.photos?.[0]?.url || null,
-                        // Puedes mapear más campos si lo deseas
                       });
                     } catch (e) {
                       setSelectedPlace(sitio);
@@ -282,9 +255,16 @@ const MapaScreen = () => {
               />
             )
           )}
+
+          {routeCoords.length > 0 && (
+            <Polyline
+              coordinates={routeCoords}
+              strokeWidth={4}
+              strokeColor={Colors.ColorOnPrimary}
+            />
+          )}
         </MapView>
 
-        {/* Botón “Mi ubicación” */}
         <TouchableOpacity
           style={styles.myLocationButton}
           onPress={() => {
@@ -297,7 +277,7 @@ const MapaScreen = () => {
             }
           }}
         >
-          <Ionicons name="locate" size={24} color="#236A34" />
+          <Ionicons name="locate" size={24} color={Colors.ColorPrimary} />
         </TouchableOpacity>
 
         {loading && (
@@ -306,25 +286,38 @@ const MapaScreen = () => {
           </View>
         )}
 
-        {/* Solo si hay un sitio seleccionado (ya sea por buscar o por tocar un marcador) */}
-        {selectedPlace && null}
         {selectedPlace && (
-          <View
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              top: 80,              
-              zIndex: 20,
-              padding: 16,
-            }}
-          >
+          <View style={{ position: "absolute", left: 0, right: 0, top: 80, zIndex: 20, padding: 16 }}>
             <HorizontalCardPlace
               name={selectedPlace.name}
               category={selectedPlace.category}
               address={selectedPlace.address}
               image={selectedPlace.image}
-              onMapPress={() => setSelectedPlace(null)}
+              onMapPress={() => {
+                setSelectedPlace(null);
+                setRouteCoords([]);
+              }}
+              detailIconName="chevron-right"
+              mapIconName="route"
+              onDetailIconPress={() => {
+                // Manejar el evento del ícono de detalle
+              }}
+              onMapIconPress={async () => {
+                // Calcular la ruta y hacer zoom out para mostrarla
+                if (location && selectedPlace && mapRef.current) {
+                  const route = await getRouteDirections(location, {
+                    latitude: selectedPlace.latitude,
+                    longitude: selectedPlace.longitude,
+                  });
+                  setRouteCoords(route);
+                  if (route.length > 1) {
+                    mapRef.current.fitToCoordinates(route, {
+                      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                      animated: true,
+                    });
+                  }
+                }
+              }}
             />
           </View>
         )}
@@ -333,24 +326,69 @@ const MapaScreen = () => {
   );
 };
 
+// --- Funciones auxiliares para rutas --- //
+function decodePolyline(encoded) {
+  let poly = [];
+  let index = 0, len = encoded.length;
+  let lat = 0, lng = 0;
+
+  while (index < len) {
+    let b, shift = 0, result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    let dlat = result & 1 ? ~(result >> 1) : result >> 1;
+    lat += dlat;
+
+    shift = 0;
+    result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    let dlng = result & 1 ? ~(result >> 1) : result >> 1;
+    lng += dlng;
+
+    poly.push([lat / 1e5, lng / 1e5]);
+  }
+
+  return poly;
+}
+
+const getRouteDirections = async (origin, destination) => {
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=${API_KEY}`
+    );
+    const data = await response.json();
+
+    if (data.routes.length) {
+      const points = decodePolyline(data.routes[0].overview_polyline.points);
+      return points.map(point => ({
+        latitude: point[0],
+        longitude: point[1],
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Error al obtener ruta:", error);
+    return [];
+  }
+};
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  map: {
-    flex: 1,
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  map: { flex: 1 },
   error: {
     fontSize: 16,
     color: "red",
     textAlign: "center",
     marginTop: 50,
   },
-  mapContainer: {
-    flex: 1,
-    position: "relative",
-  },
+  mapContainer: { flex: 1, position: "relative" },
   search: {
     position: "absolute",
     top: 20,
