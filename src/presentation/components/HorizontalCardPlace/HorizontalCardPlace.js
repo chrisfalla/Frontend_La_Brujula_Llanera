@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { GlobalStyles, Colors, TextStyles } from '../../styles/styles';
+import { useLogVisit } from '../../../context/LogVisitContext';
 
 const defaultImage = 'https://via.placeholder.com/50';
 
@@ -12,13 +13,19 @@ const HorizontalCardPlace = ({
   image,
   onMapPress, 
   onDetailPress,
+  idPlace,
   detailIconName = "chevron-right", // Nuevo prop con valor por defecto
   mapIconName = "map-marker-alt",    // Nuevo prop con valor por defecto
   onDetailIconPress, // Nuevo handler para el ícono de detalle
   onMapIconPress     // Nuevo handler para el ícono de mapa
 }) => {
+  const { logVisit } = useLogVisit();
+
   // Handler para toda la card
   const handleCardPress = () => {
+    if (idPlace) {
+      logVisit(idPlace);
+    }
     if (onDetailPress) onDetailPress();
   };
 
@@ -42,13 +49,15 @@ const HorizontalCardPlace = ({
       <View style={styles.actionsContainer}>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={onDetailIconPress || onDetailPress} // Usa el nuevo handler si existe
+         
+          onPress={onDetailIconPress || (() => { if (idPlace) logVisit(idPlace); if (onDetailPress) onDetailPress(); })}
         >
           <FontAwesome5 name={detailIconName} size={16} color="#FFFFFF" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={onMapIconPress || onMapPress} // Usa el nuevo handler si existe
+         
+          onPress={onMapIconPress || onMapPress}
         >
           <FontAwesome5 name={mapIconName} size={16} color="#FFFFFF" />
         </TouchableOpacity>
