@@ -132,7 +132,7 @@ const MapaScreen = () => {
       <View style={styles.container}>
         <MapView
           googleMapId="6bc2ed877465664dff366b78"
-          style={{ flex: 1, width: '100%' }}
+          style={styles.mapView}
           initialRegion={{
             latitude: 5.3396,
             longitude: -72.4058,
@@ -140,31 +140,17 @@ const MapaScreen = () => {
             longitudeDelta: 0.0421,
           }}
         />
-        <View style={{
-          position: 'absolute',
-          top: 80,
-          left: 32,
-          right: 32,
-          backgroundColor: 'rgba(255,255,255,0.92)',
-          borderRadius: 16,
-          padding: 20,
-          alignItems: 'center',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.2,
-          shadowRadius: 6,
-          elevation: 8,
-        }}>
+        <View style={styles.errorBox}>
           <TouchableOpacity
-            style={{ padding: 16, backgroundColor: Colors.ColorPrimary, borderRadius: 50, marginBottom: 10 }}
+            style={styles.errorButton}
             onPress={requestLocationPermission}
           >
             <Ionicons name="locate" size={28} color="#fff" />
           </TouchableOpacity>
-          <Text style={{ color: Colors.ColorPrimary, fontWeight: 'bold', fontSize: 16, marginBottom: 0, textAlign: 'center' }}>
+          <Text style={styles.errorText}>
             Activa la ubicación para usar el mapa
           </Text>
-          <Text style={{ color: Colors.ColorPrimary, fontSize: 13, marginTop: 4, textAlign: 'center' }}>
+          <Text style={styles.errorSubText}>
             Presiona el ícono para volver a solicitar los permisos de ubicación
           </Text>
         </View>
@@ -287,7 +273,7 @@ const MapaScreen = () => {
         )}
 
         {selectedPlace && (
-          <View style={{ position: "absolute", left: 0, right: 0, top: 80, zIndex: 20, padding: 16 }}>
+          <View style={styles.selectedPlaceCard}>
             <HorizontalCardPlace
               name={selectedPlace.name}
               category={selectedPlace.category}
@@ -380,13 +366,18 @@ const getRouteDirections = async (origin, destination) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  map: { flex: 1 },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.BackgroundPage,
+    ...GlobalStyles.ScreenBaseStyle,
+  },
+  map: { flex: 1, width: '100%' },
   error: {
     fontSize: 16,
-    color: "red",
+    color: Colors.ErrorAdvertisingColor,
     textAlign: "center",
     marginTop: 50,
+    ...TextStyles.PoppinsSemiBold15,
   },
   mapContainer: { flex: 1, position: "relative" },
   search: {
@@ -395,27 +386,79 @@ const styles = StyleSheet.create({
     left: 16,
     right: 16,
     zIndex: 10,
-    backgroundColor: "transparent",
-    elevation: 0,
+    backgroundColor: "#fff",
+    borderRadius: GlobalStyles.borderRadius,
+    elevation: GlobalStyles.elevation,
+    shadowColor: Colors.Black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   myLocationButton: {
     position: "absolute",
-    bottom: 10,
-    right: 16,
-    backgroundColor: "white",
-    borderRadius: 8,
-    padding: 8,
-    elevation: 4,
-    shadowColor: "#000",
+    bottom: 20,
+    right: 20,
+    backgroundColor: Colors.ColorOnPrimary,
+    borderRadius: 24,
+    padding: 12,
+    elevation: GlobalStyles.elevation,
+    shadowColor: Colors.Black,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.2)",
     justifyContent: "center",
     alignItems: "center",
+  },
+  // Nuevos estilos extraídos de los estilos en línea
+  mapView: {
+    flex: 1,
+    width: '100%',
+  },
+  errorBox: {
+    position: 'absolute',
+    top: 80,
+    left: 32,
+    right: 32,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  errorButton: {
+    padding: 16,
+    backgroundColor: Colors.ColorPrimary,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  errorText: {
+    ...TextStyles.PoppinsBold15,
+    color: Colors.ColorPrimary,
+    fontSize: 16,
+    marginBottom: 0,
+    textAlign: 'center',
+  },
+  errorSubText: {
+    color: Colors.ColorPrimary,
+    fontSize: 13,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  selectedPlaceCard: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 80,
+    zIndex: 20,
+    padding: 16,
   },
 });
 
