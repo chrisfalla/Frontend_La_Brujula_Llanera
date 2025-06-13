@@ -5,7 +5,7 @@ import { Colors, TextStyles, GlobalStyles } from "../../../presentation/styles/s
 import Rating from "../Rating/Rating";
 import { useSelector, useDispatch } from "react-redux";
 import { addFavorite, deleteFavorite, fetchFavorites } from "../../../shared/store/favoritesSlice/favoritesSlice";
-import { useLogVisit } from '../../../context/LogVisitContext';
+import { useLogVisit } from '../../../shared/context/LogVisitContext';
 
 const VerticalPlaceCard = ({
   NameCard,
