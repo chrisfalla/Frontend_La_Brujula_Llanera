@@ -17,14 +17,6 @@ export default class ReviewModel {
         this.dateTime = dateTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-
-        console.log("✅ ReviewModel creado correctamente:", {
-            idReview: this.idReview,
-            comment: this.comment,
-            ratingValue: this.ratingValue,
-            idPlaceFk: this.idPlaceFk,
-            idUserFk: this.idUserFk
-        });
-   }
+    }
 
 }
