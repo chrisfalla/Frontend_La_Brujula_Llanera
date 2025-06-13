@@ -8,17 +8,9 @@ const useMostVisitedPlaces = () => {
 
     useEffect(() => {
         const fetchMostVisitedPlaces = async () => {
-            try {
-                console.log('🔄 Iniciando carga de lugares más visitados...');
-                const data = await getMostVisitedPlacesUseCase();
-                console.log('✅ Lugares más visitados obtenidos:', data);
-                setPlaces(data || []); // Si data es undefined o null, establece un arreglo vacío
-            } catch (err) {
-                console.error('❌ Error cargando lugares más visitados:', err);
-                setError(err);
-            } finally {
-                setLoading(false);
-            }
+            const data = await getMostVisitedPlacesUseCase();
+            setPlaces(data || []); // Si data es undefined o null, establece un arreglo vacío
+            setLoading(false);
         };
 
         fetchMostVisitedPlaces();
@@ -26,6 +18,5 @@ const useMostVisitedPlaces = () => {
 
     return { places, loading, error };
 };
-
 
 export default useMostVisitedPlaces;
