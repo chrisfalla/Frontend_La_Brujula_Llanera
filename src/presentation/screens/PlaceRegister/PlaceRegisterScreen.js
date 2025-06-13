@@ -8,7 +8,7 @@ import CustomInputText from "../../components/CustomInput/CustomInputText";
 import CustomDropdown from "../../components/Dropdown/CustomDropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
-import { launchImageLibrary } from "react-native-image-picker";
+import { launchImageLibrary, launchCamera } from "react-native-image-picker";
 
 const PlaceRegisterScreen = ({ navigation }) => {
   const [photos, setPhotos] = useState([null, null, null, null]);
@@ -31,48 +31,84 @@ const PlaceRegisterScreen = ({ navigation }) => {
     return true;
   };
 
-  const pickImage = async (index) => {
-    const hasPermission = await requestGalleryPermission();
-    if (!hasPermission) {
-      Alert.alert(
-        "Permiso denegado",
-        "No se puede acceder a la galería sin permiso."
+  const requestCameraPermission = async () => {
+    if (Platform.OS === "android") {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: "Permiso para usar la cámara",
+          message: "La aplicación necesita acceso a la cámara",
+          buttonNeutral: "Preguntar luego",
+          buttonNegative: "Cancelar",
+          buttonPositive: "OK",
+        }
       );
-      return;
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
     }
-    launchImageLibrary({ mediaType: "photo", quality: 1 }, (response) => {
-      if (response.didCancel) return;
-      if (response.errorCode) {
-        Alert.alert("Error", "No se pudo abrir la galería.");
-        return;
-      }
-      if (response.assets && response.assets.length > 0) {
-        const newPhotos = [...photos];
-        newPhotos[index] = response.assets[0].uri;
-        setPhotos(newPhotos);
-      }
+    return true;
+  };
+
+  const showImagePicker = async (onImageSelected) => {
+    Alert.alert(
+      'Seleccionar imagen',
+      '¿De dónde quieres tomar la imagen?',
+      [
+        {
+          text: 'Cámara',
+          onPress: async () => {
+            const hasPermission = await requestCameraPermission();
+            if (!hasPermission) {
+              Alert.alert('Permiso denegado', 'No se puede acceder a la cámara sin permiso.');
+              return;
+            }
+            launchCamera({ mediaType: 'photo', quality: 1, saveToPhotos: true }, (response) => {
+              if (response.didCancel) return;
+              if (response.errorCode) {
+                Alert.alert('Error', 'No se pudo abrir la cámara.');
+                return;
+              }
+              if (response.assets && response.assets.length > 0) {
+                onImageSelected(response.assets[0].uri);
+              }
+            });
+          },
+        },
+        {
+          text: 'Galería',
+          onPress: async () => {
+            const hasPermission = await requestGalleryPermission();
+            if (!hasPermission) {
+              Alert.alert('Permiso denegado', 'No se puede acceder a la galería sin permiso.');
+              return;
+            }
+            launchImageLibrary({ mediaType: 'photo', quality: 1 }, (response) => {
+              if (response.didCancel) return;
+              if (response.errorCode) {
+                Alert.alert('Error', 'No se pudo abrir la galería.');
+                return;
+              }
+              if (response.assets && response.assets.length > 0) {
+                onImageSelected(response.assets[0].uri);
+              }
+            });
+          },
+        },
+        { text: 'Cancelar', style: 'cancel' },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const pickImage = (index) => {
+    showImagePicker((uri) => {
+      const newPhotos = [...photos];
+      newPhotos[index] = uri;
+      setPhotos(newPhotos);
     });
   };
 
-  const pickLogo = async () => {
-    const hasPermission = await requestGalleryPermission();
-    if (!hasPermission) {
-      Alert.alert(
-        "Permiso denegado",
-        "No se puede acceder a la galería sin permiso."
-      );
-      return;
-    }
-    launchImageLibrary({ mediaType: "photo", quality: 1 }, (response) => {
-      if (response.didCancel) return;
-      if (response.errorCode) {
-        Alert.alert("Error", "No se pudo abrir la galería.");
-        return;
-      }
-      if (response.assets && response.assets.length > 0) {
-        setLogo(response.assets[0].uri);
-      }
-    });
+  const pickLogo = () => {
+    showImagePicker((uri) => setLogo(uri));
   };
 
   // Estados para nuevas imágenes
@@ -80,65 +116,14 @@ const PlaceRegisterScreen = ({ navigation }) => {
   const [masVistado, setMasVistado] = useState(null);
   const [fotoPequena, setFotoPequena] = useState(null);
 
-  const pickLogoExtra = async () => {
-    const hasPermission = await requestGalleryPermission();
-    if (!hasPermission) {
-      Alert.alert(
-        "Permiso denegado",
-        "No se puede acceder a la galería sin permiso."
-      );
-      return;
-    }
-    launchImageLibrary({ mediaType: "photo", quality: 1 }, (response) => {
-      if (response.didCancel) return;
-      if (response.errorCode) {
-        Alert.alert("Error", "No se pudo abrir la galería.");
-        return;
-      }
-      if (response.assets && response.assets.length > 0) {
-        setLogoExtra(response.assets[0].uri);
-      }
-    });
+  const pickLogoExtra = () => {
+    showImagePicker((uri) => setLogoExtra(uri));
   };
-  const pickMasVistado = async () => {
-    const hasPermission = await requestGalleryPermission();
-    if (!hasPermission) {
-      Alert.alert(
-        "Permiso denegado",
-        "No se puede acceder a la galería sin permiso."
-      );
-      return;
-    }
-    launchImageLibrary({ mediaType: "photo", quality: 1 }, (response) => {
-      if (response.didCancel) return;
-      if (response.errorCode) {
-        Alert.alert("Error", "No se pudo abrir la galería.");
-        return;
-      }
-      if (response.assets && response.assets.length > 0) {
-        setMasVistado(response.assets[0].uri);
-      }
-    });
+  const pickMasVistado = () => {
+    showImagePicker((uri) => setMasVistado(uri));
   };
-  const pickFotoPequena = async () => {
-    const hasPermission = await requestGalleryPermission();
-    if (!hasPermission) {
-      Alert.alert(
-        "Permiso denegado",
-        "No se puede acceder a la galería sin permiso."
-      );
-      return;
-    }
-    launchImageLibrary({ mediaType: "photo", quality: 1 }, (response) => {
-      if (response.didCancel) return;
-      if (response.errorCode) {
-        Alert.alert("Error", "No se pudo abrir la galería.");
-        return;
-      }
-      if (response.assets && response.assets.length > 0) {
-        setFotoPequena(response.assets[0].uri);
-      }
-    });
+  const pickFotoPequena = () => {
+    showImagePicker((uri) => setFotoPequena(uri));
   };
 
   // 1. Estado para los valores y errores del formulario
