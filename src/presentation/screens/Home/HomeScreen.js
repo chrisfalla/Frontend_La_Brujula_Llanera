@@ -282,10 +282,12 @@ const HomeScreen = ({ navigation }) => {
         barStyle="dark-content" // Para iconos oscuros en fondo claro
         backgroundColor="#ffffff" // Fondo blanco para Android
         translucent={false} // No translúcido para evitar superposiciones
-      />
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <MainHeader username={"Christofer"} />
+      />      {/* Header */}      <View style={styles.headerContainer}>
+        <MainHeader 
+          username={"Christofer"} 
+          onNotificationPress={() => navigation.navigate("NotificationsScreen")} 
+          // Eliminamos las propiedades personalizadas para resolver el error
+        />
       </View>
 
       <ScrollView
