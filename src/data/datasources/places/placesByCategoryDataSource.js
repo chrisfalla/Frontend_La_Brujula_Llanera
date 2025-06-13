@@ -4,20 +4,15 @@ import { Place } from "../../../domain/models/places/places";
 export const placesCategoryDataSource = {
   getPlacesByCategory: async (idCategory) => {
     try {
-      console.log(`🔍 [DATASOURCE] Solicitando lugares para categoría: ${idCategory}`);
       const response = await fetchPlacesByCategory(idCategory);
 
       if (!response || !Array.isArray(response) || response.length === 0) {
-        console.warn(`⚠️ [DATASOURCE] No se encontraron lugares para la categoría ${idCategory}`);
         return [];
       }
-
-      console.log(`✅ [DATASOURCE] Se encontraron ${response.length} lugares`);
 
       // Mapear los lugares recibidos al modelo Place
       return response.map((item, index) => mapToPlace(item, index, idCategory));
     } catch (error) {
-      console.error(`❌ [DATASOURCE] Error al obtener lugares:`, error);
       return [];
     }
   }
@@ -51,3 +46,4 @@ const mapToPlace = (item, index, categoryId) => {
     categoryInfo: categoryData || { idCategory: parseInt(categoryId), category: "Categoría" }
   });
 };
+

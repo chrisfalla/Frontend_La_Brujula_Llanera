@@ -8,7 +8,6 @@ export const userStorage = {
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
       return true;
     } catch (e) {
-      console.error('❌ Error guardando usuario', e);
       return false;
     }
   },
@@ -18,7 +17,6 @@ export const userStorage = {
       const result = await SecureStore.getItemAsync(USER_KEY);
       return result ? JSON.parse(result) : null;
     } catch (e) {
-      console.error('❌ Error obteniendo usuario', e);
       return null;
     }
   },
@@ -28,7 +26,6 @@ export const userStorage = {
       await SecureStore.deleteItemAsync(USER_KEY);
       return true;
     } catch (e) {
-      console.error('❌ Error eliminando usuario', e);
       return false;
     }
   }

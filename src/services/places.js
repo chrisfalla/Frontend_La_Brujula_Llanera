@@ -5,8 +5,6 @@ const API_KEY =
   Constants.manifest?.extra?.GOOGLE_PLACES_API_KEY ||
   Constants.expoConfig?.extra?.GOOGLE_PLACES_API_KEY;
 
-console.log('[places.js] GOOGLE_PLACES_API_KEY:', API_KEY);
-
 const GOOGLE_BASE_URL = 'https://maps.googleapis.com/maps/api/place';
 
 function mapPlaceFromGoogle(googlePlace) {
@@ -26,11 +24,9 @@ function mapPlaceFromGoogle(googlePlace) {
 }
 
 export const searchPlaces = async (query, location, radius = 5000) => {
-  console.log('[searchPlaces] query:', query, 'location:', location, 'API_KEY:', API_KEY);
   if (!query) return [];
 
   if (!API_KEY) {
-    console.warn('Google Places API Key no encontrada.');
     return [];
   }
 
@@ -44,18 +40,14 @@ export const searchPlaces = async (query, location, radius = 5000) => {
       },
     });
 
-    console.log('[searchPlaces] response.data:', JSON.stringify(response.data));
-
     return response.data.results.map(mapPlaceFromGoogle);
   } catch (error) {
-    console.error('Error al buscar en Google Places:', error.response?.data || error.message);
     throw error;
   }
 };
 
 export const getPlaceDetails = async (placeId) => {
   if (!API_KEY) {
-    console.warn('Google Places API Key no encontrada.');
     return null;
   }
 
@@ -69,7 +61,6 @@ export const getPlaceDetails = async (placeId) => {
 
     return response.data.result;
   } catch (error) {
-    console.error('Error al obtener detalles del lugar:', error.response?.data || error.message);
     throw error;
   }
 };
