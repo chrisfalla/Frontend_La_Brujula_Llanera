@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginRight: 5,
     textDecorationLine: "underline",
-    marginBottom: 55,
+    marginBottom: 35,
     marginTop: -15,
   },
   buttonOne: {
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
   buttonTwo: {
     marginTop: 0,
-    marginBottom: -30,
+    marginBottom: 0,
   },
   separator: {
     color: Colors.DarkGray,
