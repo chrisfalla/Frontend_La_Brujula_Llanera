@@ -27,6 +27,7 @@ import DetailScreen from "../screens/Detail/DetailScreen";
 import SearchScreen from "../screens/Search/SearchScreen";
 import TermsCondition from "../screens/TermsCondition/TermsCondition";
 import PlaceReviews from "../screens/PlaceReviews/PlaceReviewsScreen";
+import NotificationsScreen from "../screens/Notifications/NotificationsScreen";
 import DashboardScreen from "../screens/Dashboard/DashboardScreen";
 import PlaceRegisterScreen from "../screens/PlaceRegister/PlaceRegisterScreen";
 
@@ -48,6 +49,7 @@ const RootStack = ({ isLoggedIn }) => (
     <Stack.Screen name="DetailScreen" component={DetailScreen} />
     <Stack.Screen name="TermsCondition" component={TermsCondition} />
     <Stack.Screen name="PlaceReviews" component={PlaceReviews} />
+    <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
     <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
     <Stack.Screen name="PlaceRegisterScreen" component={PlaceRegisterScreen} />
   </Stack.Navigator>
