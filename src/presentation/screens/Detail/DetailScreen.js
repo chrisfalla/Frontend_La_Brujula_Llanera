@@ -72,7 +72,7 @@ const DetailScreen = ({ navigation, route }) => {
   const galleryImages =
     placeDetail.images
       ?.filter((img) => img.categoryId !== 3)
-      ?.slice(0, 3)
+      ?.slice(0, 6)
       ?.map((img) => img.url) || [];
 
   // Extraer datos de contacto (ajusta según tu API real)
