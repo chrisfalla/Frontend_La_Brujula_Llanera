@@ -502,9 +502,6 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-//==============================================================================
-// STYLES
-//==============================================================================
 const styles = StyleSheet.create({
   // Contenedores principales
   outerContainer: {
