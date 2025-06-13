@@ -168,7 +168,7 @@ const PasswordRecoveryStepTwoScreen = () => {
 
             <CustomInputText
               LabelText={"Ingrese el código de validación"}
-              PlaceholderText={"BL-253665"}
+              PlaceholderText={"253665"}
               HasError={codeError}
               onChangeText={(text) => {
                 setCode(text);

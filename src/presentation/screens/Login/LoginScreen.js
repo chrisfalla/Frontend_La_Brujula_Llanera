@@ -75,13 +75,14 @@ const LoginScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
-        barStyle="dark-content" // Para iconos oscuros en fondo claro
-        backgroundColor="#ffffff" // Fondo blanco para Android
-        translucent={false} // No translúcido para evitar superposiciones
+        barStyle="dark-content"
+        backgroundColor="#ffffff"
+        translucent={false}
       />
       <ScrollView
-        contentContainerStyle={styles.scrollContainer}
+        contentContainerStyle={[styles.scrollContainer, { flexGrow: 1, justifyContent: 'center' }]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <Image
           style={styles.logoLeft}
@@ -159,26 +160,24 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     alignItems: "center",
-    
+    paddingBottom: 10,
   },
   logoRight: {
     position: "absolute",
     right: 0,
     top: 0,
   },
-
   logoLeft: {
     position: "absolute",
     marginVertical: 150,
     left: 0,
     top: 0,
   },
-
   img: {
     width: 164,
     height: 151,
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 0,
+    marginBottom: 60,
   },
   title: {
     color: Colors.Black,
@@ -194,6 +193,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 20,
     fontSize: 12,
+    marginBottom: 40,
   },
   input: {
     marginBottom: 20,
@@ -205,12 +205,16 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginRight: 5,
     textDecorationLine: "underline",
+    marginBottom: 55,
+    marginTop: -15,
   },
   buttonOne: {
-    marginTop: 35
+    marginTop: 35,
+    marginBottom: 10,
   },
   buttonTwo: {
-    bottom: 15,
+    marginTop: 0,
+    marginBottom: -30,
   },
   separator: {
     color: Colors.DarkGray,
@@ -223,16 +227,16 @@ const styles = StyleSheet.create({
   footerContainer: {
     width: "75%",
     position: "relative",
-    marginBottom: 25,
+    marginBottom: 0,
+    marginTop: 10,
   },
   footer: {
     textAlign: "center",
     fontFamily: "Regular",
     fontSize: 12,
     color: Colors.Black,
-    margin: 30,
+    margin: 0,
   },
- 
 });
 
 export default LoginScreen;

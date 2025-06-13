@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { GlobalStyles, Colors, TextStyles } from '../../styles/styles';
-import { useLogVisit } from '../../../context/LogVisitContext';
+import { useLogVisit } from '../../../shared/context/LogVisitContext';
 
 const defaultImage = 'https://via.placeholder.com/50';
 
