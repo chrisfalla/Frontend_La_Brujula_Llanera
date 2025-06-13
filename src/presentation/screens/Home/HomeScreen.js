@@ -99,6 +99,9 @@ const HomeScreen = ({ navigation }) => {
   const [selectedTags, setSelectedTags] = useState({});
   const [activeTagIds, setActiveTagIds] = useState([]);
 
+  // Estado para los datos del carrusel extendido
+  const [carouselData, setCarouselData] = useState([]);
+
   // Redux state
   const { all, status } = useSelector((state) => state.categories);
 
@@ -164,23 +167,40 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [topRatedPlaces]);
 
-  // Auto-scrolling carousel effect
+  // Auto-scrolling carousel effect SOLO hacia la derecha, se detiene en el último
   useEffect(() => {
-    if (!places || places.length === 0) return;
+    if (!carouselData || carouselData.length === 0) return;
 
     const interval = setInterval(() => {
       if (flatListRef.current) {
-        const nextIndex = (currentIndex + 1) % places.length;
+        let nextIndex = currentIndex + 1;
         setCurrentIndex(nextIndex);
         flatListRef.current.scrollToIndex({
           index: nextIndex,
           animated: true,
         });
+        // Si llegamos al duplicado, saltamos al primero sin animación
+        if (nextIndex === carouselData.length - 1) {
+          setTimeout(() => {
+            setCurrentIndex(0);
+            flatListRef.current.scrollToIndex({
+              index: 0,
+              animated: false,
+            });
+          }, 350); // Espera a que termine la animación
+        }
       }
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [places, currentIndex]);
+  }, [carouselData, currentIndex]);
+
+  // Actualiza carouselData cuando cambian los lugares
+  useEffect(() => {
+    if (places && places.length > 0) {
+      setCarouselData([...places, places[0]]); // Duplicamos el primero al final
+    }
+  }, [places]);
 
   // Actualizar activeTagIds cuando cambian los tags seleccionados
   useEffect(() => {
@@ -263,7 +283,14 @@ const HomeScreen = ({ navigation }) => {
   const handleScrollEnd = (e) => {
     const offset = e.nativeEvent.contentOffset.x;
     const newIndex = Math.round(offset / SNAP_INTERVAL);
-    setCurrentIndex(newIndex);
+    if (carouselData && newIndex === carouselData.length - 1) {
+      setTimeout(() => {
+        setCurrentIndex(0);
+        flatListRef.current?.scrollToIndex({ index: 0, animated: false });
+      }, 50);
+    } else {
+      setCurrentIndex(newIndex);
+    }
   };
 
   //============================================================================
@@ -306,10 +333,10 @@ const HomeScreen = ({ navigation }) => {
           {/* Carrusel horizontal */}
           <FlatList
             ref={flatListRef}
-            data={places || []}
-            keyExtractor={(item) => item.idPlace.toString()}
+            data={carouselData}
+            keyExtractor={(item, index) => `${item.idPlace}-${index}`}
             horizontal
-            renderItem={({ item, index }) => {
+            renderItem={({ item }) => {
               return (
                 <MostVisitedPlaces
                   place={item}
@@ -329,7 +356,12 @@ const HomeScreen = ({ navigation }) => {
             onScrollToIndexFailed={onScrollToIndexFailed}
             contentContainerStyle={styles.carouselContainer}
             onMomentumScrollEnd={handleScrollEnd}
-            initialNumToRender={places ? places.length : 0}
+            initialNumToRender={carouselData.length}
+            getItemLayout={(data, index) => ({
+              length: SNAP_INTERVAL,
+              offset: SNAP_INTERVAL * index,
+              index,
+            })}
           />
 
           {/* Indicadores de paginación */}
@@ -340,7 +372,7 @@ const HomeScreen = ({ navigation }) => {
                   key={index}
                   style={[
                     styles.dot,
-                    index === currentIndex
+                    index === (currentIndex % places.length)
                       ? styles.activeDot
                       : styles.inactiveDot,
                   ]}
