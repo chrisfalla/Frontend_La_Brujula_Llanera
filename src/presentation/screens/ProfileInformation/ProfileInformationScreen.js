@@ -42,49 +42,46 @@ const InformationScreen = ({ navigation }) => {
       return;
     }
 
-    try {
-      const updatedUser = await updateUserUseCase({
-        id: user.id,
-        name: editName,
-        email: editEmail,
-        phone: editPhone,
-      });
-
-      // Construir el usuario completo con todos los campos esperados
-      const userToSave = {
-        ...user,
-        id: updatedUser.id || user.id,
-        idUser: updatedUser.id || user.idUser || user.id,
-        name: updatedUser.name || updatedUser.names || editName,
-        names: updatedUser.name || updatedUser.names || editName,
-        email: updatedUser.email || updatedUser.email || editEmail,
-        phone: updatedUser.phone || updatedUser.phone || editPhone,
-        birthDate: user.birthDate,
-        roleId: user.roleId,
-        genderId: user.genderId,
-      };
-
-      dispatch(
-        update({
+    updateUserUseCase({
+      id: user.id,
+      name: editName,
+      email: editEmail,
+      phone: editPhone,
+    })
+      .then((updatedUser) => {
+        // Construir el usuario completo con todos los campos esperados
+        const userToSave = {
+          ...user,
+          id: updatedUser.id || user.id,
+          idUser: updatedUser.id || user.idUser || user.id,
           name: updatedUser.name || updatedUser.names || editName,
-          names: updatedUser.names || updatedUser.name || editName,
+          names: updatedUser.name || updatedUser.names || editName,
           email: updatedUser.email || updatedUser.email || editEmail,
           phone: updatedUser.phone || updatedUser.phone || editPhone,
-        })
-      );
+          birthDate: user.birthDate,
+          roleId: user.roleId,
+          genderId: user.genderId,
+        };
 
-      // Guardar el usuario actualizado en el almacenamiento local
-      await userStorage.save(userToSave);
+        dispatch(
+          update({
+            name: updatedUser.name || updatedUser.names || editName,
+            names: updatedUser.names || updatedUser.name || editName,
+            email: updatedUser.email || updatedUser.email || editEmail,
+            phone: updatedUser.phone || updatedUser.phone || editPhone,
+          })
+        );
 
-      setIsEditable(false);
-      Alert.alert(
-        "Éxito",
-        updatedUser.message || "Información actualizada correctamente"
-      );
-    } catch (error) {
-      console.error("Error al actualizar:", error);
-      Alert.alert("Error", "No se pudo actualizar la información");
-    }
+        // Guardar el usuario actualizado en el almacenamiento local
+        return userStorage.save(userToSave);
+      })
+      .then(() => {
+        setIsEditable(false);
+        Alert.alert("Éxito", "Información actualizada correctamente");
+      })
+      .catch(() => {
+        Alert.alert("Error", "No se pudo actualizar la información");
+      });
   };
 
   const validatePassword = (password) => {
@@ -121,22 +118,24 @@ const InformationScreen = ({ navigation }) => {
     if (hasErrors) return;
 
     setIsChangingPassword(true);
-    try {
-      await changePasswordUseCase(usersRepository)(user.email, newPassword);
-      Alert.alert("Éxito", "Tu contraseña ha sido actualizada correctamente");
-      setShowPasswordModal(false);
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (error) {
-      console.error("Error al cambiar contraseña:", error);
-      let errorMessage = "No se pudo actualizar la contraseña";
-      if (error.response && error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-      Alert.alert("Error", errorMessage);
-    } finally {
-      setIsChangingPassword(false);
-    }
+    
+    changePasswordUseCase(usersRepository)(user.email, newPassword)
+      .then(() => {
+        Alert.alert("Éxito", "Tu contraseña ha sido actualizada correctamente");
+        setShowPasswordModal(false);
+        setNewPassword("");
+        setConfirmPassword("");
+      })
+      .catch((error) => {
+        let errorMessage = "No se pudo actualizar la contraseña";
+        if (error.response && error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+        Alert.alert("Error", errorMessage);
+      })
+      .finally(() => {
+        setIsChangingPassword(false);
+      });
   };
 
   return (

@@ -23,20 +23,21 @@ const PlaceReviews = ({ navigation, route }) => {
 
   useEffect(() => {
     const fetchReviews = async () => {
+      setIsLoading(true);
       try {
-        const data = await getReviewsByPlaceId(placeId);
-        console.log("Reviews desde backend:", data); // LOG para depuración
-        setReviews(data.reviews || []);
-        setGeneralInfo(data.generalInfo || {});
+        if (placeId) {
+          const data = await getReviewsByPlaceId(placeId);
+          setReviews(data.reviews || []);
+          setGeneralInfo(data.generalInfo || {});
+        }
       } catch (error) {
-        console.log("Error al obtener reviews:", error); // LOG para depuración
         setReviews([]);
         setGeneralInfo({});
       } finally {
         setIsLoading(false);
       }
     };
-    if (placeId) fetchReviews();
+    fetchReviews();
   }, [placeId, isAddingReview]);
 
   const handleAddReview = () => {
@@ -44,29 +45,33 @@ const PlaceReviews = ({ navigation, route }) => {
   };
 
   const handleSubmitReview = async () => {
+    const userId = user?.id || user?.idUser;
+    if (!userId) {
+      alert("Debes iniciar sesión para dejar un comentario");
+      return;
+    }
+
     try {
-      const userId = user?.id || user?.idUser;
-      if (!userId) {
-        alert("Debes iniciar sesión para dejar un comentario");
-        return;
-      }
       const reviewPayload = {
         comment: newComment,
         ratingValue: rating,
         userId,
         placeId,
       };
-      console.log("Payload que se envía al backend:", reviewPayload);
+      
       await addReview(reviewPayload);
       setNewComment("");
       setIsAddingReview(false);
+      
       // Refresca la lista de reviews
       setIsLoading(true);
       const data = await getReviewsByPlaceId(placeId);
       setReviews(data.reviews || []);
       setGeneralInfo(data.generalInfo || {});
     } catch (error) {
-      console.log("Error al enviar review:", error.response?.data || error);
+      alert("Error al enviar el comentario. Por favor intente nuevamente.");
+    } finally {
+      setIsLoading(false);
     }
   };
 

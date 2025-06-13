@@ -23,28 +23,19 @@ const FavoritesScreen = ({ navigation }) => {
   const favoritesState = useSelector(state => state.favorites || {});
   const favorites = favoritesState.favorites || [];
 
-  // Efecto para cargar los favoritos solo una vez al inicio
   useEffect(() => {
     if (!user?.id || initialLoadRef.current) return;
-    
+
     const loadFavorites = async () => {
-      try {
-        console.log('🔍 [FavoritesScreen] Cargando favoritos iniciales para usuario:', user.id);
-        setLoading(true);
-        initialLoadRef.current = true;
-        await dispatch(fetchFavorites(user.id));
-      } catch (err) {
-        console.error('❌ [FavoritesScreen] Error al cargar favoritos:', err);
-        setError('No se pudieron cargar los favoritos');
-      } finally {
-        setLoading(false);
-      }
+      setLoading(true);
+      initialLoadRef.current = true;
+      await dispatch(fetchFavorites(user.id));
+      setLoading(false);
     };
 
     loadFavorites();
   }, [dispatch, user]);
 
-  // Actualizar el estado local cuando cambia el estado global de favoritos
   useEffect(() => {
     if (favoritesState.status === 'succeeded' || favoritesState.status === 'idle') {
       setFavoritePlaces(favorites);
@@ -55,12 +46,10 @@ const FavoritesScreen = ({ navigation }) => {
     }
   }, [favoritesState.status, favorites]);
 
-  // Optimización: Función para eliminar localmente un favorito inmediatamente
   const handleLocalRemove = (idPlace) => {
     if (!idPlace) return;
 
-    // Actualización optimista: remover de la UI inmediatamente
-    setFavoritePlaces(currentPlaces => 
+    setFavoritePlaces(currentPlaces =>
       currentPlaces.filter(place => {
         const currentPlaceId = place.idPlace || place.idPlaceFk;
         return String(currentPlaceId) !== String(idPlace);
@@ -68,7 +57,6 @@ const FavoritesScreen = ({ navigation }) => {
     );
   };
 
-  // Función para renderizar cada favorito
   const renderItem = ({ item }) => {
     const idPlace = item.idPlace || item.idPlaceFk;
 
@@ -79,9 +67,8 @@ const FavoritesScreen = ({ navigation }) => {
           ImagenPlaceCard={item.imageUrl || 'https://via.placeholder.com/150'}
           ratingStars={item.rating}
           imageCategoryName={item.categoryName || "Lugar"}
-          idPlace={idPlace} 
+          idPlace={idPlace}
           onPress={() => {
-            console.log('[FavoritesScreen] Navegando a DetailScreen con idPlace:', idPlace, 'item:', item);
             navigation.navigate("DetailScreen", { idPlace });
           }}
           onRemoveFavorite={handleLocalRemove}
@@ -166,7 +153,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   favoritesContainer: {
-    marginTop: 0, // Aumentado de 12 a 20
+    marginTop: 0,
     marginBottom: 10,
     position: 'static'
   },
@@ -203,7 +190,7 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingHorizontal: 10,
     paddingBottom: 20,
-    paddingTop: 15, // Añadido padding superior para crear más espacio
+    paddingTop: 15,
   }
 });
 

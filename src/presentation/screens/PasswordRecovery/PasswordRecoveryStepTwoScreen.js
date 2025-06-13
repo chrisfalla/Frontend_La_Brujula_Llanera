@@ -48,70 +48,43 @@ const PasswordRecoveryStepTwoScreen = () => {
     setIsLoading(true);
 
     try {
-      console.log("🔑 Intentando validar código:", code, "para email:", email);
-      
-      // Formatear y limpiar el código antes de enviarlo
       const formattedCode = code.trim();
-      
       const response = await verifyPasswordRecoveryCodeUseCase(usersRepository)(email, formattedCode);
-      console.log("✅ Validación exitosa, respuesta:", response);
-      
-      // Extraer el ID de usuario de la respuesta (cuando esté disponible)
       const userId = response.idUser || response.userId || 0;
-      
-      if (!userId) {
-        console.warn("⚠️ No se recibió ID de usuario en la respuesta");
-      }
-      
       navigation.navigate("RecoveryThree", { email, code: formattedCode, userId });
     } catch (error) {
-      console.error("❌ Error detallado al validar código:", error);
-      
-      let errorMessage = "Código inválido o expirado";
-      
-      // Usar el mensaje personalizado si está disponible
-      if (error.userMessage) {
-        errorMessage = error.userMessage;
-      } else if (error.response) {
-        console.error("📄 Respuesta de error del servidor:", {
-          status: error.response.status,
-          data: error.response.data
-        });
-        
-        if (error.response.status === 400) {
-          const apiMessage = error.response.data?.message;
-          if (apiMessage === "Invalid code") {
-            errorMessage = "El código ingresado es incorrecto. Por favor verifique e intente nuevamente.";
-          } else {
-            errorMessage = "Código inválido. Verifique que haya ingresado correctamente el código.";
-          }
-        } else if (error.response.status === 404) {
-          errorMessage = "No se encontró una solicitud de recuperación activa para este email.";
-        } else if (error.response.status === 401 || error.response.status === 410) {
-          errorMessage = "El código ha expirado. Por favor solicite un código nuevo.";
-        } else if (error.response.status === 429) {
-          errorMessage = "Demasiados intentos de validación. Por favor espere unos minutos.";
-        }
-      } else if (error.message && error.message.includes('Network Error')) {
-        errorMessage = "Error de conexión. Verifique su conexión a internet.";
-      } else if (error.message) {
-        // Para errores de validación del lado del cliente
-        errorMessage = error.message;
-      }
-      
-      setCodeError(errorMessage);
-      Alert.alert("Error de validación", errorMessage, [
-        {
-          text: "Solicitar nuevo código",
-          onPress: () => handleResendCode()
-        },
-        {
-          text: "Intentar de nuevo"
-        }
-      ]);
+      handleValidationError(error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleValidationError = (error) => {
+    let errorMessage = "Código inválido o expirado";
+    
+    if (error.userMessage) {
+      errorMessage = error.userMessage;
+    } else if (error.response) {
+      if (error.response.status === 400) {
+        errorMessage = "El código ingresado es incorrecto. Por favor verifique e intente nuevamente.";
+      } else if (error.response.status === 404) {
+        errorMessage = "No se encontró una solicitud de recuperación activa para este email.";
+      } else if (error.response.status === 401 || error.response.status === 410) {
+        errorMessage = "El código ha expirado. Por favor solicite un código nuevo.";
+      } else if (error.response.status === 429) {
+        errorMessage = "Demasiados intentos de validación. Por favor espere unos minutos.";
+      }
+    } else if (error.message && error.message.includes('Network Error')) {
+      errorMessage = "Error de conexión. Verifique su conexión a internet.";
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    setCodeError(errorMessage);
+    Alert.alert("Error de validación", errorMessage, [
+      { text: "Solicitar nuevo código", onPress: () => handleResendCode() },
+      { text: "Intentar de nuevo" }
+    ]);
   };
 
   const handleResendCode = async () => {
@@ -125,7 +98,7 @@ const PasswordRecoveryStepTwoScreen = () => {
       );
     } catch (error) {
       let errorMessage = "No se pudo reenviar el código";
-      if (error.response && error.response.data && error.response.data.message) {
+      if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
       Alert.alert("Error", errorMessage);

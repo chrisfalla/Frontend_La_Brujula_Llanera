@@ -360,7 +360,6 @@ const getRouteDirections = async (origin, destination) => {
     }
     return [];
   } catch (error) {
-    console.error("Error al obtener ruta:", error);
     return [];
   }
 };

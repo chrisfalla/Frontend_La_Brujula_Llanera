@@ -29,8 +29,6 @@ const CATEGORY_ICONS = {
 
 // Agregar función de depuración
 const getIconForCategory = (categoryName) => {
-  console.log('Buscando icono para:', categoryName);
-  console.log('Icono encontrado:', CATEGORY_ICONS[categoryName]);
   return CATEGORY_ICONS[categoryName] || "earth-outline"; // Icono por defecto diferente para prueba
 };
 
@@ -69,42 +67,27 @@ const CategoriesScreen = () => {
         return idxA - idxB;
       });
 
-      // Debug
-      console.log('Categorías filtradas:', filtered.map(c => c.name));
-      
       setFilteredCategories(filtered);
     }
   }, [all, searchQuery]);
 
   // Función para manejar la selección de una categoría
   const handleCategoryPress = (categoryId) => {
-    try {
-      // Buscar la categoría seleccionada para obtener su nombre
-      const selectedCategory = all.find(category => category.id === categoryId);
-      
-      if (!categoryId) {
-        console.error('⚠️ [CategoriesScreen] ID de categoría no válido:', categoryId);
-        return;
-      }
-      
-      // Log más detallado para verificar el ID exacto
-      console.log(`🔍 [CategoriesScreen] Navegando a SearchScreen con categoría:`, {
-        nombre: selectedCategory?.name,
-        id: categoryId,
-        tipoId: typeof categoryId
-      });
-      
-      // Asegurarse de que el ID sea un número si se espera así
-      const idToSend = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
-      
-      // Navegar a la pantalla de búsqueda con los parámetros de categoría
-      navigation.navigate("SearchScreen", {
-        categoryId: idToSend,
-        categoryName: selectedCategory ? selectedCategory.name : "Categoría"
-      });
-    } catch (error) {
-      console.error('❌ [CategoriesScreen] Error al navegar:', error);
+    // Buscar la categoría seleccionada para obtener su nombre
+    const selectedCategory = all.find(category => category.id === categoryId);
+    
+    if (!categoryId) {
+      return;
     }
+    
+    // Asegurarse de que el ID sea un número si se espera así
+    const idToSend = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+    
+    // Navegar a la pantalla de búsqueda con los parámetros de categoría
+    navigation.navigate("SearchScreen", {
+      categoryId: idToSend,
+      categoryName: selectedCategory ? selectedCategory.name : "Categoría"
+    });
   };
 
   return (
@@ -120,7 +103,6 @@ const CategoriesScreen = () => {
       <MainHeader title="Categorías" />
       </View>
       
-
 
       <CustomSearch 
         value={searchQuery}
@@ -153,9 +135,7 @@ const CategoriesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     backgroundColor: Colors.BackgroundPage,
-
   },
   headerContainer: {
     paddingHorizontal: 16,

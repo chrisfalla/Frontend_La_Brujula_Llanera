@@ -11,10 +11,10 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import CustomStepper from "../../components/Steper/CustomSteper";
 import CustomButton from "../../components/CustomButton/CustomButton";
-import CustomInputText from "../../components/CustomInput/CustomInputText"; // Volvemos a usar CustomInputText
+import CustomInputText from "../../components/CustomInput/CustomInputText";
 import { Colors, TextStyles } from "../../styles/styles";
 
-//imports chris validate recovery password
+//imports para manejo de recuperación de contraseña
 import { ActivityIndicator, Alert } from "react-native";
 import { usersRepository } from "../../../data/repositories/users/usersRepository";
 import { requestPasswordRecoveryCodeUseCase } from "../../../domain/usecases/passwordRecovery/getPasswordRecoveryUseCase";
@@ -23,73 +23,67 @@ const PasswordRecoveryStepOneScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(null);
-
-  const validateEmail = (text) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(text);
-  };
-
-  //states initial chris 
   const [isLoading, setIsLoading] = useState(false);
 
-  //function to handle email validation chris 
   const handleContinue = async () => {
-    if (!email) {
-      setEmailError("El correo electrónico es obligatorio");
-      return;
-    }
+    if (!validateEmail()) return;
 
-    if (!validateEmail(email)) {
-      setEmailError("Por favor ingrese un correo válido");
-      return;
-    }
-
-    setEmailError(null);
     setIsLoading(true);
-
     try {
-      console.log("📧 Intentando enviar código a:", email);
       await requestPasswordRecoveryCodeUseCase(usersRepository)(email);
-      console.log("✅ Código enviado con éxito");
       navigation.navigate("RecoveryTwo", { email });
     } catch (error) {
-      console.error("❌ Error al enviar código:", error);
-      
-      let errorMessage = "Ocurrió un error al enviar el código de recuperación";
-      
-      // Usamos el mensaje específico si está disponible
-      if (error.userMessage) {
-        errorMessage = error.userMessage;
-      } 
-      // De lo contrario, intentamos determinar el error según la respuesta
-      else if (error.response) {
-        if (error.response.status === 503) {
-          errorMessage = "El sistema de recuperación está temporalmente no disponible. Por favor intenta más tarde.";
-        } else if (error.response.data && error.response.data.message) {
-          errorMessage = error.response.data.message;
-        } else if (error.response.status === 404) {
-          errorMessage = "El correo electrónico no está registrado en el sistema";
-        } else if (error.response.status === 429) {
-          errorMessage = "Demasiados intentos. Por favor espere unos minutos";
-        }
-      } else if (error.message && error.message.includes('Network Error')) {
-        errorMessage = "Error de conexión. Verifica tu conexión a internet e intenta nuevamente.";
-      }
-      
-      Alert.alert("Error", errorMessage, [
-        { 
-          text: "Reintentar", 
-          onPress: () => handleContinue() 
-        },
-        { 
-          text: "OK" 
-        }
-      ]);
-      
-      setEmailError("Error al enviar el código. Verifique su conexión e intente nuevamente");
+      handleEmailError(error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const validateEmail = () => {
+    if (!email) {
+      setEmailError("El correo electrónico es obligatorio");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError("Por favor ingrese un correo válido");
+      return false;
+    }
+
+    setEmailError(null);
+    return true;
+  };
+
+  const handleEmailError = (error) => {
+    let errorMessage = "Ocurrió un error al enviar el código de recuperación";
+
+    if (error.userMessage) {
+      errorMessage = error.userMessage;
+    } else if (error.response) {
+      if (error.response.status === 503) {
+        errorMessage =
+          "El sistema de recuperación está temporalmente no disponible. Por favor intenta más tarde.";
+      } else if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.status === 404) {
+        errorMessage = "El correo electrónico no está registrado en el sistema";
+      } else if (error.response.status === 429) {
+        errorMessage = "Demasiados intentos. Por favor espere unos minutos";
+      }
+    } else if (error.message?.includes("Network Error")) {
+      errorMessage =
+        "Error de conexión. Verifica tu conexión a internet e intenta nuevamente.";
+    }
+
+    Alert.alert("Error", errorMessage, [
+      { text: "Reintentar", onPress: () => handleContinue() },
+      { text: "OK" },
+    ]);
+
+    setEmailError(
+      "Error al enviar el código. Verifique su conexión e intente nuevamente"
+    );
   };
 
   return (

@@ -26,21 +26,15 @@ const DetailScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const api = new PlaceDetailApi();
-        const datasource = new PlaceDetailDatasource(api);
-        const repository = new PlaceDetailRepository(datasource);
-        const useCase = new GetPlaceDetailUseCase(repository);
+      const api = new PlaceDetailApi();
+      const datasource = new PlaceDetailDatasource(api);
+      const repository = new PlaceDetailRepository(datasource);
+      const useCase = new GetPlaceDetailUseCase(repository);
 
-        const data = await useCase.execute(idPlace);
-        setPlaceDetail(data);
-        logVisit(idPlace);
-      } catch (err) {
-        console.error("Error loading data:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+      const data = await useCase.execute(idPlace);
+      setPlaceDetail(data);
+      logVisit(idPlace);
+      setLoading(false);
     };
 
     fetchData();
