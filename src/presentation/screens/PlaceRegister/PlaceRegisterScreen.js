@@ -580,9 +580,10 @@ const styles = StyleSheet.create({
     width: 250,
   },
   modalTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    ...TextStyles.PoppinsSemiBold15,
     marginBottom: 16,
+    color: Colors.ColorPrimary,
+    textAlign: 'center',
   },
   modalOptionsRow: {
     flexDirection: 'row',
@@ -594,14 +595,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalOptionText: {
+    ...TextStyles.PoppinsRegular13,
     marginTop: 8,
+    textAlign: 'center',
   },
   modalCancel: {
     marginTop: 20,
   },
   modalCancelText: {
+    ...TextStyles.PoppinsSemiBold15,
     color: Colors.ColorPrimary,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
