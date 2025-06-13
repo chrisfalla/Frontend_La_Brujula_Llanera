@@ -15,7 +15,6 @@ export const LogVisitProvider = ({ children }) => {
 
   const logVisit = useCallback(async (idPlace) => {
     if (!idPlace || !userId) {
-      console.warn('⚠️ No se puede registrar visita: faltan datos');
       return;
     }
 
