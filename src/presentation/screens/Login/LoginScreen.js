@@ -205,7 +205,8 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginRight: 5,
     textDecorationLine: "underline",
-    marginBottom: 40,
+    marginBottom: 55,
+    marginTop: -15,
   },
   buttonOne: {
     marginTop: 35,
