@@ -147,6 +147,14 @@ const PlaceRegisterScreen = ({ navigation }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Agrega este arreglo para personalizar cada sección de foto
+  const photoSections = [
+    { index: 0, label: "Foto de la fachada" },
+    { index: 1, label: "Foto del interior" },
+    { index: 2, label: "Foto del menú" },
+    { index: 3, label: "Foto adicional" },
+  ];
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -259,15 +267,15 @@ const PlaceRegisterScreen = ({ navigation }) => {
           <View style={styles.containerGallery}>
             <Text style={styles.galleryTitle}>Galeria</Text>
             <View style={styles.containerPhoto}>
-              {[0, 1, 2, 3].map((item) => (
-                <View key={item} style={styles.photoContainer}>
+              {photoSections.map((section) => (
+                <View key={section.index} style={styles.photoContainer}>
                   <TouchableOpacity
                     style={styles.photoIconButton}
-                    onPress={() => pickImage(item)}
+                    onPress={() => pickImage(section.index)}
                   >
-                    {photos[item] ? (
+                    {photos[section.index] ? (
                       <Image
-                        source={{ uri: photos[item] }}
+                        source={{ uri: photos[section.index] }}
                         style={styles.photoImage}
                       />
                     ) : (
@@ -278,7 +286,8 @@ const PlaceRegisterScreen = ({ navigation }) => {
                       />
                     )}
                   </TouchableOpacity>
-                  <Text style={styles.photoText}>Foto {item + 1}</Text>
+                  {/* Texto personalizado debajo de cada icono */}
+                  <Text style={styles.photoText}>{section.label}</Text>
                 </View>
               ))}
             </View>
@@ -336,7 +345,6 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     flex: 1,
     backgroundColor: Colors.BackgroundPage,
-
   },
   headerTopBar: {
     marginTop: 0,
@@ -376,7 +384,6 @@ const styles = StyleSheet.create({
   photoContainer: {
     alignItems: "center",
     marginRight: 16,
-    
   },
   photoIconButton: {
     padding: 10,
@@ -423,7 +430,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   buttonContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 24, // opcional, para separar del borde inferior
   },
 });
