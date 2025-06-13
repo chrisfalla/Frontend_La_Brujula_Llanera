@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {  StyleSheet,  View,  ScrollView,  Image,  TouchableOpacity,  Text,  
-  PermissionsAndroid,  Platform,  Alert,  StatusBar,
+  PermissionsAndroid,  Platform,  Alert,  StatusBar,  Modal
 } from "react-native";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import CustomButton from "../../components/CustomButton/CustomButton";
@@ -9,6 +9,7 @@ import CustomDropdown from "../../components/Dropdown/CustomDropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 import { launchImageLibrary, launchCamera } from "react-native-image-picker";
+import ImageResizer from 'react-native-image-resizer';
 
 const PlaceRegisterScreen = ({ navigation }) => {
   const [photos, setPhotos] = useState([null, null, null, null]);
@@ -48,59 +49,72 @@ const PlaceRegisterScreen = ({ navigation }) => {
     return true;
   };
 
-  const showImagePicker = async (onImageSelected) => {
-    Alert.alert(
-      'Seleccionar imagen',
-      '¿De dónde quieres tomar la imagen?',
-      [
-        {
-          text: 'Cámara',
-          onPress: async () => {
-            const hasPermission = await requestCameraPermission();
-            if (!hasPermission) {
-              Alert.alert('Permiso denegado', 'No se puede acceder a la cámara sin permiso.');
-              return;
-            }
-            launchCamera({ mediaType: 'photo', quality: 1, saveToPhotos: true }, (response) => {
-              if (response.didCancel) return;
-              if (response.errorCode) {
-                Alert.alert('Error', 'No se pudo abrir la cámara.');
-                return;
-              }
-              if (response.assets && response.assets.length > 0) {
-                onImageSelected(response.assets[0].uri);
-              }
-            });
-          },
-        },
-        {
-          text: 'Galería',
-          onPress: async () => {
-            const hasPermission = await requestGalleryPermission();
-            if (!hasPermission) {
-              Alert.alert('Permiso denegado', 'No se puede acceder a la galería sin permiso.');
-              return;
-            }
-            launchImageLibrary({ mediaType: 'photo', quality: 1 }, (response) => {
-              if (response.didCancel) return;
-              if (response.errorCode) {
-                Alert.alert('Error', 'No se pudo abrir la galería.');
-                return;
-              }
-              if (response.assets && response.assets.length > 0) {
-                onImageSelected(response.assets[0].uri);
-              }
-            });
-          },
-        },
-        { text: 'Cancelar', style: 'cancel' },
-      ],
-      { cancelable: true }
-    );
+  const convertToWebP = async (uri) => {
+    try {
+      const result = await ImageResizer.createResizedImage(
+        uri,
+        800, // ancho deseado
+        800, // alto deseado
+        'WEBP', // formato
+        80 // calidad
+      );
+      return result.uri;
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo convertir la imagen a WebP.');
+      return uri;
+    }
+  };
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [onImageSelectedCallback, setOnImageSelectedCallback] = useState(null);
+
+  const openImagePickerModal = (onImageSelected) => {
+    setOnImageSelectedCallback(() => onImageSelected);
+    setModalVisible(true);
+  };
+
+  const handleCamera = async () => {
+    setModalVisible(false);
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) {
+      Alert.alert('Permiso denegado', 'No se puede acceder a la cámara sin permiso.');
+      return;
+    }
+    launchCamera({ mediaType: 'photo', quality: 1, saveToPhotos: true }, async (response) => {
+      if (response.didCancel) return;
+      if (response.errorCode) {
+        Alert.alert('Error', 'No se pudo abrir la cámara.');
+        return;
+      }
+      if (response.assets && response.assets.length > 0) {
+        const webpUri = await convertToWebP(response.assets[0].uri);
+        if (onImageSelectedCallback) onImageSelectedCallback(webpUri);
+      }
+    });
+  };
+
+  const handleGallery = async () => {
+    setModalVisible(false);
+    const hasPermission = await requestGalleryPermission();
+    if (!hasPermission) {
+      Alert.alert('Permiso denegado', 'No se puede acceder a la galería sin permiso.');
+      return;
+    }
+    launchImageLibrary({ mediaType: 'photo', quality: 1 }, async (response) => {
+      if (response.didCancel) return;
+      if (response.errorCode) {
+        Alert.alert('Error', 'No se pudo abrir la galería.');
+        return;
+      }
+      if (response.assets && response.assets.length > 0) {
+        const webpUri = await convertToWebP(response.assets[0].uri);
+        if (onImageSelectedCallback) onImageSelectedCallback(webpUri);
+      }
+    });
   };
 
   const pickImage = (index) => {
-    showImagePicker((uri) => {
+    openImagePickerModal((uri) => {
       const newPhotos = [...photos];
       newPhotos[index] = uri;
       setPhotos(newPhotos);
@@ -108,7 +122,7 @@ const PlaceRegisterScreen = ({ navigation }) => {
   };
 
   const pickLogo = () => {
-    showImagePicker((uri) => setLogo(uri));
+    openImagePickerModal((uri) => setLogo(uri));
   };
 
   // Estados para nuevas imágenes
@@ -117,13 +131,13 @@ const PlaceRegisterScreen = ({ navigation }) => {
   const [fotoPequena, setFotoPequena] = useState(null);
 
   const pickLogoExtra = () => {
-    showImagePicker((uri) => setLogoExtra(uri));
+    openImagePickerModal((uri) => setLogoExtra(uri));
   };
   const pickMasVistado = () => {
-    showImagePicker((uri) => setMasVistado(uri));
+    openImagePickerModal((uri) => setMasVistado(uri));
   };
   const pickFotoPequena = () => {
-    showImagePicker((uri) => setFotoPequena(uri));
+    openImagePickerModal((uri) => setFotoPequena(uri));
   };
 
   // 1. Estado para los valores y errores del formulario
@@ -403,6 +417,31 @@ const PlaceRegisterScreen = ({ navigation }) => {
           />
         </View>
       </ScrollView>
+      <Modal
+  visible={modalVisible}
+  transparent
+  animationType="fade"
+  onRequestClose={() => setModalVisible(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <Text style={styles.modalTitle}>Selecciona una opción</Text>
+      <View style={styles.modalOptionsRow}>
+        <TouchableOpacity onPress={handleCamera} style={styles.modalOption}>
+          <Ionicons name="camera" size={40} color={Colors.ColorPrimary} />
+          <Text style={styles.modalOptionText}>Usar cámara</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleGallery} style={styles.modalOption}>
+          <Ionicons name="folder" size={40} color={Colors.ColorPrimary} />
+          <Text style={styles.modalOptionText}>Desde galería</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalCancel}>
+        <Text style={styles.modalCancelText}>Cancelar</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
     </View>
   );
 };
@@ -526,6 +565,43 @@ const styles = StyleSheet.create({
   extraImageContainer: {
     alignItems: 'center',
     flex: 1,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    width: 250,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  modalOptionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalOption: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  modalOptionText: {
+    marginTop: 8,
+  },
+  modalCancel: {
+    marginTop: 20,
+  },
+  modalCancelText: {
+    color: Colors.ColorPrimary,
+    fontWeight: 'bold',
   },
 });
 
