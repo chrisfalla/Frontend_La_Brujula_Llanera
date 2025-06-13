@@ -47,7 +47,7 @@ import HorizontalCardPlace from "../../components/HorizontalCardPlace/Horizontal
 // CONSTANTS
 //==============================================================================
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CARD_WIDTH = SCREEN_WIDTH;
+const CARD_WIDTH = SCREEN_WIDTH - 32; // 16px de padding a cada lado
 const CARD_MARGIN = 0;
 const SNAP_INTERVAL = CARD_WIDTH;
 
@@ -330,7 +330,7 @@ const HomeScreen = ({ navigation }) => {
           </Text>
 
           {/* Carrusel horizontal */}
-          <View style={{ width: SCREEN_WIDTH, alignSelf: 'center' }}>
+          <View style={{ width: CARD_WIDTH, alignSelf: 'center', marginHorizontal: 16 }}>
             <FlatList
               ref={flatListRef}
               data={carouselData}
@@ -364,7 +364,7 @@ const HomeScreen = ({ navigation }) => {
                 offset: SNAP_INTERVAL * index,
                 index,
               })}
-              style={{ width: SCREEN_WIDTH }}
+              style={{ width: CARD_WIDTH }}
             />
           </View>
 
