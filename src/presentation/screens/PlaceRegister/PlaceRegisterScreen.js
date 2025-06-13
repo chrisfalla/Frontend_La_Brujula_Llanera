@@ -1,15 +1,6 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Text,
-  PermissionsAndroid,
-  Platform,
-  Alert,
-  StatusBar,
+import {  StyleSheet,  View,  ScrollView,  Image,  TouchableOpacity,  Text,  
+  PermissionsAndroid,  Platform,  Alert,  StatusBar,
 } from "react-native";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import CustomButton from "../../components/CustomButton/CustomButton";
@@ -84,6 +75,72 @@ const PlaceRegisterScreen = ({ navigation }) => {
     });
   };
 
+  // Estados para nuevas imágenes
+  const [logoExtra, setLogoExtra] = useState(null);
+  const [masVistado, setMasVistado] = useState(null);
+  const [fotoPequena, setFotoPequena] = useState(null);
+
+  const pickLogoExtra = async () => {
+    const hasPermission = await requestGalleryPermission();
+    if (!hasPermission) {
+      Alert.alert(
+        "Permiso denegado",
+        "No se puede acceder a la galería sin permiso."
+      );
+      return;
+    }
+    launchImageLibrary({ mediaType: "photo", quality: 1 }, (response) => {
+      if (response.didCancel) return;
+      if (response.errorCode) {
+        Alert.alert("Error", "No se pudo abrir la galería.");
+        return;
+      }
+      if (response.assets && response.assets.length > 0) {
+        setLogoExtra(response.assets[0].uri);
+      }
+    });
+  };
+  const pickMasVistado = async () => {
+    const hasPermission = await requestGalleryPermission();
+    if (!hasPermission) {
+      Alert.alert(
+        "Permiso denegado",
+        "No se puede acceder a la galería sin permiso."
+      );
+      return;
+    }
+    launchImageLibrary({ mediaType: "photo", quality: 1 }, (response) => {
+      if (response.didCancel) return;
+      if (response.errorCode) {
+        Alert.alert("Error", "No se pudo abrir la galería.");
+        return;
+      }
+      if (response.assets && response.assets.length > 0) {
+        setMasVistado(response.assets[0].uri);
+      }
+    });
+  };
+  const pickFotoPequena = async () => {
+    const hasPermission = await requestGalleryPermission();
+    if (!hasPermission) {
+      Alert.alert(
+        "Permiso denegado",
+        "No se puede acceder a la galería sin permiso."
+      );
+      return;
+    }
+    launchImageLibrary({ mediaType: "photo", quality: 1 }, (response) => {
+      if (response.didCancel) return;
+      if (response.errorCode) {
+        Alert.alert("Error", "No se pudo abrir la galería.");
+        return;
+      }
+      if (response.assets && response.assets.length > 0) {
+        setFotoPequena(response.assets[0].uri);
+      }
+    });
+  };
+
   // 1. Estado para los valores y errores del formulario
   const [form, setForm] = useState({
     nombre: "",
@@ -146,14 +203,6 @@ const PlaceRegisterScreen = ({ navigation }) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  // Agrega este arreglo para personalizar cada sección de foto
-  const photoSections = [
-    { index: 0, label: "Foto de la fachada" },
-    { index: 1, label: "Foto del interior" },
-    { index: 2, label: "Foto del menú" },
-    { index: 3, label: "Foto adicional" },
-  ];
 
   return (
     <View style={styles.container}>
@@ -266,36 +315,32 @@ const PlaceRegisterScreen = ({ navigation }) => {
           </View>
           <View style={styles.containerGallery}>
             <Text style={styles.galleryTitle}>Galeria</Text>
-            <View style={styles.containerPhoto}>
-              {photoSections.map((section) => (
-                <View key={section.index} style={styles.photoContainer}>
-                  <TouchableOpacity
-                    style={styles.photoIconButton}
-                    onPress={() => pickImage(section.index)}
-                  >
-                    {photos[section.index] ? (
-                      <Image
-                        source={{ uri: photos[section.index] }}
-                        style={styles.photoImage}
-                      />
-                    ) : (
-                      <Ionicons
-                        name="camera"
-                        size={24}
-                        color={Colors.ColorPrimary}
-                      />
-                    )}
-                  </TouchableOpacity>
-                  {/* Texto personalizado debajo de cada icono */}
-                  <Text style={styles.photoText}>{section.label}</Text>
-                </View>
-              ))}
-            </View>
-            {errors.galeria && (
-              <Text style={styles.errorText}>{errors.galeria}</Text>
-            )}
-            <View style={styles.containerPhoto}>
-              <View style={styles.logoContainer}>
+            <View style={styles.galleryRow}>
+              <View style={styles.galleryImagesContainer}>
+                {[0, 1, 2].map((item) => (
+                  <View key={item} style={styles.photoContainer}>
+                    <TouchableOpacity
+                      style={styles.photoIconButton}
+                      onPress={() => pickImage(item)}
+                    >
+                      {photos[item] ? (
+                        <Image
+                          source={{ uri: photos[item] }}
+                          style={styles.photoImage}
+                        />
+                      ) : (
+                        <Ionicons
+                          name="camera"
+                          size={24}
+                          color={Colors.ColorPrimary}
+                        />
+                      )}
+                    </TouchableOpacity>
+                    <Text style={styles.photoText}>Foto {item + 1}</Text>
+                  </View>
+                ))}
+              </View>
+              <View style={styles.logoContainerGallery}>
                 <TouchableOpacity
                   style={styles.photoIconButton}
                   onPress={pickLogo}
@@ -310,11 +355,48 @@ const PlaceRegisterScreen = ({ navigation }) => {
                     />
                   )}
                 </TouchableOpacity>
-                <Text style={styles.photoText}>Logo</Text>
+                <Text style={styles.photoText}>Perfil</Text>
                 {errors.logo && (
                   <Text style={styles.errorText}>{errors.logo}</Text>
                 )}
               </View>
+              
+            </View>
+            {errors.galeria && (
+              <Text style={styles.errorText}>{errors.galeria}</Text>
+            )}
+          </View>
+          <Text style={styles.galleryTitle}>Otras imágenes</Text>
+          <View style={styles.extraImagesRow}>
+            <View style={styles.extraImageContainer}>
+              <TouchableOpacity style={styles.photoIconButton} onPress={pickLogoExtra}>
+                {logoExtra ? (
+                  <Image source={{ uri: logoExtra }} style={styles.photoImage} />
+                ) : (
+                  <Ionicons name="camera" size={24} color={Colors.ColorPrimary} />
+                )}
+              </TouchableOpacity>
+              <Text style={styles.photoText}>Logo</Text>
+            </View>
+            <View style={styles.extraImageContainer}>
+              <TouchableOpacity style={styles.photoIconButton} onPress={pickMasVistado}>
+                {masVistado ? (
+                  <Image source={{ uri: masVistado }} style={styles.photoImage} />
+                ) : (
+                  <Ionicons name="camera" size={24} color={Colors.ColorPrimary} />
+                )}
+              </TouchableOpacity>
+              <Text style={styles.photoText}>Más visitado</Text>
+            </View>
+            <View style={styles.extraImageContainer}>
+              <TouchableOpacity style={styles.photoIconButton} onPress={pickFotoPequena}>
+                {fotoPequena ? (
+                  <Image source={{ uri: fotoPequena }} style={styles.photoImage} />
+                ) : (
+                  <Ionicons name="camera" size={24} color={Colors.ColorPrimary} />
+                )}
+              </TouchableOpacity>
+              <Text style={styles.photoText}>Foto pequeña</Text>
             </View>
           </View>
         </View>
@@ -345,6 +427,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     flex: 1,
     backgroundColor: Colors.BackgroundPage,
+
   },
   headerTopBar: {
     marginTop: 0,
@@ -384,6 +467,7 @@ const styles = StyleSheet.create({
   photoContainer: {
     alignItems: "center",
     marginRight: 16,
+    
   },
   photoIconButton: {
     padding: 10,
@@ -412,11 +496,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 20,
   },
+  logoContainerGallery: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  galleryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",    
+    marginBottom: 20,
+  },
+  galleryImagesContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 3,
+  },
   containerGallery: {
     ...TextStyles.PoppinsRegular13,
-
     marginTop: 20,
-    marginBottom: 20,
+    
   },
   galleryTitle: {
     ...TextStyles.PoppinsSemiBold15,
@@ -430,8 +529,18 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   buttonContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 24, // opcional, para separar del borde inferior
+  },
+  extraImagesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  extraImageContainer: {
+    alignItems: 'center',
+    flex: 1,
   },
 });
 
