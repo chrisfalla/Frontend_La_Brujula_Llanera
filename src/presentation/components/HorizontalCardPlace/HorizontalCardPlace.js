@@ -1,4 +1,3 @@
-// components/Cards/HorizontalCardPlace.js
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -50,12 +49,14 @@ const HorizontalCardPlace = ({
       <View style={styles.actionsContainer}>
         <TouchableOpacity
           style={styles.iconButton}
+         
           onPress={onDetailIconPress || (() => { if (idPlace) logVisit(idPlace); if (onDetailPress) onDetailPress(); })}
         >
           <FontAwesome5 name={detailIconName} size={16} color="#FFFFFF" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconButton}
+         
           onPress={onMapIconPress || onMapPress}
         >
           <FontAwesome5 name={mapIconName} size={16} color="#FFFFFF" />

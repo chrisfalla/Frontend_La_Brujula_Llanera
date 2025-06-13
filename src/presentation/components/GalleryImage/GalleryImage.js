@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {View,StyleSheet,Image,Text,Modal,Pressable,FlatList,Dimensions,} from "react-native";
 import { Colors, TextStyles, GlobalStyles } from "../../styles/styles";
+import { Ionicons } from "@expo/vector-icons";
 
 
 const { width, height } = Dimensions.get("window");
@@ -67,7 +68,7 @@ return (
             )}
             />
             <Pressable style={styles.closeButton} onPress={closeImage}>
-            <Text style={styles.closeText}>✕</Text>
+          <Ionicons name="close" size={24} color={Colors.ColorPrimary} style={styles.closeText} />
             </Pressable>
         </View>
         </Modal>
@@ -132,7 +133,7 @@ fullscreenImage: {
     width: width * 0.85,
     height: height * 0.55,
     borderRadius: 20,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.LightGray,
     resizeMode: "cover", // llena el contenedor, recortando exceso
 },
 
@@ -140,16 +141,12 @@ closeButton: {
     position: "absolute",
     top: 80,
     right: 20,
-    backgroundColor: "#ffffff",
-    padding: 15,
+    backgroundColor: Colors.LightGray,
+    padding: 10,
     borderRadius: 50,
+    
 },
-closeText: {
-    color: Colors.Black,
-    fontSize: 20,
-    fontWeight: "bold",
-    lineHeight: 22,
-},
+
 });
 
 export default GalleryImage;

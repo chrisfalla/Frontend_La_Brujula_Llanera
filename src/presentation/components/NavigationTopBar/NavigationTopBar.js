@@ -119,7 +119,7 @@ const NavigationTopBar = ({
                 ? onSecondIconPress
                 : useHeart && SecondIcon === "heart-outline"
                 ? handleHeartPress
-                : null
+                : onSecondIconPress // Asegurando que onSecondIconPress se use para "add-circle"
             }
             disabled={isUpdating || (!useHeart && SecondIcon === "heart-outline")}
           >

@@ -190,6 +190,46 @@ const MapaScreen = () => {
               : undefined
           }
           showsUserLocation={false}
+          onPoiClick={async (e) => {
+            const { coordinate, name, placeId } = e.nativeEvent;
+            setLoading(true);
+            try {
+              let detail = null;
+              if (placeId) {
+                detail = await getPlaceDetails(placeId);
+              }
+              let imageUrl = null;
+              if (
+                detail?.photos &&
+                detail.photos.length > 0 &&
+                detail.photos[0].photo_reference
+              ) {
+                imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${detail.photos[0].photo_reference}&key=${API_KEY}`;
+              } else if (detail?.image) {
+                imageUrl = detail.image;
+              } else if (detail?.photos?.[0]?.url) {
+                imageUrl = detail.photos[0].url;
+              }
+              setSelectedPlace({
+                name: detail?.name || name,
+                address: detail?.address || detail?.formatted_address || "",
+                image: imageUrl,
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+                id: placeId,
+                // Puedes agregar más campos si los necesitas
+              });
+            } catch (err) {
+              setSelectedPlace({
+                name,
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+                id: placeId,
+              });
+            } finally {
+              setLoading(false);
+            }
+          }}
         >
           {location && (
             <Marker
@@ -315,11 +355,15 @@ const MapaScreen = () => {
 // --- Funciones auxiliares para rutas --- //
 function decodePolyline(encoded) {
   let poly = [];
-  let index = 0, len = encoded.length;
-  let lat = 0, lng = 0;
+  let index = 0,
+    len = encoded.length;
+  let lat = 0,
+    lng = 0;
 
   while (index < len) {
-    let b, shift = 0, result = 0;
+    let b,
+      shift = 0,
+      result = 0;
     do {
       b = encoded.charCodeAt(index++) - 63;
       result |= (b & 0x1f) << shift;
@@ -353,7 +397,7 @@ const getRouteDirections = async (origin, destination) => {
 
     if (data.routes.length) {
       const points = decodePolyline(data.routes[0].overview_polyline.points);
-      return points.map(point => ({
+      return points.map((point) => ({
         latitude: point[0],
         longitude: point[1],
       }));
@@ -367,44 +411,39 @@ const getRouteDirections = async (origin, destination) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.BackgroundPage,
-    ...GlobalStyles.ScreenBaseStyle,
+    backgroundColor: "#ffffff",
   },
-  map: { flex: 1, width: '100%' },
-  error: {
-    fontSize: 16,
-    color: Colors.ErrorAdvertisingColor,
-    textAlign: "center",
-    marginTop: 50,
-    ...TextStyles.PoppinsSemiBold15,
+  map: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
-  mapContainer: { flex: 1, position: "relative" },
+  mapView: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  mapContainer: {
+    flex: 1,
+    position: "relative",
+    // Sin padding ni margen
+  },
   search: {
     position: "absolute",
     top: 20,
     left: 16,
     right: 16,
     zIndex: 10,
-    backgroundColor: "#fff",
-    borderRadius: GlobalStyles.borderRadius,
-    elevation: GlobalStyles.elevation,
-    shadowColor: Colors.Black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    backgroundColor: "transparent",
+    elevation: 0,
   },
   myLocationButton: {
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: Colors.ColorOnPrimary,
-    borderRadius: 24,
+    backgroundColor: "#fff",
+    borderRadius: 12,
     padding: 12,
-    elevation: GlobalStyles.elevation,
-    shadowColor: Colors.Black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -413,20 +452,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   // Nuevos estilos extraídos de los estilos en línea
-  mapView: {
-    flex: 1,
-    width: '100%',
-  },
   errorBox: {
-    position: 'absolute',
+    position: "absolute",
     top: 80,
     left: 32,
     right: 32,
-    backgroundColor: 'rgba(255,255,255,0.92)',
+    backgroundColor: "rgba(255,255,255,0.92)",
     borderRadius: 16,
     padding: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -443,13 +478,13 @@ const styles = StyleSheet.create({
     color: Colors.ColorPrimary,
     fontSize: 16,
     marginBottom: 0,
-    textAlign: 'center',
+    textAlign: "center",
   },
   errorSubText: {
     color: Colors.ColorPrimary,
     fontSize: 13,
     marginTop: 4,
-    textAlign: 'center',
+    textAlign: "center",
   },
   selectedPlaceCard: {
     position: "absolute",
