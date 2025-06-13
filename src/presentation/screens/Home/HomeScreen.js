@@ -47,10 +47,9 @@ import HorizontalCardPlace from "../../components/HorizontalCardPlace/Horizontal
 // CONSTANTS
 //==============================================================================
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const PADDING_HORIZONTAL = 16; // Padding lateral del carrusel
-const CARD_WIDTH = SCREEN_WIDTH - PADDING_HORIZONTAL * 2; // Ancho visible (excluye padding)
-const CARD_MARGIN = 10; // Separación entre cards
-const SNAP_INTERVAL = CARD_WIDTH; // Ajustado para mejorar el desplazamiento
+const CARD_WIDTH = SCREEN_WIDTH;
+const CARD_MARGIN = 0;
+const SNAP_INTERVAL = CARD_WIDTH;
 
 // Constante de iconos para categorías (igual que en CategoriesScreen)
 const CATEGORY_ICONS = {
@@ -331,38 +330,43 @@ const HomeScreen = ({ navigation }) => {
           </Text>
 
           {/* Carrusel horizontal */}
-          <FlatList
-            ref={flatListRef}
-            data={carouselData}
-            keyExtractor={(item, index) => `${item.idPlace}-${index}`}
-            horizontal
-            renderItem={({ item }) => {
-              return (
-                <MostVisitedPlaces
-                  place={item}
-                  onPress={() => {
-                    navigation.navigate("DetailScreen", { idPlace: item.idPlace });
-                    /* TODO: Implementar navegación al detalle */
-                  }}
-                  cardWidth={CARD_WIDTH}
-                  cardMargin={CARD_MARGIN}
-                />
-              );
-            }}
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={SNAP_INTERVAL}
-            snapToAlignment="start"
-            decelerationRate="fast"
-            onScrollToIndexFailed={onScrollToIndexFailed}
-            contentContainerStyle={styles.carouselContainer}
-            onMomentumScrollEnd={handleScrollEnd}
-            initialNumToRender={carouselData.length}
-            getItemLayout={(data, index) => ({
-              length: SNAP_INTERVAL,
-              offset: SNAP_INTERVAL * index,
-              index,
-            })}
-          />
+          <View style={{ width: SCREEN_WIDTH, alignSelf: 'center' }}>
+            <FlatList
+              ref={flatListRef}
+              data={carouselData}
+              keyExtractor={(item, index) => `${item.idPlace}-${index}`}
+              horizontal
+              renderItem={({ item }) => {
+                return (
+                  <MostVisitedPlaces
+                    place={item}
+                    onPress={() => {
+                      navigation.navigate("DetailScreen", { idPlace: item.idPlace });
+                    }}
+                    cardWidth={CARD_WIDTH}
+                    cardMargin={CARD_MARGIN}
+                  />
+                );
+              }}
+              showsHorizontalScrollIndicator={false}
+              snapToInterval={SNAP_INTERVAL}
+              snapToAlignment="center" // Cambia a "center" para centrar el ítem activo
+              decelerationRate="fast"
+              onScrollToIndexFailed={onScrollToIndexFailed}
+              contentContainerStyle={{
+                paddingHorizontal: 0,
+                marginHorizontal: 0,
+              }}
+              onMomentumScrollEnd={handleScrollEnd}
+              initialNumToRender={carouselData.length}
+              getItemLayout={(data, index) => ({
+                length: SNAP_INTERVAL,
+                offset: SNAP_INTERVAL * index,
+                index,
+              })}
+              style={{ width: SCREEN_WIDTH }}
+            />
+          </View>
 
           {/* Indicadores de paginación */}
           {places && places.length > 1 && (
