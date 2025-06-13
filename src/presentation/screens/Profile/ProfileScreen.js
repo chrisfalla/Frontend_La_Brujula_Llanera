@@ -52,7 +52,10 @@ const ProfileScreen = () => {
     const handleNavigateToFavorites = () => {
         navigation.navigate('Favorites');
     };
-    
+    const handleNavigateToDashboard = () => {
+        navigation.navigate('DashboardScreen');
+    };
+
     const handleOpenTermsAndConditions = () => {
         // Navegar a la pantalla de términos y condiciones en lugar de abrir URL directamente
         navigation.navigate('TermsCondition');
@@ -82,6 +85,10 @@ const ProfileScreen = () => {
                 <MenuItem 
                     title="Mis Favoritos" 
                     onPress={handleNavigateToFavorites}
+                />
+                <MenuItem 
+                    title="Panel de Gestión" 
+                    onPress={handleNavigateToDashboard}
                 />
                 <MenuItem 
                     title="Términos y Condiciones" 
