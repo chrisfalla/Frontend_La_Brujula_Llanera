@@ -33,7 +33,6 @@ const CustomInputText = ({
           <TextInput
         value={value}
         onChangeText={(text) => {
-          console.log(`🧪 [CustomInputText] onChangeText (${LabelText}):`, text);
           if (typeof onChangeText === 'function') {
             onChangeText(text);
           }

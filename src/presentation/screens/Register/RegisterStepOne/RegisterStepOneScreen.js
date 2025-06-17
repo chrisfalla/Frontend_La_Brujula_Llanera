@@ -10,8 +10,6 @@ import CustomDecoration from "../../../components/CustomDecoration/CustomDecorat
 
 import { navigate } from "../../../../infrastructure/services/navigationService";
 
-
-
 const RegisterStepOneScreen = () => {
   const [form, setForm] = useState({ gender: null });
 
@@ -27,13 +25,9 @@ const RegisterStepOneScreen = () => {
   const [errors, setErrors] = useState({});
   const [hasErrors, setHasErrors] = useState({});
 
- 
-
   const validateForm = () => {
     let currentErrors = {};
     let currentHasErrors = {};
-
-    console.log("Estado actual del formulario:", form);
 
     if (!form.name || form.name.trim() === "") {
       currentErrors.name = "El nombre es requerido";
@@ -95,10 +89,7 @@ const RegisterStepOneScreen = () => {
         birthdate: form.birthdate,
         gender: form.gender,
       };
-      console.log("Datos enviados a Step 2:", userData);
       navigate("RegisterStepTwo", userData);
-    } else {
-      console.log("❌ No puedo avanzar. Errores:", currentErrors);
     }
   };
 

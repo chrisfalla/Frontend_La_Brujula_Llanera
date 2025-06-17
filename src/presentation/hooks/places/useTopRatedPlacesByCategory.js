@@ -18,7 +18,6 @@ const useTopRatedPlacesByCategory = (idCategory) => {
   useEffect(() => {
     // Solo disparamos la acción si hay una categoría seleccionada
     if (idCategory) {
-      console.log('🔄 Cargando lugares mejor calificados para categoría:', idCategory);
       dispatch(fetchTopRatedPlacesByCategory(idCategory));
     }
   }, [idCategory, dispatch]);

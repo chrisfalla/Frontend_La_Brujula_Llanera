@@ -26,7 +26,6 @@ export const fetchFavorites = createAsyncThunk(
   'favorites/fetchFavorites',
   async (userId, { rejectWithValue }) => {
     try {
-      console.log('🔍 [REDUX] Obteniendo favoritos para el usuario:', userId);
       const favorites = await getFavoritesUseCase(userId);
       
       // Convertir todos los objetos a formato serializable
@@ -34,10 +33,8 @@ export const fetchFavorites = createAsyncThunk(
         ? favorites.map(toSerializable).filter(Boolean)
         : [];
         
-      console.log('✅ [REDUX] Favoritos obtenidos:', serializableFavorites.length);
       return serializableFavorites;
     } catch (error) {
-      console.error('❌ [REDUX] Error al obtener favoritos:', error);
       return rejectWithValue(error.message || 'Error al obtener favoritos');
     }
   }
@@ -47,9 +44,7 @@ export const addFavorite = createAsyncThunk(
   'favorites/addFavorite',
   async ({ idUserFk, idPlaceFk }, { rejectWithValue }) => {
     try {
-      console.log(`🔍 [REDUX] Agregando favorito - Usuario: ${idUserFk}, Lugar: ${idPlaceFk}`);
-      const response = await addFavoriteUseCase(idUserFk, idPlaceFk);
-      console.log('✅ [REDUX] Favorito agregado correctamente');
+      await addFavoriteUseCase(idUserFk, idPlaceFk);
       
       // Devolver un objeto plano serializable
       return toSerializable({ 
@@ -59,7 +54,6 @@ export const addFavorite = createAsyncThunk(
         userId: idUserFk
       });
     } catch (error) {
-      console.error('❌ [REDUX] Error al agregar favorito:', error);
       return rejectWithValue(error.message || 'Error al agregar favorito');
     }
   }
@@ -69,9 +63,7 @@ export const deleteFavorite = createAsyncThunk(
   'favorites/deleteFavorite',
   async ({ idUserFk, idPlaceFk }, { rejectWithValue }) => {
     try {
-      console.log(`🔍 [REDUX] Eliminando favorito - User: ${idUserFk}, Place: ${idPlaceFk}`);
-      const response = await deleteFavoriteUseCase(idUserFk, idPlaceFk);
-      console.log('✅ [REDUX] Favorito eliminado correctamente:', response);
+      await deleteFavoriteUseCase(idUserFk, idPlaceFk);
       
       // Devolver objeto plano serializable
       return { 
@@ -81,7 +73,6 @@ export const deleteFavorite = createAsyncThunk(
         userId: idUserFk
       };
     } catch (error) {
-      console.error('❌ [REDUX] Error al eliminar favorito:', error);
       return rejectWithValue(error.message || 'Error al eliminar favorito');
     }
   }
@@ -174,3 +165,4 @@ export const isFavorite = (favorites, placeId) => {
     return String(favPlaceId) === placeIdStr;
   });
 };
+

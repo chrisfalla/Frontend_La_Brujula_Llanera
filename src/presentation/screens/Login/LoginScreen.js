@@ -14,7 +14,6 @@ import CustomButton from "../../components/CustomButton/CustomButton";
 import CustomDecoration from "../../components/CustomDecoration/CustomDecoration";
 import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
 
-//imports login chris
 import { loginUserUseCase } from "../../../domain/usecases/user/loginUserUseCase";
 import { usersRepository } from "../../../data/repositories/users/usersRepository";
 import { userLogin } from "../../../domain/models/users/userLogin";
@@ -51,13 +50,13 @@ const LoginScreen = ({ navigation }) => {
       });
       const response = await loginUserUseCase(usersRepository)(credentials);
 
-      if (response && response.user && response.token) {
+      if (response?.user && response?.token) {
         await userStorage.save(response.user);
         dispatch(login(response.user));
       } else {
         setErrors({ password: "Credenciales incorrectas" });
       }
-    } catch (error) {
+    } catch {
       setErrors({ password: "Error al iniciar sesión" });
     } finally {
       setLoading(false);
@@ -98,7 +97,7 @@ const LoginScreen = ({ navigation }) => {
         />
 
         <Text style={styles.title}>
-          Iniciar <Text style={styles.titleText}>Sesión </Text>{" "}
+          Iniciar <Text style={styles.titleText}>Sesión</Text>
         </Text>
         <View style={styles.formContainer}>
           <CustomInputText
@@ -121,7 +120,7 @@ const LoginScreen = ({ navigation }) => {
             SupportingText={errors.password}
           />
           <TouchableOpacity onPress={handleForgotPassword}>
-            <Text style={styles.forgotPassword}>¿Olvido su Contraseña?</Text>
+            <Text style={styles.forgotPassword}>¿Olvidó su Contraseña?</Text>
           </TouchableOpacity>
 
           <CustomButton
@@ -143,8 +142,7 @@ const LoginScreen = ({ navigation }) => {
         </View>
         <View style={styles.footerContainer}>
           <Text style={styles.footer}>
-            Al ingresar, aceptas nuestros Términos y condiciones, y Política de
-            privacidad
+            Al ingresar, aceptas nuestros Términos y condiciones, y Política de privacidad
           </Text>
         </View>
         <CustomDecoration type="Left" styles={styles.divider} />
@@ -176,7 +174,6 @@ const styles = StyleSheet.create({
   img: {
     width: 164,
     height: 151,
-    marginTop: 0,
     marginBottom: 60,
   },
   title: {
@@ -213,7 +210,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonTwo: {
-    marginTop: 0,
     marginBottom: 0,
   },
   separator: {
@@ -221,13 +217,10 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     fontSize: 14,
     marginBottom: 15,
-    marginTop: 0,
     textAlign: "center",
   },
   footerContainer: {
     width: "75%",
-    position: "relative",
-    marginBottom: 0,
     marginTop: 10,
   },
   footer: {
@@ -235,7 +228,6 @@ const styles = StyleSheet.create({
     fontFamily: "Regular",
     fontSize: 12,
     color: Colors.Black,
-    margin: 0,
   },
 });
 

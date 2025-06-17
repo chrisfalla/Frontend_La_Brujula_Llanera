@@ -48,53 +48,43 @@ const VerticalPlaceCard = ({
 
   const handleFavoritePress = async () => {
     if (!user?.id) {
-      console.log('⚠️ [VerticalPlaceCard] No se puede gestionar favorito: usuario no autenticado');
       return;
     }
     
     if (!placeId) {
-      console.log(`⚠️ [VerticalPlaceCard] No se puede gestionar favorito: placeId (${placeId}) no disponible`);
       return;
     }
 
     // Evitar múltiples pulsaciones mientras se procesa
     if (isUpdating) return;
 
-    try {
-      setIsUpdating(true);
-      console.log(`🔄 [VerticalPlaceCard] ${isFavorite ? "Eliminando" : "Añadiendo"} favorito - User: ${user.id}, Place: ${placeId}`);
+    setIsUpdating(true);
 
-      // Actualización optimista de UI
-      const previousState = isFavorite;
-      setIsFavorite(!previousState);
-      
-      // Si es una eliminación y tenemos la función de callback, la llamamos
-      if (previousState && onRemoveFavorite) {
-        onRemoveFavorite(placeId);
-      }
-
-      if (previousState) {
-        // Si ya es favorito, lo eliminamos
-        await dispatch(deleteFavorite({ 
-          idUserFk: user.id, 
-          idPlaceFk: placeId 
-        })).unwrap();
-        console.log("✅ [VerticalPlaceCard] Favorito eliminado correctamente");
-      } else {
-        // Si no es favorito, lo añadimos
-        await dispatch(addFavorite({ 
-          idUserFk: user.id, 
-          idPlaceFk: placeId 
-        })).unwrap();
-        console.log("✅ [VerticalPlaceCard] Favorito añadido correctamente");
-      }
-    } catch (error) {
-      console.error("❌ [VerticalPlaceCard] Error al gestionar favorito:", error);
-      // Revertir el cambio optimista en caso de error
-      setIsFavorite(isFavorite);
-    } finally {
-      setIsUpdating(false);
+    // Actualización optimista de UI
+    const previousState = isFavorite;
+    setIsFavorite(!previousState);
+    
+    // Si es una eliminación y tenemos la función de callback, la llamamos
+    if (previousState && onRemoveFavorite) {
+      onRemoveFavorite(placeId);
     }
+
+    if (previousState) {
+      // Si ya es favorito, lo eliminamos
+      await dispatch(deleteFavorite({ 
+        idUserFk: user.id, 
+        idPlaceFk: placeId 
+      })).unwrap();
+    } else {
+      // Si no es favorito, lo añadimos
+      await dispatch(addFavorite({ 
+        idUserFk: user.id, 
+        idPlaceFk: placeId 
+      })).unwrap();
+    }
+
+    setIsFavorite(isFavorite);
+    setIsUpdating(false);
   };
 
   const handleCardPress = () => {

@@ -45,7 +45,6 @@ const NavigationTopBar = ({
   // Cargar favoritos solo una vez
   useEffect(() => {
     if (user?.id && !loadedRef.current) {
-      console.log('🔄 [NavigationTopBar] Cargando favoritos iniciales para usuario:', user.id);
       loadedRef.current = true;
       dispatch(fetchFavorites(user.id));
     }
@@ -53,46 +52,38 @@ const NavigationTopBar = ({
 
   const handleHeartPress = async () => {
     if (!user?.id || !placeId) {
-      console.log("⚠️ [NavigationTopBar] No se puede gestionar favorito: usuario o placeId no disponible");
       return;
     }
 
     // Prevenir múltiples clics
     if (isUpdating) return;
 
-    try {
-      setIsUpdating(true);
-      
-      // Actualización optimista
-      const previousState = isHeartActive;
-      setIsHeartActive(!previousState);
+    setIsUpdating(true);
+    
+    // Actualización optimista
+    const previousState = isHeartActive;
+    setIsHeartActive(!previousState);
 
-      if (previousState) {
-        // Si ya es favorito, lo eliminamos
-        await dispatch(
-          deleteFavorite({
-            idUserFk: user.id,
-            idPlaceFk: placeId,
-          })
-        ).unwrap();
-        console.log("✅ [NavigationTopBar] Favorito eliminado correctamente");
-      } else {
-        // Si no es favorito, lo añadimos
-        await dispatch(
-          addFavorite({
-            idUserFk: user.id,
-            idPlaceFk: placeId,
-          })
-        ).unwrap();
-        console.log("✅ [NavigationTopBar] Favorito añadido correctamente");
-      }
-    } catch (error) {
-      console.error("❌ [NavigationTopBar] Error al gestionar favorito:", error);
-      // Revertir el cambio optimista en caso de error
-      setIsHeartActive(isHeartActive);
-    } finally {
-      setIsUpdating(false);
+    if (previousState) {
+      // Si ya es favorito, lo eliminamos
+      await dispatch(
+        deleteFavorite({
+          idUserFk: user.id,
+          idPlaceFk: placeId,
+        })
+      ).unwrap();
+    } else {
+      // Si no es favorito, lo añadimos
+      await dispatch(
+        addFavorite({
+          idUserFk: user.id,
+          idPlaceFk: placeId,
+        })
+      ).unwrap();
     }
+
+    setIsHeartActive(isHeartActive);
+    setIsUpdating(false);
   };
 
   // Cambia el ícono si el corazón está activo

@@ -6,45 +6,33 @@ const mapToTag = dto => {
     return null;
   }
   
-  try {
-    const tag = new Tag({
-      idTag: dto.idTag || dto.id || 0,
-      tagName: dto.tagName || dto.name || '',
-      isDefault: !!dto.isDefault
-    });
-    return tag;
-  } catch (error) {
-    return null;
-  }
+  const tag = new Tag({
+    idTag: dto.idTag || dto.id || 0,
+    tagName: dto.tagName || dto.name || '',
+    isDefault: !!dto.isDefault
+  });
+  return tag;
 };
 
 export const tagsRepository = {
   getTags: async () => {
-    try {
-      const dtos = await fetchTags();
-      
-      if (!Array.isArray(dtos)) {
-        return [];
-      }
-      
-      const tags = dtos.map(mapToTag).filter(Boolean);
-      return tags;
-    } catch (error) {
+    const dtos = await fetchTags();
+    
+    if (!Array.isArray(dtos)) {
       return [];
     }
+    
+    const tags = dtos.map(mapToTag).filter(Boolean);
+    return tags;
   },
   getDefaultTags: async () => {
-    try {
-      const dtos = await fetchDefaultTags();
-      
-      if (!Array.isArray(dtos)) {
-        return [];
-      }
-      
-      const tags = dtos.map(mapToTag).filter(Boolean);
-      return tags;
-    } catch (error) {
+    const dtos = await fetchDefaultTags();
+    
+    if (!Array.isArray(dtos)) {
       return [];
     }
+    
+    const tags = dtos.map(mapToTag).filter(Boolean);
+    return tags;
   },
 };

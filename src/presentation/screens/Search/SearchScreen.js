@@ -35,6 +35,7 @@ const SearchScreen = () => {
       fetchPlacesByCategory(categoryId);
     }
   }, [categoryId]);
+  
   // Actualizar el useEffect para el filtrado
   useEffect(() => {
     if (places.length > 0) {
@@ -61,37 +62,19 @@ const SearchScreen = () => {
       setLoading(true);
       setError(null);
       
-      console.log(`🔍 Buscando lugares para categoría ID: ${catId}`);
       const result = await getPlacesByCategory(catId);
-      
-      console.log(`📊 [SearchScreen] Respuesta completa:`, JSON.stringify(result));
-      console.log(`📊 [SearchScreen] Número de lugares:`, result?.length || 0);
       
       // Verificar si los datos recibidos tienen la estructura esperada
       if (result && Array.isArray(result)) {
-        if (result.length === 0) {
-          console.warn('⚠️ [SearchScreen] No se encontraron lugares para esta categoría');
-          setPlaces([]);
-          setFilteredPlaces([]);
-        } else {
-          // Verificar la estructura de los datos
-          result.forEach((place, index) => {
-            console.log(`📊 [SearchScreen] Lugar ${index + 1}:`, JSON.stringify(place));
-          });
-          
-          // Siempre asignar lugares, incluso si tienen datos incompletos
-          setPlaces(result);
-          setFilteredPlaces(result);
-          console.log(`✅ [SearchScreen] Se encontraron ${result.length} lugares para la categoría`);
-        }
+        // Siempre asignar lugares, incluso si tienen datos incompletos
+        setPlaces(result);
+        setFilteredPlaces(result);
       } else {
-        console.error("❌ [SearchScreen] Resultado no válido:", result);
         setPlaces([]);
         setFilteredPlaces([]);
         setError("Los datos recibidos no tienen el formato esperado");
       }
     } catch (err) {
-      console.error("❌ [SearchScreen] Error al obtener lugares por categoría:", err);
       setError("No se pudieron cargar los lugares. Intenta nuevamente.");
       setPlaces([]);
       setFilteredPlaces([]);
@@ -152,40 +135,36 @@ const SearchScreen = () => {
           </View>
         ) : places.length > 0 ? (
           <FlatList
-  data={filteredPlaces}
-  renderItem={({ item, index }) => {
-    // Normalizar el objeto item para la vista
-    const normalizedItem = {
-      idPlace: item.idPlace || item.id || `place-${index}`,
-      name: item.placeName || item.namePlace || `Lugar ${index + 1}`,
-      address: item.placeAddress || item.addressPlace || "Sin dirección",
-      image: item.imageUrl || "https://via.placeholder.com/150",
-      category: item.categoryInfo?.category || categoryName || "Categoría"
-    };
-    
-    // Log para depuración
-    console.log(`📝 [SearchScreen] Lugar completo ${index}:`, JSON.stringify(item));
-    console.log(`📝 [SearchScreen] Lugar normalizado ${index}:`, JSON.stringify(normalizedItem));
-    
-    // Pasar el objeto normalizado con los nombres de prop correctos
-    return (
-      <TouchableOpacity // SE usa TouchableOpacity para manejar la navegación al detalle
-        activeOpacity={0.9}
-        onPress={() => navigation.navigate("DetailScreen", { idPlace: normalizedItem.idPlace })}
-      >
-        <HorizontalCardPlace
-          name={normalizedItem.name}
-          address={normalizedItem.address}
-          image={normalizedItem.image}
-          category={normalizedItem.category}
-          onDetailPress={() => navigation.navigate("DetailScreen", { idPlace: normalizedItem.idPlace })}
-          onMapPress={() => navigation.navigate("MapScreen", { idPlace: normalizedItem.idPlace })}
-        />
-      </TouchableOpacity>
-    );
-  }}
-  keyExtractor={(item, index) => (item.idPlace?.toString() || `place-${index}`)}
-/>
+            data={filteredPlaces}
+            renderItem={({ item, index }) => {
+              // Normalizar el objeto item para la vista
+              const normalizedItem = {
+                idPlace: item.idPlace || item.id || `place-${index}`,
+                name: item.placeName || item.namePlace || `Lugar ${index + 1}`,
+                address: item.placeAddress || item.addressPlace || "Sin dirección",
+                image: item.imageUrl || "https://via.placeholder.com/150",
+                category: item.categoryInfo?.category || categoryName || "Categoría"
+              };
+              
+              // Pasar el objeto normalizado con los nombres de prop correctos
+              return (
+                <TouchableOpacity // SE usa TouchableOpacity para manejar la navegación al detalle
+                  activeOpacity={0.9}
+                  onPress={() => navigation.navigate("DetailScreen", { idPlace: normalizedItem.idPlace })}
+                >
+                  <HorizontalCardPlace
+                    name={normalizedItem.name}
+                    address={normalizedItem.address}
+                    image={normalizedItem.image}
+                    category={normalizedItem.category}
+                    onDetailPress={() => navigation.navigate("DetailScreen", { idPlace: normalizedItem.idPlace })}
+                    onMapPress={() => navigation.navigate("MapScreen", { idPlace: normalizedItem.idPlace })}
+                  />
+                </TouchableOpacity>
+              );
+            }}
+            keyExtractor={(item, index) => (item.idPlace?.toString() || `place-${index}`)}
+          />
         ) : (
           <View style={styles.centerContent}>
             <Text style={styles.noResultsText}>

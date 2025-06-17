@@ -69,6 +69,38 @@ const PasswordRecoveryStepThreeScreen = () => {
   };
 
   const handleContinue = async () => {
+    if (!validateInputs()) return;
+    
+    setIsLoading(true);
+    try {
+      // Verificar datos mínimos necesarios
+      if (!email || !password) {
+        throw new Error('Faltan datos necesarios para restablecer la contraseña');
+      }
+
+      const response = await resetPasswordUseCase(usersRepository)(
+        email,
+        password
+      );
+
+      if (response?.user) {
+        await userStorage.save(response.user);
+        dispatch(login(response.user));
+      }
+
+      Alert.alert(
+        "¡Éxito!", 
+        "Tu contraseña ha sido actualizada correctamente.", 
+        [{ text: "OK", onPress: () => navigation.navigate("Login") }]
+      );
+    } catch (error) {
+      handlePasswordError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const validateInputs = () => {
     let hasError = false;
 
     // Validación para el campo de contraseña
@@ -96,91 +128,28 @@ const PasswordRecoveryStepThreeScreen = () => {
       setConfirmPasswordError(null);
     }
 
-    if (hasError) return;
+    return !hasError;
+  };
 
-    setIsLoading(true);
-
-    try {
-      // Registramos todos los parámetros para diagnóstico
-      console.log('📝 [RESET] Datos para reseteo de contraseña:');
-      console.log('- Email:', email);
-      console.log('- Código:', code);
-      console.log('- Password Length:', password ? password.length : 0);
-
-      // Verificamos que todos los datos necesarios estén presentes
-      if (!email) {
-        throw new Error('El email es requerido para restablecer la contraseña');
-      }
-      if (!code) {
-        throw new Error('El código de verificación es requerido para restablecer la contraseña');
-      }
-      if (!password) {
-        throw new Error('Debe ingresar una nueva contraseña');
-      }
-
-      console.log('🚀 [RESET] Iniciando proceso de reseteo con datos verificados');
-
-      try {
-        const response = await resetPasswordUseCase(usersRepository)(
-          email,
-          password
-        );
-
-        console.log('✅ [RESET] Respuesta exitosa de reseteo:', response);
-
-        if (response && response.user) {
-          await userStorage.save(response.user);
-          dispatch(login(response.user));
-        }
-
-        Alert.alert("¡Éxito!", "Tu contraseña ha sido actualizada correctamente.", [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate("Login"),
-          },
-        ]);
-      } catch (resetError) {
-        console.error('❌ [RESET] Error durante el reseteo:', resetError);
-        
-        // Extraer mensaje de error para mostrar al usuario
-        let errorMessage = "No se pudo actualizar la contraseña";
-        
-        if (resetError.response) {
-          console.error('📄 [RESET] Detalles del error de respuesta:', {
-            status: resetError.response.status,
-            data: JSON.stringify(resetError.response.data)
-          });
-          
-          if (resetError.response.data && resetError.response.data.message) {
-            errorMessage = resetError.response.data.message;
-          } else if (resetError.response.status === 500) {
-            errorMessage = "Error interno del servidor. Intente más tarde o con otro código.";
-          }
-        } else if (resetError.message) {
-          errorMessage = resetError.message;
-        }
-        
-        // Mostrar opciones al usuario
-        Alert.alert(
-          "Error al cambiar contraseña", 
-          errorMessage, 
-          [
-            {
-              text: "Solicitar nuevo código",
-              onPress: () => navigation.navigate("RecoveryOne")
-            },
-            {
-              text: "Intentar de nuevo"
-            }
-          ]
-        );
-      }
-    } catch (error) {
-      console.error("❌ [RESET] Error general:", error);
-      Alert.alert("Error", "Ha ocurrido un error inesperado. Por favor intente nuevamente.");
-    } finally {
-      setIsLoading(false);
+  const handlePasswordError = (error) => {
+    let errorMessage = "No se pudo actualizar la contraseña";
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.response?.status === 500) {
+      errorMessage = "Error interno del servidor. Intente más tarde o con otro código.";
+    } else if (error.message) {
+      errorMessage = error.message;
     }
+    
+    Alert.alert(
+      "Error al cambiar contraseña", 
+      errorMessage, 
+      [
+        { text: "Solicitar nuevo código", onPress: () => navigation.navigate("RecoveryOne") },
+        { text: "Intentar de nuevo" }
+      ]
+    );
   };
 
   return (

@@ -21,7 +21,6 @@ const RegisterStepTwoScreen = () => {
   const navigation = useNavigation(); // Aseguro tener la navegación disponible
 
   const { name, email, phone, birthdate, gender } = route.params || {};
-  console.log('Datos recibidos en Step 2:', { name, email, phone, birthdate, gender }); 
   
   // Declaración correcta del estado form
   const [form, setForm] = useState({ password: '', confirmPassword: '' });
@@ -61,7 +60,7 @@ const RegisterStepTwoScreen = () => {
     
     return errors;
   };
-  const validateForm = async () => {
+  const validateForm = () => {
     let hasErrors = false;
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
 
@@ -103,38 +102,38 @@ const RegisterStepTwoScreen = () => {
     }
 
     if (!hasErrors) {
-      try {
-        const userData = new userRegisterRequest({
-          names: name,
-          email: email,
-          phone: phone,
-          password: form.password,
-          birthday: birthdate,
-          idGender: gender,
-          avatar: 1
-        });
+      const userData = new userRegisterRequest({
+        names: name,
+        email: email,
+        phone: phone,
+        password: form.password,
+        birthday: birthdate,
+        idGender: gender,
+        avatar: 1
+      });
 
-        const response = await registerUserUseCase(usersRepository)(userData);
-        
-        if (!response || !response.user) {
-          throw new Error('Respuesta inválida del servidor');
-        }
-        
-        const saveResult = await userStorage.save(response.user);
-        if (saveResult) {
-          dispatch(login(response.user));
-          navigate('Home');
-        } else {
-          throw new Error('No se pudo guardar la información del usuario');
-        }
-      } catch (error) {
-        let errorMsg = 'No se pudo registrar el usuario. Inténtalo más tarde.';
-        if (error.response && error.response.data && error.response.data.message) {
-          errorMsg = error.response.data.message;
-        }
-        Alert.alert('Error', errorMsg);
-        console.error('Error durante el registro:', error);
-      }
+      registerUserUseCase(usersRepository)(userData)
+        .then(response => {
+          if (!response || !response.user) {
+            throw new Error('Respuesta inválida del servidor');
+          }
+          return userStorage.save(response.user)
+            .then(saveResult => {
+              if (saveResult) {
+                dispatch(login(response.user));
+                navigate('Home');
+              } else {
+                throw new Error('No se pudo guardar la información del usuario');
+              }
+            });
+        })
+        .catch(error => {
+          let errorMsg = 'No se pudo registrar el usuario. Inténtalo más tarde.';
+          if (error.response && error.response.data && error.response.data.message) {
+            errorMsg = error.response.data.message;
+          }
+          Alert.alert('Error', errorMsg);
+        });
     }
   };
 

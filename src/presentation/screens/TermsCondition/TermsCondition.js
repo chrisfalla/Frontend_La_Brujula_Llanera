@@ -18,22 +18,25 @@ const TermsCondition = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleViewMore = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const url = await getTermsAndConditionsUrlUseCase();
-      if (url) {
-        // Solo abrir si hay url
-        await Linking.openURL(url);
-      } else {
+  const handleViewMore = () => {
+    setLoading(true);
+    setError(null);
+    
+    getTermsAndConditionsUrlUseCase()
+      .then(url => {
+        if (url) {
+          // Solo abrir si hay url
+          return Linking.openURL(url);
+        } else {
+          setError('No se pudo abrir el enlace. Intenta nuevamente.');
+        }
+      })
+      .catch(() => {
         setError('No se pudo abrir el enlace. Intenta nuevamente.');
-      }
-    } catch (err) {
-      setError('No se pudo abrir el enlace. Intenta nuevamente.');
-    } finally {
-      setLoading(false);
-    }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const handleBackPress = () => {

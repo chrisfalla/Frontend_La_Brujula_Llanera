@@ -21,52 +21,41 @@ instance.interceptors.request.use(async (config) => {
       }
     }
   } catch (error) {
-    console.error('Error al obtener token', error);
+    // Error silencioso al obtener token
   }
-  return config});
-
-// Helpers para logging
-const logRequest = (method, url) => {
-  console.log(`🚀 [${method.toUpperCase()}] ${url}`);
-};
-
-const logResponse = (response) => {
-  console.log('✅ Received response with status:', response.status);
-  return response;
-};
-
-const logError = (error) => {
-  if (error.response) {
-    console.error('❌ Server responded with:', error.response.status);
-  } else if (error.request) {
-    console.error('❌ No response received:', error.request);
-  } else {
-    console.error('❌ Request error:', error.message);
-  }
-  return Promise.reject(error);
-};
+  return config
+});
 
 // Configurar interceptores
-instance.interceptors.response.use(logResponse, logError);
+instance.interceptors.response.use(
+  response => response,
+  error => Promise.reject(error)
+);
 
 // Métodos HTTP
 const get = async (url, config = {}) => {
-  logRequest('GET', url);
   const response = await instance.get(url, config);
   return response.data; // Devuelve directamente los datos
 };
 
 const post = async (url, data, config = {}) => {
-  logRequest('POST', url);
   const response = await instance.post(url, data, config);
   return response.data;
 };
 
-// ... otros métodos (put, delete)
+const put = async (url, data, config = {}) => {
+  const response = await instance.put(url, data, config);
+  return response.data;
+};
+
+const del = async (url, config = {}) => {
+  const response = await instance.delete(url, config);
+  return response.data;
+};
 
 export default {
   get,
   post,
-  put: instance.put,
-  delete: instance.delete
+  put,
+  delete: del
 };

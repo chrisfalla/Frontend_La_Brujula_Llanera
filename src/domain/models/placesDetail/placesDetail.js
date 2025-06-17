@@ -16,12 +16,5 @@ export default class PlaceDetailModel {
     this.rating = parseFloat(placeRatingStars) || 0;
     this.images = images;
     this.socialMedia = socialMedia;
-
-    console.log("✅ Modelo creado correctamente:", {
-      id: this.id,
-      name: this.name,
-      category: this.category,
-      rating: this.rating
-    });
   }
 }
