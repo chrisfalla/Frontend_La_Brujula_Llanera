@@ -1,16 +1,12 @@
 // favoritesDataSource.js
-import { fetchFavoritesUseCase, fetchFavoritesDefaultUseCase } from '../../../infrastructure/api/favorites/favoritesApi';
+import { getFavorites } from '../../../infrastructure/api/favorites/favoritesApi';
 import { Favorite } from '../../../domain/models/favorites/favorite';
 
 export const FavoritesDataSource = {
-    getFavoritesUseCase: async () => {
-        const dtos = await fetchFavoritesUseCase();
+    getFavoritesUseCase: async (userId) => {
+        const dtos = await getFavorites(userId);
         return dtos.map(mapToPlace);
-    },
-    getDefaultFavoritesUseCase: async () => {
-        const dtos = await fetchFavoritesDefaultUseCase();
-        return dtos.map(mapToPlace);
-    },
+    }
 };
 
 const mapToPlace = dto => {

@@ -1,4 +1,4 @@
-import { fetchFavorites } from '../../../infrastructure/api/favorites/favoritesApi';
+import { getFavorites } from '../../../infrastructure/api/favorites/favoritesApi';
 import { createFavorite } from '../../../domain/models/favorites/favorite';
 
 // Función para sanitizar URLs
@@ -52,7 +52,7 @@ const mapToFavorite = dto => {
 
 export const favoritesRepository = {
   getFavorites: async (userId) => {
-    const response = await fetchFavorites(userId);
+    const response = await getFavorites(userId);
     
     // Verificamos si la respuesta tiene la estructura esperada
     if (response && response.places && Array.isArray(response.places)) {
