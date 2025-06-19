@@ -52,8 +52,19 @@ const ProfileScreen = () => {
     const handleNavigateToFavorites = () => {
         navigation.navigate('Favorites');
     };
+    const allowedAdminEmails = [
+        'leyurbano@gmail.com',
+        'christoferfallavillarreal@gmail.com',
+        'damiancaro2000@gmail.com',
+        'jerstebalpe@gmail.com'
+    ];
     const handleNavigateToDashboard = () => {
-        navigation.navigate('DashboardScreen');
+        if (allowedAdminEmails.includes(user?.email)) {
+            navigation.navigate('DashboardScreen');
+        } else {
+            // Mostrar alerta si el usuario no tiene acceso
+            alert('No tienes permisos para acceder al Panel de Gestión.');
+        }
     };
 
     const handleOpenTermsAndConditions = () => {
