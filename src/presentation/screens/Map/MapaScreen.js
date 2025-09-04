@@ -11,7 +11,7 @@ import {
 import CustomSearch from "../../components/Search/Search";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
-import { searchPlaces, getPlaceDetails } from "../../../services/places";
+import useMapPlaces from "../../hooks/places/useMapPlaces";
 import { Ionicons } from "@expo/vector-icons";
 import HorizontalCardPlace from "../../components/HorizontalCardPlace/HorizontalCardPlace";
 import Constants from "expo-constants";
@@ -25,12 +25,21 @@ const MapaScreen = () => {
   const mapRef = useRef(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [defaultSitios, setDefaultSitios] = useState([]);
-  const [filteredSitios, setFilteredSitios] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [routeCoords, setRouteCoords] = useState([]); // NUEVO
+  const [routeCoords, setRouteCoords] = useState([]);
+
+  // Usar el hook personalizado para manejar los lugares
+  const {
+    defaultPlaces,
+    filteredPlaces,
+    searchValue,
+    loading,
+    selectedPlace,
+    error: placesError,
+    searchPlaces,
+    getPlaceDetails: getPlaceDetailsFromHook,
+    updateSearchValue,
+    setSelectedPlace,
+  } = useMapPlaces();
 
   useEffect(() => {
     (async () => {
@@ -47,39 +56,26 @@ const MapaScreen = () => {
     })();
   }, []);
 
+  // Manejar búsqueda con debounce
   useEffect(() => {
-    const fetchSitios = async () => {
-      try {
-        const sitios = await searchPlaces("", "");
-        setDefaultSitios(sitios);
-        setFilteredSitios(sitios);
-      } catch (e) {
-        setDefaultSitios([]);
-        setFilteredSitios([]);
-      }
-    };
-    fetchSitios();
-  }, []);
+    if (searchValue.trim() === "") {
+      setRouteCoords([]);
+    } else if (searchValue.trim().length >= 3) {
+      const timeoutId = setTimeout(() => {
+        handleSearch(searchValue);
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchValue]);
 
   const handleSearch = async (query) => {
     // Permitir búsqueda aunque no haya ubicación, usando una ubicación por defecto
     const userLocation = location || { latitude: 5.3396, longitude: -72.4058 };
-    setLoading(true);
+    
     try {
-      const locationStr = `${userLocation.latitude},${userLocation.longitude}`;
-      if (!query.trim()) {
-        setFilteredSitios(defaultSitios);
-        setSelectedPlace(null);
-        setRouteCoords([]); // LIMPIAR RUTA
-        setLoading(false);
-        return;
-      }
-
-      const results = await searchPlaces(query, locationStr);
-      setFilteredSitios(results);
+      const results = await searchPlaces(query, userLocation);
 
       if (results && results.length > 0) {
-        setSelectedPlace(results[0]);
         if (mapRef.current) {
           const primer = results[0];
           const coord = {
@@ -91,25 +87,12 @@ const MapaScreen = () => {
           mapRef.current.animateToRegion(coord, 500);
         }
       } else {
-        setSelectedPlace(null);
         setRouteCoords([]);
       }
     } catch (error) {
       Alert.alert("Error", "No se pudo completar la búsqueda.");
-    } finally {
-      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (searchValue.trim() === "") {
-      setFilteredSitios(defaultSitios);
-      setSelectedPlace(null);
-      setRouteCoords([]);
-    } else if (searchValue.trim().length >= 5) {
-      handleSearch(searchValue);
-    }
-  }, [searchValue, defaultSitios]);
 
   // Nueva función para volver a pedir permisos
   const requestLocationPermission = async () => {
@@ -165,7 +148,7 @@ const MapaScreen = () => {
         <CustomSearch
           style={styles.search}
           value={searchValue}
-          onChangeText={setSearchValue}
+          onChangeText={updateSearchValue}
           onSearch={() => handleSearch(searchValue)}
           placeholder="Buscar lugares..."
         />
@@ -192,32 +175,19 @@ const MapaScreen = () => {
           showsUserLocation={false}
           onPoiClick={async (e) => {
             const { coordinate, name, placeId } = e.nativeEvent;
-            setLoading(true);
             try {
               let detail = null;
               if (placeId) {
-                detail = await getPlaceDetails(placeId);
+                detail = await getPlaceDetailsFromHook(placeId);
               }
-              let imageUrl = null;
-              if (
-                detail?.photos &&
-                detail.photos.length > 0 &&
-                detail.photos[0].photo_reference
-              ) {
-                imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${detail.photos[0].photo_reference}&key=${API_KEY}`;
-              } else if (detail?.image) {
-                imageUrl = detail.image;
-              } else if (detail?.photos?.[0]?.url) {
-                imageUrl = detail.photos[0].url;
-              }
+              
               setSelectedPlace({
                 name: detail?.name || name,
                 address: detail?.address || detail?.formatted_address || "",
-                image: imageUrl,
+                image: detail?.image || null,
                 latitude: coordinate.latitude,
                 longitude: coordinate.longitude,
                 id: placeId,
-                // Puedes agregar más campos si los necesitas
               });
             } catch (err) {
               setSelectedPlace({
@@ -226,8 +196,6 @@ const MapaScreen = () => {
                 longitude: coordinate.longitude,
                 id: placeId,
               });
-            } finally {
-              setLoading(false);
             }
           }}
         >
@@ -246,35 +214,31 @@ const MapaScreen = () => {
           )}
 
           {/* Mostrar marcadores aunque no haya ubicación */}
-          {(Array.isArray(filteredSitios) ? filteredSitios : []).map(
+          {(Array.isArray(filteredPlaces) ? filteredPlaces : []).map(
             (sitio) => (
               <Marker
                 key={sitio.place_id || sitio.idPlace || sitio.id}
                 coordinate={{
-                  latitude: sitio.geometry?.location?.lat || sitio.latitude,
-                  longitude: sitio.geometry?.location?.lng || sitio.longitude,
+                latitude: sitio.geometry?.location?.lat || sitio.latitude,
+                longitude: sitio.geometry?.location?.lng || sitio.longitude,
                 }}
                 image={require("../../../shared/assets/pin.png")}
                 onPress={async () => {
-                  setLoading(true);
                   if (sitio.image) {
                     setSelectedPlace(sitio);
-                    setLoading(false);
                   } else {
                     try {
                       const id = sitio.idPlace || sitio.place_id || sitio.id;
                       let detail = null;
                       if (id) {
-                        detail = await getPlaceDetails(id);
+                        detail = await getPlaceDetailsFromHook(id);
                       }
                       setSelectedPlace({
                         ...sitio,
-                        image: detail?.image || detail?.photos?.[0]?.url || null,
+                        image: detail?.image || null,
                       });
                     } catch (e) {
                       setSelectedPlace(sitio);
-                    } finally {
-                      setLoading(false);
                     }
                   }
                 }}

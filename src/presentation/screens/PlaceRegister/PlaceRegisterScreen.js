@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {  StyleSheet,  View,  ScrollView,  Image,  TouchableOpacity,  Text,  
-  PermissionsAndroid,  Platform,  Alert,  StatusBar,  Modal
+  Alert,  StatusBar,  Modal
 } from "react-native";
 import NavigationTopBar from "../../components/NavigationTopBar/NavigationTopBar";
 import CustomButton from "../../components/CustomButton/CustomButton";
@@ -8,113 +8,116 @@ import CustomInputText from "../../components/CustomInput/CustomInputText";
 import CustomDropdown from "../../components/Dropdown/CustomDropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
-import { launchImageLibrary, launchCamera } from "react-native-image-picker";
+import * as ImagePicker from 'expo-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 
 const PlaceRegisterScreen = ({ navigation }) => {
   const [photos, setPhotos] = useState([null, null, null, null]);
   const [logo, setLogo] = useState(null);
 
-  const requestGalleryPermission = async () => {
-    if (Platform.OS === "android") {
-      let permission = PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
-      if (Platform.Version >= 33) {
-        permission = PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES;
-      }
-      const granted = await PermissionsAndroid.request(
-        permission,
-        {
-          title: "Permiso para acceder a la galería",
-          message: "La aplicación necesita acceso a tus fotos",
-          buttonNeutral: "Preguntar luego",
-          buttonNegative: "Cancelar",
-          buttonPositive: "OK",
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    }
-    return true;
+  const requestPermissions = async () => {
+    // Para Expo, los permisos se solicitan automáticamente
+    const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+    const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    return {
+      camera: cameraStatus === 'granted',
+      media: mediaStatus === 'granted'
+    };
   };
 
-  const requestCameraPermission = async () => {
-    if (Platform.OS === "android") {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: "Permiso para usar la cámara",
-          message: "La aplicación necesita acceso a la cámara",
-          buttonNeutral: "Preguntar luego",
-          buttonNegative: "Cancelar",
-          buttonPositive: "OK",
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    }
-    return true;
-  };
-
-  const convertToWebP = async (uri) => {
+  const convertToWebP = async (uri, imageType = 'gallery') => {
     try {
+      // Configuraciones optimizadas para tu UI actual
+      const configs = {
+        profile: { width: 150, height: 150, quality: 75 },    // Para logos circulares (50x50 UI)
+        gallery: { width: 400, height: 300, quality: 80 },    // Para cards verticales (140px altura UI)
+        thumbnail: { width: 100, height: 100, quality: 70 },  // Para miniaturas muy pequeñas
+        featured: { width: 600, height: 400, quality: 85 }    // Para destacadas del carrusel
+      };
+      
+      const config = configs[imageType] || configs.gallery;
+      
       const result = await ImageResizer.createResizedImage(
         uri,
-        800, // ancho deseado
-        800, // alto deseado
-        'WEBP', // formato
-        80 // calidad
+        config.width,
+        config.height,
+        'WEBP',
+        config.quality,
+        0, // rotación
+        null, // outputPath
+        false, // keepMeta
+        {
+          mode: 'contain', // 'contain' mantiene aspecto, 'cover' rellena
+          onlyScaleDown: true // Solo redimensiona si es más grande
+        }
       );
       return result.uri;
     } catch (error) {
-      Alert.alert('Error', 'No se pudo convertir la imagen a WebP.');
+      console.log('Error al convertir imagen:', error);
+      Alert.alert('Error', 'No se pudo procesar la imagen.');
       return uri;
     }
   };
 
   const [modalVisible, setModalVisible] = useState(false);
   const [onImageSelectedCallback, setOnImageSelectedCallback] = useState(null);
+  const [currentImageType, setCurrentImageType] = useState('gallery');
 
-  const openImagePickerModal = (onImageSelected) => {
+  const openImagePickerModal = (onImageSelected, imageType = 'gallery') => {
     setOnImageSelectedCallback(() => onImageSelected);
+    setCurrentImageType(imageType);
     setModalVisible(true);
   };
 
   const handleCamera = async () => {
     setModalVisible(false);
-    const hasPermission = await requestCameraPermission();
-    if (!hasPermission) {
+    const permissions = await requestPermissions();
+    if (!permissions.camera) {
       Alert.alert('Permiso denegado', 'No se puede acceder a la cámara sin permiso.');
       return;
     }
-    launchCamera({ mediaType: 'photo', quality: 1, saveToPhotos: true }, async (response) => {
-      if (response.didCancel) return;
-      if (response.errorCode) {
-        Alert.alert('Error', 'No se pudo abrir la cámara.');
-        return;
-      }
-      if (response.assets && response.assets.length > 0) {
-        const webpUri = await convertToWebP(response.assets[0].uri);
+    
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.9, // Alta calidad inicial para luego procesar
+      });
+      
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const webpUri = await convertToWebP(result.assets[0].uri, currentImageType);
         if (onImageSelectedCallback) onImageSelectedCallback(webpUri);
       }
-    });
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo abrir la cámara.');
+    }
   };
 
   const handleGallery = async () => {
     setModalVisible(false);
-    const hasPermission = await requestGalleryPermission();
-    if (!hasPermission) {
+    const permissions = await requestPermissions();
+    if (!permissions.media) {
       Alert.alert('Permiso denegado', 'No se puede acceder a la galería sin permiso.');
       return;
     }
-    launchImageLibrary({ mediaType: 'photo', quality: 1 }, async (response) => {
-      if (response.didCancel) return;
-      if (response.errorCode) {
-        Alert.alert('Error', 'No se pudo abrir la galería.');
-        return;
-      }
-      if (response.assets && response.assets.length > 0) {
-        const webpUri = await convertToWebP(response.assets[0].uri);
+    
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.9, // Alta calidad inicial para luego procesar
+      });
+      
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const webpUri = await convertToWebP(result.assets[0].uri, currentImageType);
         if (onImageSelectedCallback) onImageSelectedCallback(webpUri);
       }
-    });
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo abrir la galería.');
+    }
   };
 
   const pickImage = (index) => {
@@ -122,11 +125,11 @@ const PlaceRegisterScreen = ({ navigation }) => {
       const newPhotos = [...photos];
       newPhotos[index] = uri;
       setPhotos(newPhotos);
-    });
+    }, 'gallery'); // Fotos de galería
   };
 
   const pickLogo = () => {
-    openImagePickerModal((uri) => setLogo(uri));
+    openImagePickerModal((uri) => setLogo(uri), 'profile'); // Logo/perfil
   };
 
   // Estados para nuevas imágenes
@@ -135,13 +138,13 @@ const PlaceRegisterScreen = ({ navigation }) => {
   const [fotoPequena, setFotoPequena] = useState(null);
 
   const pickLogoExtra = () => {
-    openImagePickerModal((uri) => setLogoExtra(uri));
+    openImagePickerModal((uri) => setLogoExtra(uri), 'profile'); // Logo
   };
   const pickMasVistado = () => {
-    openImagePickerModal((uri) => setMasVistado(uri));
+    openImagePickerModal((uri) => setMasVistado(uri), 'featured'); // Imagen destacada
   };
   const pickFotoPequena = () => {
-    openImagePickerModal((uri) => setFotoPequena(uri));
+    openImagePickerModal((uri) => setFotoPequena(uri), 'thumbnail'); // Miniatura
   };
 
   // 1. Estado para los valores y errores del formulario
