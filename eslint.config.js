@@ -1,9 +1,9 @@
-import eslint from '@eslint/js';
-import globals from 'globals';
-import react from 'eslint-plugin-react';
-import reactNative from 'eslint-plugin-react-native';
+const eslint = require('@eslint/js');
+const globals = require('globals');
+const react = require('eslint-plugin-react');
+const reactNative = require('eslint-plugin-react-native');
 
-export default [
+module.exports = [
   {
     files: ['**/*.{js,jsx,mjs,cjs}'],
     languageOptions: {
