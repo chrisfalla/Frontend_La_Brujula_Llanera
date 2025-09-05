@@ -1,35 +1,35 @@
   import { useState, useEffect } from "react";
-  import { getDefaultTagsUseCase } from "../../../domain/usecases/tags/getDefaultTagsUseCase";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchFavorites } from "../../../shared/store/favoritesSlice/favoritesSlice";
 
-  export  const useFavorites = () => {    
+export const useFavorites = () => {
+  const dispatch = useDispatch();
+  const { favorites, status, error } = useSelector(state => state.favorites);
+  const user = useSelector(state => state.auth?.user);
+  const userId = user?.id || user?.idUser;
 
-    const [tags, setTags] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const fetchedTags = await getDefaultTagsUseCase();
+  useEffect(() => {
+    if (userId && status === 'idle') {
+      setLoading(true);
+      dispatch(fetchFavorites(userId))
+        .finally(() => setLoading(false));
+    }
+  }, [dispatch, userId, status]);
 
-                if (Array.isArray(fetchedTags) && fetchedTags.length > 0) {
-                    setTags(fetchedTags);
-                } else {
-                    setTags([]);
-                }
+  const refetch = () => {
+    if (userId) {
+      setLoading(true);
+      dispatch(fetchFavorites(userId))
+        .finally(() => setLoading(false));
+    }
+  };
 
-                setError(null);
-            } catch (err) {
-                setTags([]);
-                setError(err?.message || "Error al cargar las etiquetas");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    return { tags, loading, error };  
-  }
+  return { 
+    favorites, 
+    loading: loading || status === 'loading', 
+    error, 
+    refetch 
+  };
+};
