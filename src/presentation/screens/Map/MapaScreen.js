@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Text,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import CustomSearch from "../../components/Search/Search";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
@@ -38,6 +39,7 @@ const isValidCoordinate = (lat, lng) => {
 };
 
 const MapaScreen = () => {
+  const navigation = useNavigation();
   const mapRef = useRef(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -313,7 +315,11 @@ const MapaScreen = () => {
               detailIconName="chevron-right"
               mapIconName="route"
               onDetailIconPress={() => {
-                // Manejar el evento del ícono de detalle
+                // Navegar a la pantalla de detalle pasando los datos del lugar
+                navigation.navigate('DetailScreen', {
+                  place: selectedPlace,
+                  placeId: selectedPlace.id || selectedPlace.idPlace || selectedPlace.place_id
+                });
               }}
               onMapIconPress={async () => {
                 // Calcular la ruta y hacer zoom out para mostrarla
