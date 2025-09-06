@@ -12,21 +12,16 @@ import MainImage from "../../components/MainImage/MainImage";
 import GalleryImage from "../../components/GalleryImage/GalleryImage";
 import DetailInfo from "../../components/DetailInfo/DetailInfo";
 import Rating from "../../components/Rating/Rating";
-import GetPlaceDetailUseCase from "../../../domain/usecases/placesDetail/getPlaceDetailUseCase";
-import PlaceDetailRepository from "../../../data/repositories/placesDetail/placesDetailRepository";
-import PlaceDetailApi from "../../../infrastructure/api/placesDetail/placesDetailApi";
-import PlaceDetailDatasource from "../../../data/datasources/placesDetail/placesDetailDataSource";
-import { useLogVisit } from '../../../shared/context/LogVisitContext';
 
 const DetailScreen = ({ navigation, route }) => {
   const API_KEY = Constants.manifest?.extra?.GOOGLE_PLACES_API_KEY || Constants.expoConfig?.extra?.GOOGLE_PLACES_API_KEY;
   
-  const idPlace = route?.params?.idPlace ?? route?.params?.placeId ?? 2;
   const googlePlaceData = route?.params?.place; // Datos del mapa de Google Places
-  const { logVisit } = useLogVisit();
   const [placeDetail, setPlaceDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
 
   // Función para obtener detalles completos de Google Places
   const getGooglePlaceDetails = async (placeId) => {
@@ -34,91 +29,85 @@ const DetailScreen = ({ navigation, route }) => {
     
     const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,user_ratings_total,formatted_address,photos,formatted_phone_number,website&key=${API_KEY}`;
     
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    if (data.status === 'OK' && data.result) {
-      return data.result;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.status === 'OK' && data.result) {
+        return data.result;
+      }
+      
+      return null;
+    } catch (error) {
+      return null;
     }
-    
-    return null;
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      // Primero, intentar obtener datos de la API local si tenemos un ID
-      let localData = null;
-      if (idPlace && idPlace !== 2) { // 2 es el valor por defecto cuando no hay ID real
-        const api = new PlaceDetailApi();
-        const datasource = new PlaceDetailDatasource(api);
-        const repository = new PlaceDetailRepository(datasource);
-        const useCase = new GetPlaceDetailUseCase(repository);
-
-        localData = await useCase.execute(idPlace);
-        
-        // Si encontramos datos locales, usarlos y terminar
-        if (localData && localData.name) {
-          setPlaceDetail(localData);
-          logVisit(idPlace);
-          setLoading(false);
-          return;
-        }
-      }
-      
-      // Si NO hay datos locales y tenemos datos de Google Places, usarlos
-      if (googlePlaceData) {
-        let rating = googlePlaceData.rating || 0;
-        let phoneNumber = "Información no disponible";
-        let website = "Información no disponible";
-        
-        // Si tenemos place_id, obtener detalles completos de Google
-        if (googlePlaceData.id || googlePlaceData.place_id) {
-          const googleDetails = await getGooglePlaceDetails(googlePlaceData.id || googlePlaceData.place_id);
+      try {
+        // Solo usar datos de Google Places API
+        if (googlePlaceData) {
+          let rating = googlePlaceData.rating || 0;
+          let phoneNumber = "Información no disponible";
+          let website = "Información no disponible";
+          let photos = [];
           
-          if (googleDetails) {
-            rating = googleDetails.rating || rating;
-            phoneNumber = googleDetails.formatted_phone_number || phoneNumber;
-            website = googleDetails.website || website;
+          // Si tenemos place_id, obtener detalles completos de Google
+          if (googlePlaceData.id || googlePlaceData.place_id) {
+            const googleDetails = await getGooglePlaceDetails(googlePlaceData.id || googlePlaceData.place_id);
+            
+            if (googleDetails) {
+              rating = googleDetails.rating || rating;
+              phoneNumber = googleDetails.formatted_phone_number || phoneNumber;
+              website = googleDetails.website || website;
+              
+              // Procesar fotos de Google Places
+              if (googleDetails.photos && googleDetails.photos.length > 0) {
+                photos = googleDetails.photos.map((photo, index) => ({
+                  categoryId: index === 0 ? 3 : 4, // Primera imagen es principal (categoryId: 3)
+                  url: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${API_KEY}`
+                }));
+              }
+            }
           }
+          
+          // Si no hay fotos de la API pero hay imagen del marker, usarla
+          if (photos.length === 0 && googlePlaceData.image) {
+            photos = [{
+              categoryId: 3,
+              url: googlePlaceData.image
+            }];
+          }
+          
+          // Crear un objeto con formato compatible usando solo datos de Google
+          const googlePlaceDetail = {
+            name: googlePlaceData.name,
+            category: googlePlaceData.category || "Lugar",
+            description: googlePlaceData.address || googlePlaceData.formatted_address || "Información no disponible",
+            rating: rating,
+            images: photos,
+            socialMedia: [
+              { typeSocialMediaId: "3", value: phoneNumber },
+              { typeSocialMediaId: "4", value: website }
+            ],
+          };
+          
+          setPlaceDetail(googlePlaceDetail);
+          setLoading(false);
+        } else {
+          // Si no hay datos de Google Places, mostrar error
+          setError("No se encontró información del lugar");
+          setLoading(false);
         }
-        
-        // Crear un objeto similar al formato de la API local usando datos de Google
-        const googlePlaceDetail = {
-          name: googlePlaceData.name,
-          category: googlePlaceData.category || "Lugar",
-          description: googlePlaceData.address || "Información no disponible",
-          rating: rating,
-          images: googlePlaceData.image ? [{
-            categoryId: 3,
-            url: googlePlaceData.image
-          }] : [],
-          socialMedia: [
-            { typeSocialMediaId: "3", value: phoneNumber },
-            { typeSocialMediaId: "4", value: website }
-          ],
-        };
-        
-        setPlaceDetail(googlePlaceDetail);
-        setLoading(false);
-        return;
-      }
-      
-      // Si llegamos aquí, no hay datos locales ni de Google
-      // Como última opción, intentar cargar con ID por defecto
-      if (!localData) {
-        const api = new PlaceDetailApi();
-        const datasource = new PlaceDetailDatasource(api);
-        const repository = new PlaceDetailRepository(datasource);
-        const useCase = new GetPlaceDetailUseCase(repository);
-
-        const data = await useCase.execute(2); // ID por defecto
-        setPlaceDetail(data);
+      } catch (error) {
+        setError("Error al cargar la información del lugar");
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [idPlace, logVisit, googlePlaceData]);
+  }, [googlePlaceData]);
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -173,7 +162,7 @@ const DetailScreen = ({ navigation, route }) => {
         name={placeDetail.name}
         category={placeDetail.category}
         onBackPress={handleBackPress}
-        placeId={idPlace}
+        placeId={googlePlaceData?.id || googlePlaceData?.place_id || 'google-place'}
       />
       <View style={styles.rating}>
         <Rating average={placeDetail.rating} />
@@ -186,7 +175,7 @@ const DetailScreen = ({ navigation, route }) => {
         phoneNumber={contactInfo?.phone || "Información no disponible"}
         mail={contactInfo?.mail || "Información no disponible"}
         navigation={navigation}
-        placeId={idPlace}
+        placeId={googlePlaceData?.id || googlePlaceData?.place_id || 'google-place'}
         initialTab="Sobre nosotros"
       />
     </ScrollView>

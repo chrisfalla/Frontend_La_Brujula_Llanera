@@ -43,7 +43,12 @@ const MapaScreen = () => {
   const mapRef = useRef(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [routeCoords, setRouteCoords] = useState([]);
+  const [routeCoords, setRouteCoords] = useState([]); // AGREGADO: Estado para almacenar coordenadas de la ruta a dibujar
+
+  // MODIFICADO: useEffect limpio sin logs de depuración
+  useEffect(() => {
+    // Silencioso - monitorea cambios en routeCoords
+  }, [routeCoords]);
 
   // Usar el hook personalizado para manejar los lugares
   const {
@@ -74,10 +79,10 @@ const MapaScreen = () => {
     })();
   }, []);
 
-  // Manejar búsqueda con debounce
+  // MODIFICADO: Limpiar ruta cuando se borra el texto de búsqueda
   useEffect(() => {
     if (searchValue.trim() === "") {
-      setRouteCoords([]);
+      setRouteCoords([]); // Limpiar ruta al borrar búsqueda
     } else if (searchValue.trim().length >= 3) {
       const timeoutId = setTimeout(() => {
         handleSearch(searchValue);
@@ -90,26 +95,38 @@ const MapaScreen = () => {
     // Permitir búsqueda aunque no haya ubicación, usando una ubicación por defecto
     const userLocation = location || { latitude: 5.335, longitude: -72.396 };
     
-    const results = await searchPlaces(query, userLocation);
+    // Agregar timeout para evitar búsquedas que demoren mucho
+    const searchTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), 10000)
+    );
+    
+    try {
+      const results = await Promise.race([
+        searchPlaces(query, userLocation),
+        searchTimeout
+      ]);
 
-    if (results && results.length > 0) {
-      if (mapRef.current) {
-        const primer = results[0];
-        const lat = primer.geometry?.location?.lat || primer.latitude;
-        const lng = primer.geometry?.location?.lng || primer.longitude;
-        
-        // Validar coordenadas antes de animar el mapa
-        if (isValidCoordinate(lat, lng)) {
-          const coord = {
-            latitude: lat,
-            longitude: lng,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          };
-          mapRef.current.animateToRegion(coord, 500);
+      if (results && results.length > 0) {
+        if (mapRef.current) {
+          const primer = results[0];
+          const lat = primer.geometry?.location?.lat || primer.latitude;
+          const lng = primer.geometry?.location?.lng || primer.longitude;
+          
+          // Validar coordenadas antes de animar el mapa
+          if (isValidCoordinate(lat, lng)) {
+            const coord = {
+              latitude: lat,
+              longitude: lng,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            };
+            mapRef.current.animateToRegion(coord, 500);
+          }
         }
+      } else {
+        setRouteCoords([]);
       }
-    } else {
+    } catch (error) {
       setRouteCoords([]);
     }
   };
@@ -201,19 +218,35 @@ const MapaScreen = () => {
               return;
             }
             
-            let detail = null;
-            if (placeId) {
-              detail = await getPlaceDetailsFromHook(placeId);
-            }
-            
-            setSelectedPlace({
-              name: detail?.name || name,
-              address: detail?.address || detail?.formatted_address || "",
-              image: detail?.image || null,
+            // Crear objeto básico inmediatamente para mostrar algo rápido
+            const basicPlace = {
+              name: name,
+              address: "",
+              image: null,
               latitude: coordinate.latitude,
               longitude: coordinate.longitude,
               id: placeId,
-            });
+            };
+            
+            // Mostrar información básica primero
+            setSelectedPlace(basicPlace);
+            
+            // Luego cargar detalles en segundo plano si hay placeId
+            if (placeId) {
+              try {
+                const detail = await getPlaceDetailsFromHook(placeId);
+                if (detail) {
+                  setSelectedPlace({
+                    ...basicPlace,
+                    name: detail.name || name,
+                    address: detail.address || detail.formatted_address || "",
+                    image: detail.image || null,
+                  });
+                }
+              } catch (error) {
+                // Si falla, mantener la información básica
+              }
+            }
           }}
         >
           {location && (
@@ -251,18 +284,33 @@ const MapaScreen = () => {
                   }}
                   image={require("../../../shared/assets/pin.png")}
                   onPress={async () => {
+                    // Mostrar inmediatamente el lugar si ya tiene imagen
                     if (sitio.image) {
                       setSelectedPlace(sitio);
-                    } else {
-                      const id = sitio.idPlace || sitio.place_id || sitio.id;
-                      let detail = null;
-                      if (id) {
-                        detail = await getPlaceDetailsFromHook(id);
+                      return;
+                    }
+                    
+                    // Si no tiene imagen, mostrar primero información básica
+                    const basicPlace = {
+                      ...sitio,
+                      image: null,
+                    };
+                    setSelectedPlace(basicPlace);
+                    
+                    // Luego intentar cargar detalles en segundo plano
+                    const id = sitio.idPlace || sitio.place_id || sitio.id;
+                    if (id) {
+                      try {
+                        const detail = await getPlaceDetailsFromHook(id);
+                        if (detail?.image) {
+                          setSelectedPlace({
+                            ...basicPlace,
+                            image: detail.image,
+                          });
+                        }
+                      } catch (error) {
+                        // Mantener la información básica si falla
                       }
-                      setSelectedPlace({
-                        ...sitio,
-                        image: detail?.image || null,
-                      });
                     }
                   }}
                 />
@@ -270,12 +318,12 @@ const MapaScreen = () => {
             }
           )}
 
+          {/* AGREGADO: Componente Polyline para mostrar la ruta en el mapa */}
           {routeCoords.length > 0 && (
             <Polyline
               coordinates={routeCoords}
-              strokeWidth={6}
-              strokeColor="#FF0000"  // Rojo para que sea más visible
-              lineDashPattern={[0]}  // Línea sólida
+              strokeWidth={4}
+              strokeColor={Colors.ColorOnPrimary} // Color verde de la marca
             />
           )}
         </MapView>
@@ -310,65 +358,55 @@ const MapaScreen = () => {
               image={selectedPlace.image}
               onMapPress={() => {
                 setSelectedPlace(null);
-                setRouteCoords([]);
+                setRouteCoords([]); // AGREGADO: Limpiar ruta al cerrar la card del lugar
               }}
               detailIconName="chevron-right"
               mapIconName="route"
               onDetailIconPress={() => {
-                // Navegar a la pantalla de detalle pasando los datos del lugar
+                // Navegar a la pantalla de detalle pasando los datos completos del lugar
+                const placeData = {
+                  ...selectedPlace,
+                  // Asegurar que tenemos todos los campos necesarios
+                  place_id: selectedPlace.id || selectedPlace.place_id,
+                  formatted_address: selectedPlace.address,
+                };
+                
                 navigation.navigate('DetailScreen', {
-                  place: selectedPlace,
-                  placeId: selectedPlace.id || selectedPlace.idPlace || selectedPlace.place_id
+                  place: placeData,
+                  placeId: selectedPlace.id || selectedPlace.idPlace || selectedPlace.place_id,
+                  // Pasar también el ID local si existe
+                  idPlace: selectedPlace.idPlace
                 });
               }}
               onMapIconPress={async () => {
-                // Calcular la ruta y hacer zoom out para mostrarla
-                if (!location) {
-                  // Usar ubicación por defecto de Yopal
-                  const defaultLocation = { latitude: 5.335, longitude: -72.396 };
-                  
-                  if (selectedPlace && mapRef.current) {
-                    const destLat = selectedPlace.latitude;
-                    const destLng = selectedPlace.longitude;
-                    
-                    if (isValidCoordinate(destLat, destLng)) {
-                      const route = await getRouteDirections(defaultLocation, {
-                        latitude: destLat,
-                        longitude: destLng,
-                      });
-                      
-                      setRouteCoords(route);
-                      
-                      if (route.length > 1) {
-                        mapRef.current.fitToCoordinates(route, {
-                          edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
-                          animated: true,
-                        });
-                      }
-                    }
-                  }
-                  return;
-                }
-                
+                // AGREGADO: Funcionalidad para calcular y mostrar ruta al presionar el botón de ruta
                 if (location && selectedPlace && mapRef.current) {
-                  // Validar coordenadas antes de calcular la ruta
-                  const destLat = selectedPlace.latitude;
-                  const destLng = selectedPlace.longitude;
-                  
-                  if (isValidCoordinate(destLat, destLng)) {
-                    const route = await getRouteDirections(location, {
-                      latitude: destLat,
-                      longitude: destLng,
+                  // Usar ubicación real del usuario
+                  const route = await getRouteDirections(location, {
+                    latitude: selectedPlace.latitude,
+                    longitude: selectedPlace.longitude,
+                  });
+                  setRouteCoords(route); // Actualizar coordenadas de la ruta
+                  if (route.length > 1) {
+                    // Ajustar zoom del mapa para mostrar toda la ruta
+                    mapRef.current.fitToCoordinates(route, {
+                      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                      animated: true,
                     });
-                    
-                    setRouteCoords(route);
-                    
-                    if (route.length > 1) {
-                      mapRef.current.fitToCoordinates(route, {
-                        edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
-                        animated: true,
-                      });
-                    }
+                  }
+                } else if (!location && selectedPlace && mapRef.current) {
+                  // Fallback: usar ubicación por defecto si no hay GPS
+                  const defaultLocation = { latitude: 5.335, longitude: -72.396 };
+                  const route = await getRouteDirections(defaultLocation, {
+                    latitude: selectedPlace.latitude,
+                    longitude: selectedPlace.longitude,
+                  });
+                  setRouteCoords(route);
+                  if (route.length > 1) {
+                    mapRef.current.fitToCoordinates(route, {
+                      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                      animated: true,
+                    });
                   }
                 }
               }}
@@ -380,7 +418,9 @@ const MapaScreen = () => {
   );
 };
 
-// --- Funciones auxiliares para rutas --- //
+// --- AGREGADO: Funciones auxiliares para rutas --- //
+
+// Función para decodificar polylines de Google Maps
 function decodePolyline(encoded) {
   let poly = [];
   let index = 0,
@@ -416,50 +456,36 @@ function decodePolyline(encoded) {
   return poly;
 }
 
+// AGREGADO: Función para obtener direcciones de Google Maps API
 const getRouteDirections = async (origin, destination) => {
-  if (!API_KEY) {
-    return [];
-  }
-  
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=${API_KEY}`;
-  
-  const response = await fetch(url);
-  const data = await response.json();
-  
-  if (data.status === 'REQUEST_DENIED') {
-    return [];
-  }
-  
-  if (data.status === 'ZERO_RESULTS') {
-    return [];
-  }
-  
-  if (data.status !== 'OK') {
-    return [];
-  }
-  
-  if (data.routes && data.routes.length > 0) {
-    const route = data.routes[0];
-    
-    if (!route.overview_polyline?.points) {
-      return [];
+  try {
+    // Llamar a Google Directions API
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=${API_KEY}`
+    );
+    const data = await response.json();
+
+    // Si la API funciona y devuelve rutas
+    if (data.routes && data.routes.length && data.status === 'OK') {
+      const points = decodePolyline(data.routes[0].overview_polyline.points);
+      return points.map((point) => ({
+        latitude: point[0],
+        longitude: point[1],
+      }));
+    } else {
+      // FALLBACK: Si la API falla, usar línea directa
+      return [
+        { latitude: origin.latitude, longitude: origin.longitude },
+        { latitude: destination.latitude, longitude: destination.longitude }
+      ];
     }
-    
-    const points = decodePolyline(route.overview_polyline.points);
-    
-    if (points.length === 0) {
-      return [];
-    }
-    
-    const routeCoords = points.map((point) => ({
-      latitude: point[0],
-      longitude: point[1],
-    }));
-    
-    return routeCoords;
+  } catch (error) {
+    // FALLBACK: En caso de error, usar línea directa
+    return [
+      { latitude: origin.latitude, longitude: origin.longitude },
+      { latitude: destination.latitude, longitude: destination.longitude }
+    ];
   }
-  
-  return [];
 };
 
 const styles = StyleSheet.create({
