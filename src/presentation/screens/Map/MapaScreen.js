@@ -88,31 +88,27 @@ const MapaScreen = () => {
     // Permitir búsqueda aunque no haya ubicación, usando una ubicación por defecto
     const userLocation = location || { latitude: 5.335, longitude: -72.396 };
     
-    try {
-      const results = await searchPlaces(query, userLocation);
+    const results = await searchPlaces(query, userLocation);
 
-      if (results && results.length > 0) {
-        if (mapRef.current) {
-          const primer = results[0];
-          const lat = primer.geometry?.location?.lat || primer.latitude;
-          const lng = primer.geometry?.location?.lng || primer.longitude;
-          
-          // Validar coordenadas antes de animar el mapa
-          if (isValidCoordinate(lat, lng)) {
-            const coord = {
-              latitude: lat,
-              longitude: lng,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            };
-            mapRef.current.animateToRegion(coord, 500);
-          }
+    if (results && results.length > 0) {
+      if (mapRef.current) {
+        const primer = results[0];
+        const lat = primer.geometry?.location?.lat || primer.latitude;
+        const lng = primer.geometry?.location?.lng || primer.longitude;
+        
+        // Validar coordenadas antes de animar el mapa
+        if (isValidCoordinate(lat, lng)) {
+          const coord = {
+            latitude: lat,
+            longitude: lng,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          };
+          mapRef.current.animateToRegion(coord, 500);
         }
-      } else {
-        setRouteCoords([]);
       }
-    } catch (error) {
-      Alert.alert("Error", "No se pudo completar la búsqueda.");
+    } else {
+      setRouteCoords([]);
     }
   };
 
@@ -200,32 +196,22 @@ const MapaScreen = () => {
             
             // Validar coordenadas del POI
             if (!coordinate || !isValidCoordinate(coordinate.latitude, coordinate.longitude)) {
-              console.warn('POI con coordenadas inválidas:', coordinate);
               return;
             }
             
-            try {
-              let detail = null;
-              if (placeId) {
-                detail = await getPlaceDetailsFromHook(placeId);
-              }
-              
-              setSelectedPlace({
-                name: detail?.name || name,
-                address: detail?.address || detail?.formatted_address || "",
-                image: detail?.image || null,
-                latitude: coordinate.latitude,
-                longitude: coordinate.longitude,
-                id: placeId,
-              });
-            } catch (err) {
-              setSelectedPlace({
-                name,
-                latitude: coordinate.latitude,
-                longitude: coordinate.longitude,
-                id: placeId,
-              });
+            let detail = null;
+            if (placeId) {
+              detail = await getPlaceDetailsFromHook(placeId);
             }
+            
+            setSelectedPlace({
+              name: detail?.name || name,
+              address: detail?.address || detail?.formatted_address || "",
+              image: detail?.image || null,
+              latitude: coordinate.latitude,
+              longitude: coordinate.longitude,
+              id: placeId,
+            });
           }}
         >
           {location && (
@@ -266,19 +252,15 @@ const MapaScreen = () => {
                     if (sitio.image) {
                       setSelectedPlace(sitio);
                     } else {
-                      try {
-                        const id = sitio.idPlace || sitio.place_id || sitio.id;
-                        let detail = null;
-                        if (id) {
-                          detail = await getPlaceDetailsFromHook(id);
-                        }
-                        setSelectedPlace({
-                          ...sitio,
-                          image: detail?.image || null,
-                        });
-                      } catch (e) {
-                        setSelectedPlace(sitio);
+                      const id = sitio.idPlace || sitio.place_id || sitio.id;
+                      let detail = null;
+                      if (id) {
+                        detail = await getPlaceDetailsFromHook(id);
                       }
+                      setSelectedPlace({
+                        ...sitio,
+                        image: detail?.image || null,
+                      });
                     }
                   }}
                 />
@@ -289,8 +271,9 @@ const MapaScreen = () => {
           {routeCoords.length > 0 && (
             <Polyline
               coordinates={routeCoords}
-              strokeWidth={4}
-              strokeColor={Colors.ColorOnPrimary}
+              strokeWidth={6}
+              strokeColor="#FF0000"  // Rojo para que sea más visible
+              lineDashPattern={[0]}  // Línea sólida
             />
           )}
         </MapView>
@@ -334,6 +317,33 @@ const MapaScreen = () => {
               }}
               onMapIconPress={async () => {
                 // Calcular la ruta y hacer zoom out para mostrarla
+                if (!location) {
+                  // Usar ubicación por defecto de Yopal
+                  const defaultLocation = { latitude: 5.335, longitude: -72.396 };
+                  
+                  if (selectedPlace && mapRef.current) {
+                    const destLat = selectedPlace.latitude;
+                    const destLng = selectedPlace.longitude;
+                    
+                    if (isValidCoordinate(destLat, destLng)) {
+                      const route = await getRouteDirections(defaultLocation, {
+                        latitude: destLat,
+                        longitude: destLng,
+                      });
+                      
+                      setRouteCoords(route);
+                      
+                      if (route.length > 1) {
+                        mapRef.current.fitToCoordinates(route, {
+                          edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                          animated: true,
+                        });
+                      }
+                    }
+                  }
+                  return;
+                }
+                
                 if (location && selectedPlace && mapRef.current) {
                   // Validar coordenadas antes de calcular la ruta
                   const destLat = selectedPlace.latitude;
@@ -344,15 +354,15 @@ const MapaScreen = () => {
                       latitude: destLat,
                       longitude: destLng,
                     });
+                    
                     setRouteCoords(route);
+                    
                     if (route.length > 1) {
                       mapRef.current.fitToCoordinates(route, {
                         edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
                         animated: true,
                       });
                     }
-                  } else {
-                    console.warn('Coordenadas de destino inválidas:', destLat, destLng);
                   }
                 }
               }}
@@ -401,23 +411,49 @@ function decodePolyline(encoded) {
 }
 
 const getRouteDirections = async (origin, destination) => {
-  try {
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=${API_KEY}`
-    );
-    const data = await response.json();
-
-    if (data.routes.length) {
-      const points = decodePolyline(data.routes[0].overview_polyline.points);
-      return points.map((point) => ({
-        latitude: point[0],
-        longitude: point[1],
-      }));
-    }
-    return [];
-  } catch (error) {
+  if (!API_KEY) {
     return [];
   }
+  
+  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=${API_KEY}`;
+  
+  const response = await fetch(url);
+  const data = await response.json();
+  
+  if (data.status === 'REQUEST_DENIED') {
+    return [];
+  }
+  
+  if (data.status === 'ZERO_RESULTS') {
+    return [];
+  }
+  
+  if (data.status !== 'OK') {
+    return [];
+  }
+  
+  if (data.routes && data.routes.length > 0) {
+    const route = data.routes[0];
+    
+    if (!route.overview_polyline?.points) {
+      return [];
+    }
+    
+    const points = decodePolyline(route.overview_polyline.points);
+    
+    if (points.length === 0) {
+      return [];
+    }
+    
+    const routeCoords = points.map((point) => ({
+      latitude: point[0],
+      longitude: point[1],
+    }));
+    
+    return routeCoords;
+  }
+  
+  return [];
 };
 
 const styles = StyleSheet.create({
