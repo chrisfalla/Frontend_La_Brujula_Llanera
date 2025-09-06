@@ -17,5 +17,13 @@ const mapToPlace = dto => {
     placeName: dto.placeName,
     visitCount: dto.visitCount,
     imageUrl: fixedImageUrl || dto.imageUrl,
+    // Agregar coordenadas por defecto si no están disponibles
+    latitude: dto.latitude || 5.335,  // Ubicación por defecto (Yopal, Casanare)
+    longitude: dto.longitude || -72.396,
+    name: dto.placeName,
+    address: dto.placeAddress || 'Dirección no disponible',
+    image: fixedImageUrl || dto.imageUrl,
+    rating: dto.ratingStars || 0,
+    category: dto.categoryInfo?.categoryName || 'general'
   });
 };

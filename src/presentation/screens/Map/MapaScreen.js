@@ -21,6 +21,22 @@ const API_KEY =
   Constants.manifest?.extra?.GOOGLE_PLACES_API_KEY ||
   Constants.expoConfig?.extra?.GOOGLE_PLACES_API_KEY;
 
+// Función utilitaria para validar coordenadas
+const isValidCoordinate = (lat, lng) => {
+  return (
+    lat !== null && 
+    lat !== undefined && 
+    lng !== null && 
+    lng !== undefined &&
+    typeof lat === 'number' && 
+    typeof lng === 'number' &&
+    !isNaN(lat) && 
+    !isNaN(lng) &&
+    lat >= -90 && lat <= 90 &&
+    lng >= -180 && lng <= 180
+  );
+};
+
 const MapaScreen = () => {
   const mapRef = useRef(null);
   const [location, setLocation] = useState(null);
@@ -70,7 +86,7 @@ const MapaScreen = () => {
 
   const handleSearch = async (query) => {
     // Permitir búsqueda aunque no haya ubicación, usando una ubicación por defecto
-    const userLocation = location || { latitude: 5.3396, longitude: -72.4058 };
+    const userLocation = location || { latitude: 5.335, longitude: -72.396 };
     
     try {
       const results = await searchPlaces(query, userLocation);
@@ -78,13 +94,19 @@ const MapaScreen = () => {
       if (results && results.length > 0) {
         if (mapRef.current) {
           const primer = results[0];
-          const coord = {
-            latitude: primer.geometry?.location?.lat || primer.latitude,
-            longitude: primer.geometry?.location?.lng || primer.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          };
-          mapRef.current.animateToRegion(coord, 500);
+          const lat = primer.geometry?.location?.lat || primer.latitude;
+          const lng = primer.geometry?.location?.lng || primer.longitude;
+          
+          // Validar coordenadas antes de animar el mapa
+          if (isValidCoordinate(lat, lng)) {
+            const coord = {
+              latitude: lat,
+              longitude: lng,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            };
+            mapRef.current.animateToRegion(coord, 500);
+          }
         }
       } else {
         setRouteCoords([]);
@@ -117,8 +139,8 @@ const MapaScreen = () => {
           googleMapId="6bc2ed877465664dff366b78"
           style={styles.mapView}
           initialRegion={{
-            latitude: 5.3396,
-            longitude: -72.4058,
+            latitude: 5.335,
+            longitude: -72.396,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
@@ -157,8 +179,8 @@ const MapaScreen = () => {
           ref={mapRef}
           style={styles.map}
           initialRegion={{
-            latitude: location?.latitude || 5.3396,
-            longitude: location?.longitude || -72.4058,
+            latitude: location?.latitude || 5.335,
+            longitude: location?.longitude || -72.396,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
@@ -175,6 +197,13 @@ const MapaScreen = () => {
           showsUserLocation={false}
           onPoiClick={async (e) => {
             const { coordinate, name, placeId } = e.nativeEvent;
+            
+            // Validar coordenadas del POI
+            if (!coordinate || !isValidCoordinate(coordinate.latitude, coordinate.longitude)) {
+              console.warn('POI con coordenadas inválidas:', coordinate);
+              return;
+            }
+            
             try {
               let detail = null;
               if (placeId) {
@@ -214,36 +243,47 @@ const MapaScreen = () => {
           )}
 
           {/* Mostrar marcadores aunque no haya ubicación */}
-          {(Array.isArray(filteredPlaces) ? filteredPlaces : []).map(
-            (sitio) => (
-              <Marker
-                key={sitio.place_id || sitio.idPlace || sitio.id}
-                coordinate={{
-                latitude: sitio.geometry?.location?.lat || sitio.latitude,
-                longitude: sitio.geometry?.location?.lng || sitio.longitude,
-                }}
-                image={require("../../../shared/assets/pin.png")}
-                onPress={async () => {
-                  if (sitio.image) {
-                    setSelectedPlace(sitio);
-                  } else {
-                    try {
-                      const id = sitio.idPlace || sitio.place_id || sitio.id;
-                      let detail = null;
-                      if (id) {
-                        detail = await getPlaceDetailsFromHook(id);
-                      }
-                      setSelectedPlace({
-                        ...sitio,
-                        image: detail?.image || null,
-                      });
-                    } catch (e) {
+          {(Array.isArray(filteredPlaces) ? filteredPlaces : [])
+            .filter((sitio) => {
+              // Validar que el lugar tenga coordenadas válidas
+              const lat = sitio.geometry?.location?.lat || sitio.latitude;
+              const lng = sitio.geometry?.location?.lng || sitio.longitude;
+              return isValidCoordinate(lat, lng);
+            })
+            .map((sitio) => {
+              const lat = sitio.geometry?.location?.lat || sitio.latitude;
+              const lng = sitio.geometry?.location?.lng || sitio.longitude;
+              
+              return (
+                <Marker
+                  key={sitio.place_id || sitio.idPlace || sitio.id}
+                  coordinate={{
+                    latitude: lat,
+                    longitude: lng,
+                  }}
+                  image={require("../../../shared/assets/pin.png")}
+                  onPress={async () => {
+                    if (sitio.image) {
                       setSelectedPlace(sitio);
+                    } else {
+                      try {
+                        const id = sitio.idPlace || sitio.place_id || sitio.id;
+                        let detail = null;
+                        if (id) {
+                          detail = await getPlaceDetailsFromHook(id);
+                        }
+                        setSelectedPlace({
+                          ...sitio,
+                          image: detail?.image || null,
+                        });
+                      } catch (e) {
+                        setSelectedPlace(sitio);
+                      }
                     }
-                  }
-                }}
-              />
-            )
+                  }}
+                />
+              );
+            }
           )}
 
           {routeCoords.length > 0 && (
@@ -295,16 +335,24 @@ const MapaScreen = () => {
               onMapIconPress={async () => {
                 // Calcular la ruta y hacer zoom out para mostrarla
                 if (location && selectedPlace && mapRef.current) {
-                  const route = await getRouteDirections(location, {
-                    latitude: selectedPlace.latitude,
-                    longitude: selectedPlace.longitude,
-                  });
-                  setRouteCoords(route);
-                  if (route.length > 1) {
-                    mapRef.current.fitToCoordinates(route, {
-                      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
-                      animated: true,
+                  // Validar coordenadas antes de calcular la ruta
+                  const destLat = selectedPlace.latitude;
+                  const destLng = selectedPlace.longitude;
+                  
+                  if (isValidCoordinate(destLat, destLng)) {
+                    const route = await getRouteDirections(location, {
+                      latitude: destLat,
+                      longitude: destLng,
                     });
+                    setRouteCoords(route);
+                    if (route.length > 1) {
+                      mapRef.current.fitToCoordinates(route, {
+                        edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                        animated: true,
+                      });
+                    }
+                  } else {
+                    console.warn('Coordenadas de destino inválidas:', destLat, destLng);
                   }
                 }
               }}

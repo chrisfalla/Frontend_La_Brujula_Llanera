@@ -46,7 +46,7 @@ const useMapPlaces = () => {
     try {
       const locationStr = location 
         ? `${location.latitude},${location.longitude}` 
-        : '5.3396,-72.4058'; // Ubicación por defecto
+        : '5.335,-72.396'; // Ubicación por defecto (Yopal, Casanare)
       
       const results = await searchPlacesUseCase(query, locationStr);
       setFilteredPlaces(results);

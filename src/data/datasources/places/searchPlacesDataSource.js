@@ -21,12 +21,27 @@ export const searchPlacesDataSource = {
 
 // Función para mapear los datos de Google Places al modelo Place
 const mapToPlace = (googlePlace, index) => {
+  // Extraer coordenadas de manera segura
+  const lat = googlePlace.geometry?.location?.lat || 
+               googlePlace.geometry?.location?.latitude || 
+               googlePlace.latitude || 
+               5.335; // Ubicación por defecto (Yopal, Casanare)
+  
+  const lng = googlePlace.geometry?.location?.lng || 
+               googlePlace.geometry?.location?.longitude || 
+               googlePlace.longitude || 
+               -72.396; // Ubicación por defecto (Yopal, Casanare)
+  
+  // Validar que las coordenadas sean números válidos
+  const latitude = (typeof lat === 'number' && !isNaN(lat)) ? lat : 5.335;
+  const longitude = (typeof lng === 'number' && !isNaN(lng)) ? lng : -72.396;
+  
   return new Place({
     idPlace: googlePlace.place_id || `search_${index}`,
     name: googlePlace.name || 'Sin nombre',
     address: googlePlace.formatted_address || googlePlace.vicinity || '',
-    latitude: googlePlace.geometry?.location?.lat || 0,
-    longitude: googlePlace.geometry?.location?.lng || 0,
+    latitude: latitude,
+    longitude: longitude,
     image: googlePlace.photos && googlePlace.photos.length > 0 
       ? googlePlace.photos[0].url 
       : googlePlace.icon || '',
