@@ -10,6 +10,11 @@ const GalleryImage = ({ images }) => {
 const [isVisible, setIsVisible] = useState(false);
 const [activeIndex, setActiveIndex] = useState(0);
 
+// Limitar a 3 imágenes para mostrar
+const maxVisibleImages = 3;
+const visibleImages = images ? images.slice(0, maxVisibleImages) : [];
+const remainingCount = images ? Math.max(0, images.length - maxVisibleImages) : 0;
+
 const openImage = (index) => {
     setActiveIndex(index);
     setIsVisible(true);
@@ -21,7 +26,7 @@ return (
         <Text style={styles.title}>Galería:</Text>
         <View style={styles.imagesContainer}>
         {images && images.length > 0 ? (
-        images.map((image, index) => (
+        visibleImages.map((image, index) => (
             <Pressable
                 key={index}
                 style={styles.imageWrapper}
@@ -32,6 +37,12 @@ return (
                 style={styles.image}
                 resizeMode="cover"
             />
+            {/* Mostrar contador en la tercera imagen si hay más imágenes */}
+            {index === maxVisibleImages - 1 && remainingCount > 0 && (
+                <View style={styles.countOverlay}>
+                <Text style={styles.countText}>+{remainingCount}</Text>
+                </View>
+            )}
             </Pressable>
         ))
         ) : (
@@ -144,6 +155,24 @@ closeButton: {
     backgroundColor: Colors.LightGray,
     padding: 10,
     borderRadius: 50,
+    
+},
+// Estilos para el contador de imágenes adicionales
+countOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: GlobalStyles.borderRadius,
+},
+countText: {
+    fontFamily: "Poppins-Bold",
+    fontSize: 36,
+    color: "#ffffff",
     
 },
 
