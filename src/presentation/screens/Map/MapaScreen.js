@@ -265,15 +265,8 @@ const MapaScreen = () => {
                   longitude: e.nativeEvent.coordinate.longitude,
                 })
               }
-            >
-              <View style={styles.customMarker}>
-                <Image
-                  source={require("../../../shared/assets/pin.png")}
-                  style={styles.markerImage}
-                  resizeMode="contain"
-                />
-              </View>
-            </Marker>
+              image={require("../../../shared/assets/pin.png")}
+            />
           )}
 
           {/* AGREGADO: Componente Polyline para mostrar la ruta en el mapa */}
@@ -547,14 +540,6 @@ const styles = StyleSheet.create({
     top: 80,
     zIndex: 20,
     padding: 16,
-  },
-  customMarker: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  markerImage: {
-    width: 20,
-    height: 20,
   },
 });
 
