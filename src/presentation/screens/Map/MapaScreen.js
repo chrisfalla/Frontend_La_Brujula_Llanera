@@ -7,6 +7,7 @@ import {
   Alert,
   ActivityIndicator,
   Text,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CustomSearch from "../../components/Search/Search";
@@ -25,16 +26,18 @@ const API_KEY =
 // Función utilitaria para validar coordenadas
 const isValidCoordinate = (lat, lng) => {
   return (
-    lat !== null && 
-    lat !== undefined && 
-    lng !== null && 
+    lat !== null &&
+    lat !== undefined &&
+    lng !== null &&
     lng !== undefined &&
-    typeof lat === 'number' && 
-    typeof lng === 'number' &&
-    !isNaN(lat) && 
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    !isNaN(lat) &&
     !isNaN(lng) &&
-    lat >= -90 && lat <= 90 &&
-    lng >= -180 && lng <= 180
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180
   );
 };
 
@@ -94,16 +97,16 @@ const MapaScreen = () => {
   const handleSearch = async (query) => {
     // Permitir búsqueda aunque no haya ubicación, usando una ubicación por defecto
     const userLocation = location || { latitude: 5.335, longitude: -72.396 };
-    
+
     // Agregar timeout para evitar búsquedas que demoren mucho
     const searchTimeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout')), 10000)
+      setTimeout(() => reject(new Error("Timeout")), 10000)
     );
-    
+
     try {
       const results = await Promise.race([
         searchPlaces(query, userLocation),
-        searchTimeout
+        searchTimeout,
       ]);
 
       if (results && results.length > 0) {
@@ -111,7 +114,7 @@ const MapaScreen = () => {
           const primer = results[0];
           const lat = primer.geometry?.location?.lat || primer.latitude;
           const lng = primer.geometry?.location?.lng || primer.longitude;
-          
+
           // Validar coordenadas antes de animar el mapa
           if (isValidCoordinate(lat, lng)) {
             const coord = {
@@ -212,12 +215,15 @@ const MapaScreen = () => {
           showsUserLocation={false}
           onPoiClick={async (e) => {
             const { coordinate, name, placeId } = e.nativeEvent;
-            
+
             // Validar coordenadas del POI
-            if (!coordinate || !isValidCoordinate(coordinate.latitude, coordinate.longitude)) {
+            if (
+              !coordinate ||
+              !isValidCoordinate(coordinate.latitude, coordinate.longitude)
+            ) {
               return;
             }
-            
+
             // Crear objeto básico inmediatamente para mostrar algo rápido
             const basicPlace = {
               name: name,
@@ -227,10 +233,10 @@ const MapaScreen = () => {
               longitude: coordinate.longitude,
               id: placeId,
             };
-            
+
             // Mostrar información básica primero
             setSelectedPlace(basicPlace);
-            
+
             // Luego cargar detalles en segundo plano si hay placeId
             if (placeId) {
               try {
@@ -259,63 +265,15 @@ const MapaScreen = () => {
                   longitude: e.nativeEvent.coordinate.longitude,
                 })
               }
-              image={require("../../../shared/assets/pin.png")}
-            />
-          )}
-
-          {/* Mostrar marcadores aunque no haya ubicación */}
-          {(Array.isArray(filteredPlaces) ? filteredPlaces : [])
-            .filter((sitio) => {
-              // Validar que el lugar tenga coordenadas válidas
-              const lat = sitio.geometry?.location?.lat || sitio.latitude;
-              const lng = sitio.geometry?.location?.lng || sitio.longitude;
-              return isValidCoordinate(lat, lng);
-            })
-            .map((sitio) => {
-              const lat = sitio.geometry?.location?.lat || sitio.latitude;
-              const lng = sitio.geometry?.location?.lng || sitio.longitude;
-              
-              return (
-                <Marker
-                  key={sitio.place_id || sitio.idPlace || sitio.id}
-                  coordinate={{
-                    latitude: lat,
-                    longitude: lng,
-                  }}
-                  image={require("../../../shared/assets/pin.png")}
-                  onPress={async () => {
-                    // Mostrar inmediatamente el lugar si ya tiene imagen
-                    if (sitio.image) {
-                      setSelectedPlace(sitio);
-                      return;
-                    }
-                    
-                    // Si no tiene imagen, mostrar primero información básica
-                    const basicPlace = {
-                      ...sitio,
-                      image: null,
-                    };
-                    setSelectedPlace(basicPlace);
-                    
-                    // Luego intentar cargar detalles en segundo plano
-                    const id = sitio.idPlace || sitio.place_id || sitio.id;
-                    if (id) {
-                      try {
-                        const detail = await getPlaceDetailsFromHook(id);
-                        if (detail?.image) {
-                          setSelectedPlace({
-                            ...basicPlace,
-                            image: detail.image,
-                          });
-                        }
-                      } catch (error) {
-                        // Mantener la información básica si falla
-                      }
-                    }
-                  }}
+            >
+              <View style={styles.customMarker}>
+                <Image
+                  source={require("../../../shared/assets/pin.png")}
+                  style={styles.markerImage}
+                  resizeMode="contain"
                 />
-              );
-            }
+              </View>
+            </Marker>
           )}
 
           {/* AGREGADO: Componente Polyline para mostrar la ruta en el mapa */}
@@ -370,12 +328,15 @@ const MapaScreen = () => {
                   place_id: selectedPlace.id || selectedPlace.place_id,
                   formatted_address: selectedPlace.address,
                 };
-                
-                navigation.navigate('DetailScreen', {
+
+                navigation.navigate("DetailScreen", {
                   place: placeData,
-                  placeId: selectedPlace.id || selectedPlace.idPlace || selectedPlace.place_id,
+                  placeId:
+                    selectedPlace.id ||
+                    selectedPlace.idPlace ||
+                    selectedPlace.place_id,
                   // Pasar también el ID local si existe
-                  idPlace: selectedPlace.idPlace
+                  idPlace: selectedPlace.idPlace,
                 });
               }}
               onMapIconPress={async () => {
@@ -390,13 +351,21 @@ const MapaScreen = () => {
                   if (route.length > 1) {
                     // Ajustar zoom del mapa para mostrar toda la ruta
                     mapRef.current.fitToCoordinates(route, {
-                      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                      edgePadding: {
+                        top: 100,
+                        right: 100,
+                        bottom: 100,
+                        left: 100,
+                      },
                       animated: true,
                     });
                   }
                 } else if (!location && selectedPlace && mapRef.current) {
                   // Fallback: usar ubicación por defecto si no hay GPS
-                  const defaultLocation = { latitude: 5.335, longitude: -72.396 };
+                  const defaultLocation = {
+                    latitude: 5.335,
+                    longitude: -72.396,
+                  };
                   const route = await getRouteDirections(defaultLocation, {
                     latitude: selectedPlace.latitude,
                     longitude: selectedPlace.longitude,
@@ -404,7 +373,12 @@ const MapaScreen = () => {
                   setRouteCoords(route);
                   if (route.length > 1) {
                     mapRef.current.fitToCoordinates(route, {
-                      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+                      edgePadding: {
+                        top: 100,
+                        right: 100,
+                        bottom: 100,
+                        left: 100,
+                      },
                       animated: true,
                     });
                   }
@@ -466,7 +440,7 @@ const getRouteDirections = async (origin, destination) => {
     const data = await response.json();
 
     // Si la API funciona y devuelve rutas
-    if (data.routes && data.routes.length && data.status === 'OK') {
+    if (data.routes && data.routes.length && data.status === "OK") {
       const points = decodePolyline(data.routes[0].overview_polyline.points);
       return points.map((point) => ({
         latitude: point[0],
@@ -476,14 +450,14 @@ const getRouteDirections = async (origin, destination) => {
       // FALLBACK: Si la API falla, usar línea directa
       return [
         { latitude: origin.latitude, longitude: origin.longitude },
-        { latitude: destination.latitude, longitude: destination.longitude }
+        { latitude: destination.latitude, longitude: destination.longitude },
       ];
     }
   } catch (error) {
     // FALLBACK: En caso de error, usar línea directa
     return [
       { latitude: origin.latitude, longitude: origin.longitude },
-      { latitude: destination.latitude, longitude: destination.longitude }
+      { latitude: destination.latitude, longitude: destination.longitude },
     ];
   }
 };
@@ -573,6 +547,14 @@ const styles = StyleSheet.create({
     top: 80,
     zIndex: 20,
     padding: 16,
+  },
+  customMarker: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  markerImage: {
+    width: 20,
+    height: 20,
   },
 });
 
