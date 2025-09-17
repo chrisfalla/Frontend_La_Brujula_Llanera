@@ -1,17 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Animated,StatusBar } from 'react-native';
+import { View, Text, Image, StyleSheet, Animated, StatusBar } from 'react-native';
+import { TextStyles, Colors } from '../../styles/styles';
 
 const SplashScreen = () => {
   const fadeLogo = useRef(new Animated.Value(0)).current;
   const scaleLogo = useRef(new Animated.Value(0.7)).current;
   const spinValue = useRef(new Animated.Value(0)).current;
-  const slideText1 = useRef(new Animated.Value(30)).current;
-  const slideText2 = useRef(new Animated.Value(30)).current;
-  const fadeText1 = useRef(new Animated.Value(0)).current;
-  const fadeText2 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Animar logo y rotación
+    // Animar logo y texto juntos
     Animated.parallel([
       Animated.timing(fadeLogo, {
         toValue: 1,
@@ -25,6 +22,7 @@ const SplashScreen = () => {
       }),
     ]).start();
 
+    // Animar rotación del arrow
     Animated.loop(
       Animated.timing(spinValue, {
         toValue: 1,
@@ -32,37 +30,7 @@ const SplashScreen = () => {
         useNativeDriver: true,
       }),
     ).start();
-
-    // Animar texto
-    Animated.sequence([
-      Animated.delay(1000),
-      Animated.parallel([
-        Animated.timing(slideText1, {
-          toValue: 0,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeText1, {
-          toValue: 1,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-      ]),
-      Animated.delay(300),
-      Animated.parallel([
-        Animated.timing(slideText2, {
-          toValue: 0,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeText2, {
-          toValue: 1,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
-  }, []); // Limpiamos dependencias
+  }, []);
 
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
@@ -94,6 +62,25 @@ const SplashScreen = () => {
           style={[styles.arrow, { transform: [{ rotate: spin }] }]}
         />
       </Animated.View>
+      
+      <Animated.View
+        style={[
+          styles.titleContainer,
+          {
+            opacity: fadeLogo,
+            transform: [{ scale: scaleLogo }],
+          },
+        ]}
+      >
+        <Text style={styles.titleTextSmall}>
+          <Text style={styles.titleTextBlack}>BRÚJ</Text>
+          <Text style={styles.titleTextPrimary}>ULA</Text>
+        </Text>
+        <Text style={styles.titleText}>
+          <Text style={styles.titleTextBlack}>LLA</Text>
+          <Text style={styles.titleTextPrimary}>NERA</Text>
+        </Text>
+      </Animated.View>
     </View>
   );
 };
@@ -106,19 +93,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoContainer: {
-    width: 280,
-    height: 280,
+    width: 200,
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
   },
   capsule: {
     position: 'absolute',
-    width: 240,
-    height: 240,
+    width: 160,
+    height: 160,
   },
   arrow: {
-    width: 90,
-    height: 90,
+    width: 60,
+    height: 60,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  titleText: {
+    ...TextStyles.MerriweatherBold45,
+    lineHeight: 50,
+  },
+  titleTextSmall: {
+    ...TextStyles.MerriweatherBold40,
+    lineHeight: 45,
+  },
+  titleTextBlack: {
+    color: Colors.Black,
+  },
+  titleTextPrimary: {
+    color: Colors.ColorPrimary,
   },
 });
 
