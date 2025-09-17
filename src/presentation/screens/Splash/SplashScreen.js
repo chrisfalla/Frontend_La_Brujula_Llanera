@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Animated } from 'react-native';
+import { View, Text, Image, StyleSheet, Animated,StatusBar } from 'react-native';
 
 const SplashScreen = () => {
   const fadeLogo = useRef(new Animated.Value(0)).current;
@@ -71,6 +71,11 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar
+              barStyle="dark-content" // Para iconos oscuros en fondo claro
+              backgroundColor="#ffffff" // Fondo blanco para Android
+              translucent={false} // No translúcido para evitar superposiciones
+            />
       <Animated.View
         style={[
           styles.logoContainer,
