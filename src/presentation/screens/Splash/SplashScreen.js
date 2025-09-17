@@ -77,8 +77,8 @@ const SplashScreen = () => {
           <Text style={styles.titleTextPrimary}>ULA</Text>
         </Text>
         <Text style={styles.titleText}>
-          <Text style={styles.titleTextBlack}>LLA</Text>
-          <Text style={styles.titleTextPrimary}>NERA</Text>
+          <Text style={styles.titleTextPrimary}>LLA</Text>
+          <Text style={styles.titleTextBlack}>NERA</Text>
         </Text>
       </Animated.View>
     </View>
@@ -114,10 +114,12 @@ const styles = StyleSheet.create({
   titleText: {
     ...TextStyles.MerriweatherBold45,
     lineHeight: 50,
+    textAlign: 'center',
   },
   titleTextSmall: {
-    ...TextStyles.MerriweatherBold40,
+    ...TextStyles.MerriweatherBold38,
     lineHeight: 45,
+    textAlign: 'center',
   },
   titleTextBlack: {
     color: Colors.Black,

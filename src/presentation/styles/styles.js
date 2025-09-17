@@ -47,9 +47,9 @@ const Colors = {
       fontFamily: 'Merriweather-Bold',
       fontSize: 35,
     },
-    MerriweatherBold40: {
+    MerriweatherBold38: {
       fontFamily: 'Merriweather-Bold',
-      fontSize: 40,
+      fontSize: 38,
     },
     MerriweatherBold45: {
       fontFamily: 'Merriweather-Bold',
