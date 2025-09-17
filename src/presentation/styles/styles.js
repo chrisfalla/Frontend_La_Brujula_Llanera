@@ -35,6 +35,15 @@ const Colors = {
       fontFamily: 'Poppins-SemiBold',
       fontSize: 20,
     },
+    MerriweatherRegular35: {
+      fontFamily: 'Merriweather-Regular',
+      fontSize: 35,
+    },
+    MerriweatherRegular25: {
+      fontFamily: 'Merriweather-Regular',
+      fontSize: 25,
+    },
+
   };
   
   const GlobalStyles = {
