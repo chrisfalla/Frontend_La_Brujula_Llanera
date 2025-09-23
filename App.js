@@ -12,6 +12,8 @@ const App = () => {
     'Poppins-Bold': require('./src/shared/assets/fonts/Poppins-Bold.ttf'),
     'Poppins-Regular': require('./src/shared/assets/fonts/Poppins-Regular.ttf'),
     'Poppins-SemiBold': require('./src/shared/assets/fonts/Poppins-SemiBold.ttf'),
+    'Merriweather-Bold': require('./src/shared/assets/fonts/Merriweather-Bold.ttf'),
+    'Merriweather-Regular': require('./src/shared/assets/fonts/Merriweather-Regular.ttf'),
   });
 
   if (!fontsLoaded) return null;
