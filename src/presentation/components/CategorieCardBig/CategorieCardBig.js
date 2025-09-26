@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import {Ionicons } from '@expo/vector-icons';
-import { GlobalStyles, Colors, TextStyles } from "../../styles/styles";
+import { Colors, TextStyles } from "../../styles/styles";
 
 const CategorieCardBig = ({ nameCategory, iconCategory, onPress }) => {
     const [isSelected, setIsSelected] = useState(false);
